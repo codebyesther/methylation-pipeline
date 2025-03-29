@@ -6,13 +6,17 @@ This repository contains Python-based tools for filtering and visualizing DNA me
 
 ## 🔧 What It Does
 
-## 🧬 Locus-Level (CpG Island / Gene) Analysis
-
-This workflow focuses on specific genomic loci such as CpG islands or genes.
-
 ### Step 1: Filter Methylation Files by Patient ID
 - Applies to all methylation Excel files and a patient ID list.
 - Filters for samples of interest before any region-level analysis.
+
+### Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
+- Required only if you have `.xlsx` outputs from multiple different EMseq batches.
+- Produces one merged file for unified analysis.
+
+## 🧬 Locus-Level (CpG Island / Gene) Analysis
+
+This workflow focuses on specific genomic loci such as CpG islands or genes.
 
 ### Step 3 (Coming Soon): Visualize Methylation by Region
 - Generate plots per CpG island, gene, or genomic region.
@@ -22,13 +26,6 @@ This workflow focuses on specific genomic loci such as CpG islands or genes.
 
 This workflow focuses on overall methylation trends per patient or treatment condition.
 
-### Step 1: Filter Methylation Files by Patient ID
-- Same as above; prepare filtered sample files by ID.
-
-### Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
-- Required only if you have multiple `.xlsx` outputs from different EMseq batches.
-- Produces one merged file for unified analysis.
-
 ### Step 3 (Coming Soon): Visualize Global Methylation Trends
 - Barplots and bubble plots per timepoint or patient.
 - Includes summaries across chromosomes or treatment stages.
@@ -36,6 +33,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
 
 ## 📁 Input File Requirements
 
+### Step 1: Filter Methylation Files by Patient ID
 - One Excel file with patient IDs (e.g. `patient_list.xlsx`)
   - IDs must be in the first column.
 - One or more methylation Excel files
@@ -81,27 +79,6 @@ pip install -r requirements.txt
 ## 📂 Project Structure
 
 ```
-methylation-pipeline/
-├── data/                  # Input Excel files
-├── output/                # Filtered and merged outputs
-├── scripts/
-│   ├── step_1_filter_patients_local.py
-│   └── step_2_merge_filtered_files.py
-├── README.md
-├── .gitignore
-├── requirements.txt
-├── CITATION.cff
-```
-methylation-pipeline/
-├── data/                  # Input Excel files
-├── output/                # Filtered and merged outputs
-├── scripts/
-│   ├── step_1_filter_patients_local.py
-│   └── step_2_merge_filtered_files.py
-├── README.md
-├── .gitignore
-├── requirements.txt
-├── CITATION.cff
 methylation-pipeline/
 ├── data/                  # Input Excel files
 ├── output/                # Filtered and merged outputs
