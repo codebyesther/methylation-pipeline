@@ -4,7 +4,7 @@ This repository contains Python-based tools for filtering and visualizing DNA me
 
 ---
 
-## 🔧 What It Does
+## 🔧 Preprocessing Steps
 
 ### Step 1: Filter Methylation Files by Patient ID
 - Applies to all methylation Excel files and a patient ID list.
