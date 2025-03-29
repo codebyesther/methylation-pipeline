@@ -11,12 +11,14 @@ This repository contains Python-based tools for filtering and visualizing DNA me
 - Filters each methylation dataset to include only the columns matching specified patient IDs.
 - Saves the filtered outputs to new Excel files for downstream analysis.
 
-### 🔁 Step 2 (Optional): Merge Filtered Files for Global-Scale Analysis
-This step is only required for global/sample-level methylation analysis, not CGI-level analysis.
+### 🔁 Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
+This step is optional for both global and CGI-level methylation analysis.
 
-- Merges the filtered Excel files generated in Step 1
-- Produces a single combined file for downstream global metrics
-- Looks for all `.xlsx` files in the `output/` directory
+Use it when you have separate filtered Excel files from **multiple EMseq runs** and want to combine them into a single file for unified downstream analysis.
+
+- Merges filtered `.xlsx` files from the `output/` directory
+- Produces a single combined file: `merged_output.xlsx`
+- Useful when samples were processed across different EMseq runs
 
 ### 📊 Step 3: Visualize Methylation Data *(coming soon)*
 - Plot longitudinal methylation trends by treatment timepoint.
@@ -25,14 +27,14 @@ This step is only required for global/sample-level methylation analysis, not CGI
 
 ---
 
-## 📁 File Requirements
+## 📁 Input File Requirements
 
 - One Excel file with patient IDs (e.g. `patient_list.xlsx`)
   - IDs must be in the first column.
 - One or more methylation Excel files
   - Columns should contain patient IDs in their names.
 
-Place all input files in a `data/` folder and results will be saved to an `output/` folder.
+These input files are used at the start of Step 1. Place them in a `data/` folder. Filtered outputs will be saved to an `output/` folder.
 
 ---
 
@@ -72,6 +74,16 @@ pip install -r requirements.txt
 ## 📂 Project Structure
 
 ```
+methylation-pipeline/
+├── data/                  # Input Excel files
+├── output/                # Filtered and merged outputs
+├── scripts/
+│   ├── step_1_filter_patients_local.py
+│   └── step_2_merge_filtered_files.py
+├── README.md
+├── .gitignore
+├── requirements.txt
+├── CITATION.cff
 methylation-pipeline/
 ├── data/                  # Input Excel files
 ├── output/                # Filtered Excel outputs
