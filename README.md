@@ -56,10 +56,11 @@ Place all input files in a `data/` folder and results will be saved to an `outpu
 
 ## 📦 Dependencies
 
-- `pandas`
-- `openpyxl`
+Install required Python packages with:
 
----
+```bash
+pip install -r requirements.txt
+```
 
 ## 📂 Project Structure
 
