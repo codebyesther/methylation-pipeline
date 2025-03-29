@@ -84,16 +84,6 @@ methylation-pipeline/
 ├── .gitignore
 ├── requirements.txt
 ├── CITATION.cff
-methylation-pipeline/
-├── data/                  # Input Excel files
-├── output/                # Filtered and merged outputs
-├── scripts/
-│   ├── step_1_filter_patients_local.py
-│   └── step_2_merge_filtered_files.py
-├── README.md
-├── .gitignore
-├── requirements.txt
-├── CITATION.cff
 ```
 
 ---
