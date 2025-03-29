@@ -13,9 +13,10 @@ This repository contains Python-based tools for filtering and visualizing DNA me
 
 ### 🔁 Step 2 (Optional): Merge Filtered Files for Global-Scale Analysis
 This step is only required for global/sample-level methylation analysis, not CGI-level analysis.
+
 - Merges the filtered Excel files generated in Step 1
 - Produces a single combined file for downstream global metrics
-- Input files must end in `_samples-of-interest.xlsx`
+- Looks for all `.xlsx` files in the `output/` directory
 
 ### 📊 Step 3: Visualize Methylation Data *(coming soon)*
 - Plot longitudinal methylation trends by treatment timepoint.
