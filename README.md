@@ -6,26 +6,33 @@ This repository contains Python-based tools for filtering and visualizing DNA me
 
 ## 🔧 What It Does
 
-### ✅ Step 1: Filter Methylation Files by Patient ID
-- Loads a patient ID Excel file and multiple methylation Excel files.
-- Filters each methylation dataset to include only the columns matching specified patient IDs.
-- Saves the filtered outputs to new Excel files for downstream analysis.
+## 🧬 Locus-Level (CpG Island / Gene) Analysis
 
-### 🔁 Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
-This step is optional for both global and CGI-level methylation analysis.
+This workflow focuses on specific genomic loci such as CpG islands or genes.
 
-Use it when you have separate filtered Excel files from **multiple EMseq runs** and want to combine them into a single file for unified downstream analysis.
+### Step 1: Filter Methylation Files by Patient ID
+- Applies to all methylation Excel files and a patient ID list.
+- Filters for samples of interest before any region-level analysis.
 
-- Merges filtered `.xlsx` files from the `output/` directory
-- Produces a single combined file: `merged_output.xlsx`
-- Useful when samples were processed across different EMseq runs
+### Step 3 (Coming Soon): Visualize Methylation by Region
+- Generate plots per CpG island, gene, or genomic region.
+- Includes heatmaps, line plots, and longitudinal summaries.
 
-### 📊 Step 3: Visualize Methylation Data *(coming soon)*
-- Plot longitudinal methylation trends by treatment timepoint.
-- Generate chromosome-level summaries and CpG island heatmaps.
-- Identify genes with significant methylation changes.
+## 🌐 Global-Level (Patient / Timepoint) Analysis
 
----
+This workflow focuses on overall methylation trends per patient or treatment condition.
+
+### Step 1: Filter Methylation Files by Patient ID
+- Same as above; prepare filtered sample files by ID.
+
+### Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
+- Required only if you have multiple `.xlsx` outputs from different EMseq batches.
+- Produces one merged file for unified analysis.
+
+### Step 3 (Coming Soon): Visualize Global Methylation Trends
+- Barplots and bubble plots per timepoint or patient.
+- Includes summaries across chromosomes or treatment stages.
+
 
 ## 📁 Input File Requirements
 
@@ -74,6 +81,27 @@ pip install -r requirements.txt
 ## 📂 Project Structure
 
 ```
+methylation-pipeline/
+├── data/                  # Input Excel files
+├── output/                # Filtered and merged outputs
+├── scripts/
+│   ├── step_1_filter_patients_local.py
+│   └── step_2_merge_filtered_files.py
+├── README.md
+├── .gitignore
+├── requirements.txt
+├── CITATION.cff
+```
+methylation-pipeline/
+├── data/                  # Input Excel files
+├── output/                # Filtered and merged outputs
+├── scripts/
+│   ├── step_1_filter_patients_local.py
+│   └── step_2_merge_filtered_files.py
+├── README.md
+├── .gitignore
+├── requirements.txt
+├── CITATION.cff
 methylation-pipeline/
 ├── data/                  # Input Excel files
 ├── output/                # Filtered and merged outputs
