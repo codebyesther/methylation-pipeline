@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this code or a derivative in your research, please cite it as below."
+authors:
+  - family-names: Choi
+    given-names: Esther
+    affiliation: Yale University
+title: "Methylation Pipeline"
+version: "0.1.0"
+date-released: 2025-03-29
+repository-code: https://github.com/codebyesther/methylation-pipeline
+license: MIT
+type: software

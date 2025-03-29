@@ -1,0 +1,30 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# macOS
+.DS_Store
+
+# VS Code settings
+.vscode/
+
+# Output and data folders
+data/
+output/
+*.xlsx
+
+# Quarto render artifacts
+*.html
+*.pdf
+*.docx
+*.qmd~
