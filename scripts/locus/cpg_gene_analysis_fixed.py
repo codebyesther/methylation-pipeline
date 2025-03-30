@@ -93,7 +93,7 @@ for comp in comparisons:
     multi_cpg_genes_list.append(multi_gene_agg.assign(Comparison=comp_label))
 
     # Modified plotting code to limit to top 20 genes based on absolute avg_delta:
-    top_genes = multi_cpg_genes.reindex(multi_cpg_genes.avg_delta.abs().sort_values(ascending=False).index).head(20)
+    top_genes = multi_cpg_genes_list.reindex(multi_cpg_genes_list.avg_delta.abs().sort_values(ascending=False).index).head(20)
 
     plt.figure(figsize=(10, 6))
     sns.barplot(data=top_genes, x="avg_delta", y="Gene", color="#000080")
