@@ -105,12 +105,13 @@ methylation-pipeline/
 ```
 
 ## 🧠 Additional Context: Data Annotation Format
-A breakdown of CGI names (i.e. CGI_chr1_778604_779167_LOC100288069_0) can be done to interpret CGI identifiers:
-- CGI_ → prefix 
-- chr1 → chromosome
-- 778604_779167 → genomic coordinates
-- LOC100288069 → gene name
-- _0 → sometimes denotes CpG island index or probe ID
+A breakdown of CGI names (i.e. `CGI_chr1_778604_779167_LOC100288069_0`) can be done to interpret CGI identifiers:
+- `CGI_` → prefix 
+- `chr1` → chromosome
+- `778604_779167` → genomic coordinates
+- `LOC100288069` → gene name
+- `_0` → sometimes denotes CpG island index or probe ID
+
 Hopefully, this helps you understand the CpG region labels.
 
 ---
