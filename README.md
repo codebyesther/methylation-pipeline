@@ -16,7 +16,7 @@ These scripts help prepare your input methylation data.
 - Merges filtered Excel files from separate EMseq runs into a single dataset.
 - Only needed if your filtered files are split by run.
 
-## 📊 Locus-Level (CpG Island / Gene) Analysis
+## 🔍 Locus-Level (CpG Island / Gene) Analysis
 
 This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
 
