@@ -69,3 +69,11 @@ This project is licensed under the MIT License.
 ## 🧾 Citation
 
 Please cite this work if you use any scripts or plots from this repository.
+
+**Suggested citation:**
+
+```
+Choi, E. (2025). Methylation Pipeline for Visualizing Treatment-Induced Methylation Changes. GitHub repository. https://github.com/codebyesther/methylation-pipeline
+```
+
+If you use or adapt specific components, please mention the relevant script in your methods or supplementary material.
