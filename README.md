@@ -30,7 +30,7 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
 
 ### Step 3 (Update Coming): Visualize Methylation by Region
-- Script: `scripts/global/step_3_cpg_subregion_gene_plots_darkblue_local.py`
+- Script: `scripts/locus/step_3_cpg_subregion_gene_plots_darkblue_local.py`
 - Generate plots per CpG island, gene, or genomic region.
 - Includes bar plots, heatmaps, line plots, and longitudinal summaries.
 
