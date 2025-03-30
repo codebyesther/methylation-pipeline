@@ -55,7 +55,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
   ```
 - Install dependencies:
   ```bash
-  pip install pandas openpyxl
+  pip install pandas numpy openpyxl matplotlib seaborn
   ```
 - Place your input `.xlsx` files in a `data/` folder.
 - Run the script:
@@ -79,6 +79,7 @@ pip install -r requirements.txt
 ```
 
 - `pandas`
+- `numpy`
 - `openpyxl`
 - `matplotlib`
 - `seaborn`
@@ -102,6 +103,17 @@ methylation-pipeline/
 ├── requirements.txt
 ├── CITATION.cff
 ```
+
+## 📂 Additional Context: Data Annotation Format
+A breakdown of CGI names (i.e. CGI_chr1_778604_779167_LOC100288069_0) can be done to interpret CGI identifiers:
+- CGI_ → prefix 
+- chr1 → chromosome
+- 778604_779167 → genomic coordinates
+- LOC100288069 → gene name
+- _0 → sometimes denotes CpG island index or probe ID
+Hopefully, this helps you understand the CpG region labels.
+
+---
 
 ## 📜 License
 
