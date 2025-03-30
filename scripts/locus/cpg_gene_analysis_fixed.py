@@ -16,7 +16,7 @@ args = parser.parse_args()
 os.makedirs(args.outdir, exist_ok=True)
 
 # Automated file detection
-methylation_file = next(f for f in os.listdir(args.datadir) if "merged_output" in f.lower())
+methylation_file = next(f for f in os.listdir(args.datadir) if "patient" not in f.lower() and f.lower().endswith('.xlsx'))
 patient_file = next(f for f in os.listdir(args.datadir) if "patient" in f.lower())
 
 print("Detected files:", methylation_file, patient_file)
