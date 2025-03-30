@@ -104,7 +104,7 @@ methylation-pipeline/
 ├── CITATION.cff
 ```
 
-## 📂 Additional Context: Data Annotation Format
+## 🧠 Additional Context: Data Annotation Format
 A breakdown of CGI names (i.e. CGI_chr1_778604_779167_LOC100288069_0) can be done to interpret CGI identifiers:
 - CGI_ → prefix 
 - chr1 → chromosome
