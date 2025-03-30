@@ -92,27 +92,19 @@ for comp in comparisons:
 
     multi_cpg_genes_list.append(multi_gene_agg.assign(Comparison=comp_label))
 
+    # Modified plotting code to limit to top 20 genes based on absolute avg_delta:
+    top_genes = multi_cpg_genes.reindex(multi_cpg_genes.avg_delta.abs().sort_values(ascending=False).index).head(20)
+
     plt.figure(figsize=(10, 6))
-    sns.barplot(data=multi_gene_agg, x="Avg_Delta", y="Gene", color="#000080")
+    sns.barplot(data=top_genes, x="avg_delta", y="Gene", color="#000080")
+
     plt.axvline(0, color="gray", linestyle="--")
-    plt.title(f"Genes with Multiple Affected CpG Islands ({comp_label})")
+    plt.title(f"Top 20 Genes with Multiple Affected CpG Islands ({comp_label})")
     plt.xlabel("Avg Change in Methylated Fragment Count")
     plt.ylabel("Gene")
     plt.tight_layout()
     plt.savefig(os.path.join(args.outdir, f"multi_CpG_genes_{comp[0]}_{comp[1]}.png"))
     plt.close()
 
-# Aggregate all comparisons
-aggregate_genes = pd.concat(multi_cpg_genes_list).groupby("Gene")["Avg_Delta"].mean().reset_index().sort_values("Avg_Delta")
-
-plt.figure(figsize=(10, 6))
-sns.barplot(data=aggregate_genes, x="Avg_Delta", y="Gene", color="#000080")
-plt.axvline(0, color="gray", linestyle="--")
-plt.title("Genes with Multiple Affected CpG Islands (All Comparisons)")
-plt.xlabel("Avg Change in Methylated Fragment Count")
-plt.ylabel("Gene")
-plt.tight_layout()
-plt.savefig(os.path.join(args.outdir, "multi_CpG_genes_all_comparisons.png"))
-plt.close()
 
 print("Plots generated successfully.")
