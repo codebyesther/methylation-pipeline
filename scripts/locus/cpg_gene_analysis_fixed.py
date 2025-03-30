@@ -15,14 +15,15 @@ args = parser.parse_args()
 
 os.makedirs(args.outdir, exist_ok=True)
 
-# Automated file detection
-methylation_file = next(f for f in os.listdir(args.outdir) if "merged_output" in f.lower())
-patient_file = next(f for f in os.listdir(args.datadir) if "patient" in f.lower())
+# Automated file detection from separate directories
+methylation_file = next(f for f in os.listdir("output") if "merged_output" in f.lower())
+patient_file = next(f for f in os.listdir("data") if "patient" in f.lower())
 
 print("Detected files:", methylation_file, patient_file)
 
-methylation_df = pd.read_excel(os.path.join(args.datadir, methylation_file))
-patient_df = pd.read_excel(os.path.join(args.datadir, patient_file))
+methylation_df = pd.read_excel(os.path.join("output", methylation_file))
+patient_df = pd.read_excel(os.path.join("data", patient_file))
+
 patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
 
 # Extract locus-level matrix
