@@ -1,110 +1,71 @@
-# Methylation Pipeline
+# 🧬 Methylation Pipeline
 
-This repository contains Python-based tools for filtering and visualizing DNA methylation data from patient samples. It is designed for cfDNA or cancer methylation studies where preprocessing and longitudinal analysis are needed.
-
----
+This repository contains preprocessing and visualization tools for analyzing DNA methylation changes across treatment timepoints using filtered EMseq data.
 
 ## 🔧 Preprocessing Steps
 
-### Step 1: Filter Methylation Files by Patient ID
-- Applies to all methylation Excel files and a patient ID list.
-- Filters for samples of interest before any region-level analysis.
+These scripts help prepare your input methylation data.
 
-### Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
-- Required only if you have `.xlsx` outputs from multiple different EMseq batches.
-- Produces one merged file for unified analysis.
+### Step 1: Filter Samples of Interest
+- Script: `scripts/step_1_filter_patients_local.py`
+- Filters large Excel files to retain only samples from selected patients.
+- Outputs one filtered Excel file per original input.
 
-## 🧬 Locus-Level (CpG Island / Gene) Analysis
+### Step 2 (Optional): Merge Filtered Files
+- Script: `scripts/step_2_merge_filtered_files.py`
+- Merges filtered Excel files from separate EMseq runs into a single dataset.
+- Only needed if your filtered files are split by run.
 
-This workflow focuses on specific genomic loci such as CpG islands or genes.
+## 📊 Locus-Level (CpG Island / Gene) Analysis
 
-### Step 3 (Coming Soon): Visualize Methylation by Region
-- Generate plots per CpG island, gene, or genomic region.
-- Includes heatmaps, line plots, and longitudinal summaries.
+This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
+
+> (Coming soon)
 
 ## 🌐 Global-Level (Patient / Timepoint) Analysis
 
 This workflow focuses on overall methylation trends per patient or treatment condition.
 
-### Step 3 (Coming Soon): Visualize Global Methylation Trends
-- Barplots and bubble plots per timepoint or patient.
-- Includes summaries across chromosomes or treatment stages.
-
-
-## 📁 Input File Requirements
-
-### Step 1: Filter Methylation Files by Patient ID
-- One Excel file with patient IDs (e.g. `patient_list.xlsx`)
-  - IDs must be in the first column.
-- One or more methylation Excel files
-  - Columns should contain patient IDs in their names.
-
-These input files are used at the start of Step 1. Place them in a `data/` folder. Filtered outputs will be saved to an `output/` folder.
-
----
-
-## ▶️ How to Use
-
-### Option 1: Run Locally
-- Clone the repository:
-  ```bash
-  git clone https://github.com/codebyesther/methylation-pipeline.git
-  cd methylation-pipeline
-  ```
-- Install dependencies:
-  ```bash
-  pip install pandas openpyxl
-  ```
-- Place your input `.xlsx` files in a `data/` folder.
-- Run the script:
-  ```bash
-  python scripts/step_1_filter_patients.py
-  ```
-
-### Option 2: Google Colab (if using the Colab version)
-- Open the `.ipynb` file in Colab
-- Upload your files when prompted
-- Download the filtered results
-
----
-
-## 📦 Dependencies
-
-Install required Python packages with:
-
-```bash
-pip install -r requirements.txt
-```
+### Step 3: Visualize Chromosome-Level Methylation Change
+- Script: `scripts/global/step_3_chr_avg_overlay_global_local.py`
+- Visualizes average methylation change across chromosomes using bar plots (Baseline → On-Tx, On-Tx → Post-Tx) and a line plot (Baseline → Post-Tx).
+- Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation.
 
 ## 📂 Project Structure
 
 ```
 methylation-pipeline/
-├── data/                  # Input Excel files
-├── output/                # Filtered and merged outputs
+├── data/                      # Input Excel files
+├── output/                    # Filtered and merged outputs
+├── plots/                     # Generated plots and Excel summaries
 ├── scripts/
 │   ├── step_1_filter_patients_local.py
-│   └── step_2_merge_filtered_files.py
+│   ├── step_2_merge_filtered_files.py
+│   └── global/
+│       └── step_3_chr_avg_overlay_global_local.py
 ├── README.md
 ├── .gitignore
 ├── requirements.txt
 ├── CITATION.cff
 ```
 
----
+## 📦 Dependencies
 
-## ✍️ Author
+Install all requirements at once:
 
-Developed by **Esther Choi**  
-If you use or adapt this code in a publication or project, **please include appropriate attribution or authorship**.  
+```bash
+pip install -r requirements.txt
+```
 
-Suggested citation:  
-Esther Choi (2025), *Methylation Pipeline*, GitHub: [https://github.com/codebyesther/methylation-pipeline](https://github.com/codebyesther/methylation-pipeline)
-
-You can also find formal citation formats in the `CITATION.cff` file or by clicking **"Cite this repository"** on GitHub.
-
----
+- `pandas`
+- `openpyxl`
+- `matplotlib`
+- `seaborn`
 
 ## 📜 License
 
-MIT License
+This project is licensed under the MIT License.
+
+## 🧾 Citation
+
+Please cite this work if you use any scripts or plots from this repository.
