@@ -39,6 +39,15 @@ result_df = pd.concat([glob20_numeric, globmin80_numeric, scaled_ratio], keys=['
 
 # STEP7: Export results
 output_file = os.path.join(output_dir, "scaled_fragment_ratios_matrix.xlsx")
-result_df.to_excel(output_file)
+
+# Split DataFrame into chunks if too large for a single sheet
+max_columns = 16384
+num_chunks = (result_df.shape[1] // max_columns) + 1
+
+with pd.ExcelWriter(output_file) as writer:
+    for i in range(num_chunks):
+        start_col = i * max_columns
+        end_col = min((i + 1) * max_columns, result_df.shape[1])
+        result_df.iloc[:, start_col:end_col].to_excel(writer, sheet_name=f'Sheet_{i+1}')
 
 print(f"Saved output to {output_file}")
