@@ -51,8 +51,7 @@ except Exception as e:
     print(f"Error inspecting {cpg_matrix_file}: {e}")
     exit(1)
 
-# Specify the encoding to handle decoding issues
-# Check the file extension to determine the appropriate read function
+# Load cpg_matrix
 if cpg_matrix_file.endswith('.csv'):
     try:
         cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='ISO-8859-1')
@@ -69,14 +68,21 @@ else:
     print(f"Unsupported file format: {cpg_matrix_file}")
     exit(1)
 
+# Load patient list
 try:
     patient_df = pd.read_excel(patient_list_file)
 except Exception as e:
     print(f"Error reading {patient_list_file}: {e}")
     exit(1)
 
+# Load gene annotation (support CSV or XLSX)
 try:
-    gene_annot = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
+    if gene_annotation_file.endswith('.csv'):
+        gene_annot = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
+    elif gene_annotation_file.endswith('.xlsx'):
+        gene_annot = pd.read_excel(gene_annotation_file)
+    else:
+        raise ValueError("Unsupported gene annotation file format")
 except Exception as e:
     print(f"Error reading {gene_annotation_file}: {e}")
     exit(1)
@@ -97,6 +103,11 @@ sample_timepoints = {s: classify_timepoint(s) for s in cpg_matrix.columns}
 timepoint_df = pd.DataFrame.from_dict(sample_timepoints, orient='index', columns=['Timepoint'])
 
 # Filter for genes with multiple CpG islands
+if 'gene_name' not in gene_annot.columns or 'cgi_id' not in gene_annot.columns:
+    print("Error: 'gene_name' or 'cgi_id' column missing in gene annotation file.")
+    print("Available columns:", gene_annot.columns.tolist())
+    exit(1)
+
 cpg_gene_counts = gene_annot['gene_name'].value_counts()
 multicpg_genes = cpg_gene_counts[cpg_gene_counts > 1].index.tolist()
 
