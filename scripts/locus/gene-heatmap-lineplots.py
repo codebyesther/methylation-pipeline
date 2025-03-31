@@ -10,7 +10,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots.')
 parser.add_argument('--input_dir', type=str, default='output', help='Directory containing cpg matrix file')
 parser.add_argument('--patient_data_dir', type=str, default='data', help='Directory containing patient list file')
-parser.add_argument('--output_dir', type=str, default='output/heatmaps-lineplots', help='Directory to save plots')
+parser.add_argument('--output_dir', type=str, default='plots/heatmaps-lineplots', help='Directory to save plots')
 args = parser.parse_args()
 
 # Create output directory if it doesn't exist
