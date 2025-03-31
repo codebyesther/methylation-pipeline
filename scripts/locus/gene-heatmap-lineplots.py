@@ -8,14 +8,15 @@ import argparse
 
 # Argument parser for local execution
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots.')
-parser.add_argument('--input_dir', type=str, default='output', help='Directory containing input files')
+parser.add_argument('--input_dir', type=str, default='output', help='Directory containing cpg matrix file')
+parser.add_argument('--patient_data_dir', type=str, default='data', help='Directory containing patient list file')
 parser.add_argument('--output_dir', type=str, default='outputs', help='Directory to save plots')
 args = parser.parse_args()
 
 # Create output directory if it doesn't exist
 os.makedirs(args.output_dir, exist_ok=True)
 
-# Helper to find file containing a keyword
+# Helper to find file containing a keyword, raises a descriptive error if not found
 def find_file(keyword, directory):
     files = glob.glob(os.path.join(directory, f"*{keyword}*"))
     if not files:
@@ -23,8 +24,12 @@ def find_file(keyword, directory):
     return files[0]
 
 # Load inputs based on known filename patterns
-cpg_matrix_file = find_file("matrix", args.input_dir)
-patient_list_file = find_file("patient", os.path.join(args.input_dir, 'data'))
+try:
+    cpg_matrix_file = find_file("matrix", args.input_dir)
+    patient_list_file = find_file("patient", args.patient_data_dir)
+except FileNotFoundError as e:
+    print(e)
+    exit(1)
 
 # Read the input files
 cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
