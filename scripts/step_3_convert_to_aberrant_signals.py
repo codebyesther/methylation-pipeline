@@ -22,8 +22,8 @@ globmin80_filtered = globmin80_df[filter_condition]
 # Ensure the filtered DataFrames have the same shape
 assert glob20_filtered.shape == globmin80_filtered.shape, "Filtered DataFrames do not have the same shape."
 
-# STEP4: Divide the values in the output_glob20 file by the corresponding values in the output_globmin80 file and multiply by 100
-ratio_df = (glob20_filtered.iloc[:, 1:].astype(float) / globmin80_filtered.iloc[:, 1:].astype(float)) * 100
+# STEP4: Divide the values in the output_glob20 file by the corresponding values in the output_globmin80 file and multiply by 1000
+ratio_df = (glob20_filtered.iloc[:, 1:].astype(float) / globmin80_filtered.iloc[:, 1:].astype(float)) * 1000
 
 # STEP5: Reassemble the DataFrame with the original row labels
 result_df = pd.concat([glob20_filtered.iloc[:, 0].reset_index(drop=True), ratio_df.reset_index(drop=True)], axis=1)
