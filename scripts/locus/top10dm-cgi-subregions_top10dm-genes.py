@@ -122,13 +122,13 @@ for fname, df in methylation_dfs.items():
     multi_cpg_genes = gene_df[gene_df["count"] > 1].sort_values("avg_delta")
     print(multi_cpg_genes)
 
-    # Modify this part to plot all genes, regardless of count
+    # Modify this part to plot only the top 10 genes
     plt.figure(figsize=(10, 6))
-    sns.barplot(data=gene_df.sort_values("avg_delta"), x="avg_delta", y="Gene", color='darkblue')
+    sns.barplot(data=multi_cpg_genes.head(10).sort_values("avg_delta"), x="avg_delta", y="Gene", color='darkblue')
     plt.xlabel("Avg Change in Methylated Fragment Count")
     plt.axvline(0, color="gray", linestyle="--")
-    plt.title(f"Genes with Affected CpG Islands")
+    plt.title(f"Top 10 Differentially Methylated Genes with Affected CpG Islands")
     plt.tight_layout()
-    plot2_path = os.path.join(args.outdir, "all_CpG_genes.png")
+    plot2_path = os.path.join(args.outdir, "top10_CpG_genes.png")
     plt.savefig(plot2_path)
     plt.show()
