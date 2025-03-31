@@ -76,4 +76,40 @@ multicpg_genes = cpg_gene_counts[cpg_gene_counts > 1].index.tolist()
 
 # Average methylation for each gene
 gene_means = {}
-for gene in multicpg ▋
+for gene in multicpg_genes:
+    cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
+    gene_data = cpg_matrix.loc[cpg_matrix.index.isin(cpgs)]
+    gene_means[gene] = gene_data.mean()
+
+gene_matrix = pd.DataFrame(gene_means).T
+
+# Plot heatmap (aggregated by timepoint)
+gene_matrix_T = gene_matrix.T
+merged = gene_matrix_T.merge(timepoint_df, left_index=True, right_index=True)
+avg_by_tp = merged.groupby("Timepoint").mean().T
+
+plt.figure(figsize=(15, len(avg_by_tp)))
+sns.heatmap(avg_by_tp, cmap="coolwarm")
+plt.title("Average Methylation per Gene Across Timepoints")
+plt.tight_layout()
+plt.savefig(os.path.join(args.output_dir, "avg_methylation_heatmap.png"))
+plt.close()
+
+# Plot line plot (aggregated)
+if 'Healthy' in avg_by_tp.columns:
+    avg_by_tp_ordered = avg_by_tp[['Healthy', 'Baseline', 'On-Treatment', 'Post-Treatment']]
+else:
+    avg_by_tp_ordered = avg_by_tp[['Baseline', 'On-Treatment', 'Post-Treatment']]
+
+plt.figure(figsize=(15, 6))
+for gene in avg_by_tp_ordered.index:
+    plt.plot(avg_by_tp_ordered.columns, avg_by_tp_ordered.loc[gene], label=gene)
+plt.title("Methylation Trends Across Timepoints")
+plt.ylabel("Average Methylation")
+plt.xticks(rotation=45)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.savefig(os.path.join(args.output_dir, "avg_methylation_lineplot.png"))
+plt.close()
+
+print("Plots saved to", args.output_dir)
