@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser(description="Global-level methylation visualization with auto file detection.")
 parser.add_argument("--datadir", default="data", help="Directory containing input Excel files")
 parser.add_argument("--outdir", default="plots", help="Output directory for plots")
+parser.add_argument("--methylationdir", default="output", help="Directory containing methylation Excel files")
 args = parser.parse_args()
 
 os.makedirs(args.outdir, exist_ok=True)
@@ -14,14 +15,17 @@ os.makedirs(args.outdir, exist_ok=True)
 # Auto-detect patient and methylation files
 patient_file, methylation_file = None, None
 for fname in os.listdir(args.datadir):
+    if fname.endswith(".xlsx") and "patient" in fname.lower():
+        patient_file = os.path.join(args.datadir, fname)
+        break
+
+for fname in os.listdir(args.methylationdir):
     if fname.endswith(".xlsx"):
-        if "patient" in fname.lower():
-            patient_file = os.path.join(args.datadir, fname)
-        else:
-            methylation_file = os.path.join(args.datadir, fname)
+        methylation_file = os.path.join(args.methylationdir, fname)
+        break
 
 if not patient_file or not methylation_file:
-    raise FileNotFoundError("Could not find required input files in the specified data directory.")
+    raise FileNotFoundError("Could not find required input files in the specified directories.")
 
 patient_df = pd.read_excel(patient_file)
 patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
