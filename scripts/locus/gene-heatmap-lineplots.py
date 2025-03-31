@@ -23,7 +23,7 @@ find_file = lambda keyword: glob.glob(os.path.join(args.input_dir, f"*{keyword}*
 # Load inputs based on known filename patterns
 cpg_matrix_file = find_file("matrix")
 patient_list_file = find_file("patient")
-gene_annotation_file = find_file("gene")
+gene_annotation_file = find_file("gene_annotation")
 
 cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
 patient_df = pd.read_excel(patient_list_file)
