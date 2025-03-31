@@ -15,10 +15,11 @@ glob20_df = pd.read_excel(glob20_file)
 globmin80_df = pd.read_excel(globmin80_file)
 
 # STEP3: Extract the target rows
-target_rows = glob20_df[glob20_df['Header'].str.contains("CGI_chr") | (glob20_df['Header'] == "Total CpG island fragments counts for this particular spreadsheet")]
-glob20_rows = target_rows.set_index("Header").loc[:, target_rows.columns != "Header"]
-target_rows = globmin80_df[globmin80_df['Header'].str.contains("CGI_chr") | (globmin80_df['Header'] == "Total CpG island fragments counts for this particular spreadsheet")]
-globmin80_rows = target_rows.set_index("Header").loc[:, target_rows.columns != "Header"]
+target_rows_glob20 = glob20_df[glob20_df['Header'].str.contains("CGI_chr") | (glob20_df['Header'] == "Total CpG island fragments counts for this particular spreadsheet")]
+glob20_rows = target_rows_glob20.set_index("Header").loc[:, target_rows_glob20.columns != "Header"]
+
+target_rows_globmin80 = globmin80_df[globmin80_df['Header'].str.contains("CGI_chr") | (globmin80_df['Header'] == "Total CpG island fragments counts for this particular spreadsheet")]
+globmin80_rows = target_rows_globmin80.set_index("Header").loc[:, target_rows_globmin80.columns != "Header"]
 
 # STEP4: Clean and align sample names
 glob20_cleaned = glob20_rows.rename(lambda x: str(x).strip(), axis='columns')
