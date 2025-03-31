@@ -41,7 +41,7 @@ df = pd.read_excel(args.methylation)
 methylation_dfs[os.path.basename(args.methylation)] = df
 
 
-This script takes your Patient ID list.xlsx (has to have "patient" in filename) and Methylation data.xlsx to plot "Top Differentially Methylated CpG Islands" and "Genes with More than One Affected CpG Island".
+# This script takes your Patient ID list.xlsx (has to have "patient" in filename) and Methylation data.xlsx to plot "Top Differentially Methylated CpG Islands" and "Genes with More than One Affected CpG Island".
 
 STEP1: Install Dependencies.
 """
