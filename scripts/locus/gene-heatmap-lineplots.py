@@ -10,7 +10,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots.')
 parser.add_argument('--input_dir', type=str, default='output', help='Directory containing cpg matrix file')
 parser.add_argument('--patient_data_dir', type=str, default='data', help='Directory containing patient list file')
-parser.add_argument('--output_dir', type=str, default='outputs', help='Directory to save plots')
+parser.add_argument('--output_dir', type=str, default='output/heatmaps-lineplots', help='Directory to save plots')
 args = parser.parse_args()
 
 # Create output directory if it doesn't exist
@@ -31,8 +31,12 @@ except FileNotFoundError as e:
     print(e)
     exit(1)
 
-# Read the input files
-cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
+# Read the input files with error handling for encoding issues
+try:
+    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
+except UnicodeDecodeError:
+    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='latin1')
+    
 patient_df = pd.read_excel(patient_list_file)
 
 # Extract gene annotations from cpg_matrix index
