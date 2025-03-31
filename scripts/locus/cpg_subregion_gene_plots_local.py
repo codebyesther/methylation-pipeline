@@ -1,20 +1,35 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-try:
-    from google.colab import files
-    colab = True
-except ImportError:
-    colab = False
+import glob
 
 class Args:
-    methylation = "merged_output.xlsx"
-    patients = "Patient ID list.xlsx"
+    patients = ""
+    methylation = ""
     outdir = "plots"
 args = Args()
+
+# Locate the files based on the specified criteria
+data_folder = "data"
+output_folder = "output"
+
+patient_files = glob.glob(os.path.join(data_folder, '*[pP][aA][tT][iI][eE][nN][tT] [iI][dD]*.xlsx'))
+matrix_files = glob.glob(os.path.join(output_folder, '*[mM][aA][tT][rR][iI][xX]*.xlsx'))
+
+if patient_files:
+    args.patients = patient_files[0]
+else:
+    raise FileNotFoundError("No patient ID file found in the data folder.")
+
+if matrix_files:
+    args.methylation = matrix_files[0]
+else:
+    raise FileNotFoundError("No matrix file found in the output folder.")
 
 methylation_dfs = {}
 patient_ids = []
@@ -110,9 +125,3 @@ for fname, df in methylation_dfs.items():
     plot2_path = os.path.join(args.outdir, "multi_CpG_genes.png")
     plt.savefig(plot2_path)
     plt.show()
-
-    if colab:
-        # Download all saved plots
-        for plot_path in [plot1_path, plot2_path]:
-            time.sleep(2)  # slight delay to ensure Colab has time to process download
-            files.download(plot_path)
