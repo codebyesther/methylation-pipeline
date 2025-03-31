@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+"""Step2-calculate global aberrant methylation levels.ipynb
+
+Original file was modified to run locally.
+
+STEP1: Import packages.
+"""
+
+import pandas as pd
+import glob
+
+"""STEP2: Automatically detect and load Excel files."""
+
+# Modify the directory as needed
+excel_files = glob.glob('*.xlsx')
+glob20_name = [f for f in excel_files if "Glob20" in f][0]
+globmin80_name = [f for f in excel_files if "GlobMin80" in f][0]
+
+glob20_df = pd.read_excel(glob20_name)
+globmin80_df = pd.read_excel(globmin80_name)
+
+"""STEP3: Extract the fragment count rows."""
+
+target_row = "Total CpG island fragments counts for this particular spreadsheet"
+glob20_row = glob20_df.set_index("Header").loc[target_row]
+globmin80_row = globmin80_df.set_index("Header").loc[target_row]
+
+"""STEP4: Clean and align sample names."""
+
+glob20_cleaned = glob20_row.rename(lambda x: str(x).strip())
+globmin80_cleaned = globmin80_row.rename(lambda x: str(x).strip())
+glob20_numeric, globmin80_numeric = glob20_cleaned.astype(float).align(globmin80_cleaned.astype(float), join="inner")
+
+"""STEP5: Compute scaled ratio."""
+
+scaled_ratio = (glob20_numeric / globmin80_numeric) * 100000
+
+"""STEP6: Assemble final DataFrame and display preview."""
+
+result_df = pd.DataFrame({
+    "Glob20": glob20_numeric,
+    "GlobMin80": globmin80_numeric,
+    "Scaled Ratio (x100K)": scaled_ratio
+})
+
+print(result_df.head())
+
+"""STEP7: Export the global aberrant methylation level file to Excel."""
+
+result_df.to_excel("scaled_fragment_ratios.xlsx")
+print("Excel file has been saved as 'scaled_fragment_ratios.xlsx'.")
