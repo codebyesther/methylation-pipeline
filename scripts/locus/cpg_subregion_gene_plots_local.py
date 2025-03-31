@@ -1,27 +1,17 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-from google.colab import files
-uploaded = files.upload()
-
-
-# In[ ]:
-
-
 import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
-# In[13]:
+try:
+    from google.colab import files
+    colab = True
+except ImportError:
+    colab = False
 
 class Args:
-    methylation = "matrix.xlsx"
+    methylation = "merged_output.xlsx"
     patients = "Patient ID list.xlsx"
     outdir = "plots"
 args = Args()
@@ -29,7 +19,6 @@ args = Args()
 methylation_dfs = {}
 patient_ids = []
 
-import os
 os.makedirs(args.outdir, exist_ok=True)
 
 # Read files
@@ -40,52 +29,24 @@ if "patient" in args.patients.lower():
 df = pd.read_excel(args.methylation)
 methylation_dfs[os.path.basename(args.methylation)] = df
 
+# Metadata functions
+def get_patient(sample):
+    for pid in patient_ids:
+        if pid in sample:
+            return pid
+    return None
 
-# This script takes your Patient ID list.xlsx (has to have "patient" in filename) and Methylation data.xlsx (has to have "matrix" in filename) to plot "Top Differentially Methylated CpG Islands" and "Genes with More than One Affected CpG Island".
-
-"""STEP1: Install Dependencies.
-"""
-
-
-"""STEP2: Upload Excel files (Methylation matrix data + Patient list)."""
-
-
-"""STEP3: Import packages."""
-
-import io
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import re
-import os
-import time
-import matplotlib.pyplot as plt
-
-"""STEP4: Extract methylation dataframes and patient IDs."""
-
-methylation_dfs = {}
-patient_ids = []
-
-for fname, fdata in uploaded.items():
-    if "patient" in fname.lower():
-        patient_df = pd.read_excel(io.BytesIO(fdata))
-        patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
+def normalize_timepoint(sample):
+    if "Baseline" in sample:
+        return "Baseline"
+    elif "Off-tx" in sample:
+        return "Post-Treatment"
+    elif "INNOV" in sample:
+        return "Healthy"
     else:
-        df = pd.read_excel(io.BytesIO(fdata))
-        methylation_dfs[fname] = df
+        return "On-Treatment"
 
-"""STEP5: Loop through each methylation file.
-1. Locate locus-level matrix starting with "CGI_chr"
-2. Extract metadata
-3. Filter out healthy samples
-4. Format matrix and group by patient + timepoint
-5. Show the top differentially methylated CpG islands
-6. Show genes with more than one affected CpG island
-"""
-
-os.makedirs("plots", exist_ok=True)
-
+# Process the methylation data
 for fname, df in methylation_dfs.items():
     print(f"\n=== Processing file: {fname} ===")
     base_fname = os.path.splitext(fname)[0]  # For cleaner filenames
@@ -95,23 +56,6 @@ for fname, df in methylation_dfs.items():
     cpg_island_df = df.iloc[start_idx:].reset_index(drop=True)
     cpg_island_df.rename(columns={cpg_island_df.columns[0]: "CpG_Island"}, inplace=True)
     cpg_island_df.dropna(how="all", subset=cpg_island_df.columns[1:], inplace=True)
-
-    # Metadata functions
-    def get_patient(sample):
-        for pid in patient_ids:
-            if pid in sample:
-                return pid
-        return None
-
-    def normalize_timepoint(sample):
-        if "Baseline" in sample:
-            return "Baseline"
-        elif "Off-tx" in sample:
-            return "Post-Treatment"
-        elif "INNOV" in sample:
-            return "Healthy"
-        else:
-            return "On-Treatment"
 
     samples = cpg_island_df.columns[1:]
     sample_meta = pd.DataFrame({
@@ -167,8 +111,8 @@ for fname, df in methylation_dfs.items():
     plt.savefig(plot2_path)
     plt.show()
 
-    # Download all saved plots
-    for plot_path in [plot1_path, plot2_path]:
-        time.sleep(2)  # slight delay to ensure Colab has time to process download
-        files.download(plot_path)
-
+    if colab:
+        # Download all saved plots
+        for plot_path in [plot1_path, plot2_path]:
+            time.sleep(2)  # slight delay to ensure Colab has time to process download
+            files.download(plot_path)
