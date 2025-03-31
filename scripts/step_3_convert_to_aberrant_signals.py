@@ -4,8 +4,8 @@ import pandas as pd
 # STEP1: Auto-detect input files in the "output" directory
 output_dir = 'output'
 files_in_dir = os.listdir(output_dir)
-glob20_file = next((os.path.join(output_dir, f) for f in files_in_dir if "Glob20" in f and f.endswith(".xlsx")), None)
-globmin80_file = next((os.path.join(output_dir, f) for f in files_in_dir if "GlobMin80" in f and f.endswith(".xlsx")), None)
+glob20_file = next((os.path.join(output_dir, f) for f in files_in_dir if "output_glob20" in f and f.endswith(".xlsx")), None)
+globmin80_file = next((os.path.join(output_dir, f) for f in files_in_dir if "output_globmin80" in f and f.endswith(".xlsx")), None)
 
 if not glob20_file or not globmin80_file:
     raise FileNotFoundError("One or both input files ('Glob20_*.xlsx', 'GlobMin80_*.xlsx') not found in the 'output' directory.")
