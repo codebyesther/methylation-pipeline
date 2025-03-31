@@ -1,4 +1,11 @@
 import pandas as pd
+import os
+
+def find_excel_file(directory, keyword):
+    for file_name in os.listdir(directory):
+        if keyword in file_name and file_name.endswith(".xlsx"):
+            return os.path.join(directory, file_name)
+    raise FileNotFoundError(f"No Excel file with keyword '{keyword}' found in directory '{directory}'")
 
 def generate_gene_annotation(input_excel, output_csv):
     # Load the Excel file without skipping rows
@@ -48,4 +55,6 @@ def generate_gene_annotation(input_excel, output_csv):
 
 # Example usage
 if __name__ == "__main__":
-    generate_gene_annotation("scaled_fragment_ratios_matrix.xlsx", "structured_gene_annotation.csv")
+    input_excel = find_excel_file("../output", "matrix")
+    output_csv = "structured_gene_annotation.csv"
+    generate_gene_annotation(input_excel, output_csv)
