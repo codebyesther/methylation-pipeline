@@ -111,24 +111,21 @@ for fname, df in methylation_dfs.items():
     plt.savefig(plot1_path)
     plt.show()
 
-    # === Top 10 Differentially Methylated Genes with Affected CpG Islands ===
+   # === Top 10 Differentially Methylated Genes with Affected CpG Islands ===
     top_df["Gene"] = top_df["CpG_Island"].str.extract(r"chr\w+_\d+_\d+_(.+?)_")
     gene_df = top_df.groupby("Gene").agg(count=("CpG_Island", "count"), avg_delta=("Avg_Delta", "mean")).reset_index()
     
     # Debugging statements
     print("Gene DataFrame:")
     print(gene_df)
-    print("Multi CpG Genes DataFrame:")
-    multi_cpg_genes = gene_df[gene_df["count"] > 1].sort_values("avg_delta")
-    print(multi_cpg_genes)
-
-    # Modify this part to plot only the top 10 genes
+    
+    # Plot the top 10 genes without filtering for multiple CpG islands
     plt.figure(figsize=(10, 6))
-    sns.barplot(data=multi_cpg_genes.head(10).sort_values("avg_delta"), x="avg_delta", y="Gene", color='darkblue')
+    sns.barplot(data=gene_df.sort_values("avg_delta", ascending=False).head(10), x="avg_delta", y="Gene", color='darkblue')
     plt.xlabel("Avg Change in Methylated Fragment Count")
     plt.axvline(0, color="gray", linestyle="--")
     plt.title(f"Top 10 Differentially Methylated Genes with Affected CpG Islands")
     plt.tight_layout()
-    plot2_path = os.path.join(args.outdir, "top10_CpG_genes.png")
+    plot2_path = os.path.join(args.outdir, "top10_CpG_genes_no_filter.png")
     plt.savefig(plot2_path)
     plt.show()
