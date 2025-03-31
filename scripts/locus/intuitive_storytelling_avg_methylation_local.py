@@ -1,4 +1,3 @@
-
 import os
 import pandas as pd
 import numpy as np
@@ -10,7 +9,7 @@ import re
 data_dir = "data"
 output_dir = "output"
 patient_file = next((f for f in os.listdir(data_dir) if "patient" in f.lower()), None)
-methylation_file = next((f for f in os.listdir(output_dir) if f.endswith(".xlsx")), None)
+methylation_file = next((f for f in os.listdir(output_dir) if "scaled" in f.lower() and f.endswith(".xlsx")), None)
 
 if not patient_file or not methylation_file:
     raise FileNotFoundError("Could not find necessary patient or methylation file.")
