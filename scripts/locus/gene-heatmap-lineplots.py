@@ -37,9 +37,23 @@ except FileNotFoundError as e:
     exit(1)
 
 # Specify the encoding to handle decoding issues
-cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='ISO-8859-1')
-patient_df = pd.read_excel(patient_list_file)
-gene_annot = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
+try:
+    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='ISO-8859-1')
+except pd.errors.ParserError as e:
+    print(f"Error parsing {cpg_matrix_file}: {e}")
+    exit(1)
+
+try:
+    patient_df = pd.read_excel(patient_list_file)
+except Exception as e:
+    print(f"Error reading {patient_list_file}: {e}")
+    exit(1)
+
+try:
+    gene_annot = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
+except Exception as e:
+    print(f"Error reading {gene_annotation_file}: {e}")
+    exit(1)
 
 # Function to classify sample timepoints
 def classify_timepoint(sample_name):
@@ -62,37 +76,4 @@ multicpg_genes = cpg_gene_counts[cpg_gene_counts > 1].index.tolist()
 
 # Average methylation for each gene
 gene_means = {}
-for gene in multicpg_genes:
-    cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
-    gene_data = cpg_matrix.loc[cpg_matrix.index.isin(cpgs)]
-    gene_means[gene] = gene_data.mean()
-
-gene_matrix = pd.DataFrame(gene_means).T
-
-# Plot heatmap (aggregated by timepoint)
-gene_matrix_T = gene_matrix.T
-merged = gene_matrix_T.merge(timepoint_df, left_index=True, right_index=True)
-avg_by_tp = merged.groupby("Timepoint").mean().T
-
-plt.figure(figsize=(15, len(avg_by_tp)))
-sns.heatmap(avg_by_tp, cmap="coolwarm")
-plt.title("Average Methylation per Gene Across Timepoints")
-plt.tight_layout()
-plt.savefig(os.path.join(args.output_dir, "avg_methylation_heatmap.png"))
-plt.close()
-
-# Plot line plot (aggregated)
-avg_by_tp_ordered = avg_by_tp[['Baseline', 'On-Treatment', 'Post-Treatment'] if 'Healthy' not in avg_by_tp.columns else ['Healthy', 'Baseline', 'On-Treatment', 'Post-Treatment']]
-
-plt.figure(figsize=(15, 6))
-for gene in avg_by_tp_ordered.index:
-    plt.plot(avg_by_tp_ordered.columns, avg_by_tp_ordered.loc[gene], label=gene)
-plt.title("Methylation Trends Across Timepoints")
-plt.ylabel("Average Methylation")
-plt.xticks(rotation=45)
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-plt.tight_layout()
-plt.savefig(os.path.join(args.output_dir, "avg_methylation_lineplot.png"))
-plt.close()
-
-print("Plots saved to", args.output_dir)
+for gene in multicpg ▋
