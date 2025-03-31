@@ -1,5 +1,3 @@
-# gene_heatmap_lineplots_local.py
-
 import os
 import glob
 import pandas as pd
@@ -18,16 +16,29 @@ args = parser.parse_args()
 os.makedirs(args.output_dir, exist_ok=True)
 
 # Helper to find file containing a keyword
-find_file = lambda keyword: glob.glob(os.path.join(args.input_dir, f"*{keyword}*"))[0]
+find_file = lambda keyword, directory: glob.glob(os.path.join(directory, f"*{keyword}*"))[0]
 
 # Load inputs based on known filename patterns
-cpg_matrix_file = find_file("matrix")
-patient_list_file = find_file("patient")
-gene_annotation_file = find_file("gene")
+cpg_matrix_file = find_file("matrix", args.input_dir)
+patient_list_file = find_file("patient", os.path.join(args.input_dir, 'data'))
 
+# Read the input files
 cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
 patient_df = pd.read_excel(patient_list_file)
-gene_annot = pd.read_csv(gene_annotation_file)
+
+# Extract gene annotations from cpg_matrix index
+def extract_gene_annotations(cpg_index):
+    gene_annotations = []
+    for cpg in cpg_index:
+        parts = cpg.split('_')
+        if len(parts) > 4:
+            gene_annotations.append(parts[4])
+        else:
+            gene_annotations.append('Unknown')
+    return gene_annotations
+
+# Annotate CpG matrix with gene names
+cpg_matrix['gene_name'] = extract_gene_annotations(cpg_matrix.index)
 
 # Function to classify sample timepoints
 def classify_timepoint(sample_name):
@@ -45,14 +56,14 @@ sample_timepoints = {s: classify_timepoint(s) for s in cpg_matrix.columns}
 timepoint_df = pd.DataFrame.from_dict(sample_timepoints, orient='index', columns=['Timepoint'])
 
 # Filter for genes with multiple CpG islands
-cpg_gene_counts = gene_annot['gene_name'].value_counts()
+cpg_gene_counts = cpg_matrix['gene_name'].value_counts()
 multicpg_genes = cpg_gene_counts[cpg_gene_counts > 1].index.tolist()
 
 # Average methylation for each gene
 gene_means = {}
 for gene in multicpg_genes:
-    cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
-    gene_data = cpg_matrix.loc[cpg_matrix.index.isin(cpgs)]
+    cpgs = cpg_matrix[cpg_matrix['gene_name'] == gene].index
+    gene_data = cpg_matrix.loc[cpgs].drop(columns=['gene_name'])
     gene_means[gene] = gene_data.mean()
 
 gene_matrix = pd.DataFrame(gene_means).T
