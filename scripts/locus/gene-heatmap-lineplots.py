@@ -36,7 +36,10 @@ try:
     cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, on_bad_lines='warn')
 except UnicodeDecodeError:
     cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='latin1', on_bad_lines='warn')
-    
+
+# Drop rows where the index is not a string
+cpg_matrix = cpg_matrix[~cpg_matrix.index.to_series().apply(lambda x: isinstance(x, float))]
+
 patient_df = pd.read_excel(patient_list_file)
 
 # Extract gene annotations from cpg_matrix index
