@@ -8,7 +8,7 @@ import argparse
 
 # Argument parser for local execution
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots.')
-parser.add_argument('--input_dir', type=str, required=True, help='Directory containing input files')
+parser.add_argument('--input_dir', type=str, default='output', help='Directory containing input files')
 parser.add_argument('--output_dir', type=str, default='outputs', help='Directory to save plots')
 args = parser.parse_args()
 
@@ -16,7 +16,11 @@ args = parser.parse_args()
 os.makedirs(args.output_dir, exist_ok=True)
 
 # Helper to find file containing a keyword
-find_file = lambda keyword, directory: glob.glob(os.path.join(directory, f"*{keyword}*"))[0]
+def find_file(keyword, directory):
+    files = glob.glob(os.path.join(directory, f"*{keyword}*"))
+    if not files:
+        raise FileNotFoundError(f"No file found with keyword '{keyword}' in directory '{directory}'")
+    return files[0]
 
 # Load inputs based on known filename patterns
 cpg_matrix_file = find_file("matrix", args.input_dir)
