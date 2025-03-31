@@ -56,5 +56,5 @@ def generate_gene_annotation(input_excel, output_csv):
 # Example usage
 if __name__ == "__main__":
     input_excel = find_excel_file("../output", "matrix")
-    output_csv = "structured_gene_annotation.csv"
+    output_csv = "../output/structured_gene_annotation.csv"
     generate_gene_annotation(input_excel, output_csv)
