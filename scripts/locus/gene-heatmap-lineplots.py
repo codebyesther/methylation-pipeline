@@ -75,16 +75,29 @@ except Exception as e:
     print(f"Error reading {patient_list_file}: {e}")
     exit(1)
 
-# Load gene annotation (support CSV or XLSX)
+# Load and reformat gene annotation file
 try:
     if gene_annotation_file.endswith('.csv'):
-        gene_annot = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
+        gene_annot_raw = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
     elif gene_annotation_file.endswith('.xlsx'):
-        gene_annot = pd.read_excel(gene_annotation_file)
+        gene_annot_raw = pd.read_excel(gene_annotation_file)
     else:
         raise ValueError("Unsupported gene annotation file format")
+
+    # Reshape wide gene columns into long format
+    gene_cols = [col for col in gene_annot_raw.columns if col.startswith("Gene")]
+    gene_annot = gene_annot_raw.melt(id_vars=['chr', 'start genomic coordinate', 'end genomic coordinate'],
+                                     value_vars=gene_cols,
+                                     var_name='gene_col', value_name='gene_name')
+    gene_annot = gene_annot.dropna(subset=['gene_name'])
+
+    # Construct region_id to match methylation matrix index
+    gene_annot['cgi_id'] = gene_annot.apply(
+        lambda row: f"{row['chr']}:{int(row['start genomic coordinate'])}-{int(row['end genomic coordinate'])}", axis=1)
+
+    gene_annot = gene_annot[['cgi_id', 'gene_name']].drop_duplicates()
 except Exception as e:
-    print(f"Error reading {gene_annotation_file}: {e}")
+    print(f"Error processing {gene_annotation_file}: {e}")
     exit(1)
 
 # Function to classify sample timepoints
@@ -103,11 +116,6 @@ sample_timepoints = {s: classify_timepoint(s) for s in cpg_matrix.columns}
 timepoint_df = pd.DataFrame.from_dict(sample_timepoints, orient='index', columns=['Timepoint'])
 
 # Filter for genes with multiple CpG islands
-if 'gene_name' not in gene_annot.columns or 'cgi_id' not in gene_annot.columns:
-    print("Error: 'gene_name' or 'cgi_id' column missing in gene annotation file.")
-    print("Available columns:", gene_annot.columns.tolist())
-    exit(1)
-
 cpg_gene_counts = gene_annot['gene_name'].value_counts()
 multicpg_genes = cpg_gene_counts[cpg_gene_counts > 1].index.tolist()
 
