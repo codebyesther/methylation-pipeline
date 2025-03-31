@@ -114,6 +114,13 @@ for fname, df in methylation_dfs.items():
     # === Genes with More than One Affected CpG Island ===
     top_df["Gene"] = top_df["CpG_Island"].str.extract(r"chr\w+_\d+_\d+_(.+?)_")
     gene_df = top_df.groupby("Gene").agg(count=("CpG_Island", "count"), avg_delta=("Avg_Delta", "mean")).reset_index()
+    
+    # Debugging statements
+    print("Gene DataFrame:")
+    print(gene_df.head())
+    print("Multi CpG Genes DataFrame:")
+    print(multi_cpg_genes.head())
+
     multi_cpg_genes = gene_df[gene_df["count"] > 1].sort_values("avg_delta")
 
     plt.figure(figsize=(10, 6))
