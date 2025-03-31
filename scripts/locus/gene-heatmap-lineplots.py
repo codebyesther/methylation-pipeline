@@ -36,6 +36,21 @@ except FileNotFoundError as e:
     print(e)
     exit(1)
 
+# Function to inspect file contents
+def inspect_file(file_path, num_lines=5):
+    with open(file_path, 'r', encoding='ISO-8859-1') as file:
+        for i, line in enumerate(file):
+            print(f"Line {i+1}: {line.strip()}")
+            if i >= num_lines - 1:
+                break
+
+# Inspect the cpg_matrix_file to identify issues
+try:
+    inspect_file(cpg_matrix_file)
+except Exception as e:
+    print(f"Error inspecting {cpg_matrix_file}: {e}")
+    exit(1)
+
 # Specify the encoding to handle decoding issues
 try:
     cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='ISO-8859-1')
