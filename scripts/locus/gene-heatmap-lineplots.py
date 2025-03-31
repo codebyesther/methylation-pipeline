@@ -10,7 +10,7 @@ import argparse
 
 # Argument parser for local execution
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots.')
-parser.add_argument('--output_dir', type=str, default='outputs', help='Directory to save plots')
+parser.add_argument('--output_dir', type=str, default='output', help='Directory to save plots')
 args = parser.parse_args()
 
 # Create output directory if it doesn't exist
@@ -18,16 +18,23 @@ os.makedirs(args.output_dir, exist_ok=True)
 
 # Helper to find file containing a keyword
 def find_file(directory, keyword):
-    return glob.glob(os.path.join(directory, f"*{keyword}*"))[0]
+    files = glob.glob(os.path.join(directory, f"*{keyword}*"))
+    if not files:
+        raise FileNotFoundError(f"No file containing '{keyword}' found in directory '{directory}'")
+    return files[0]
 
 # Define the directories
-output_folder = 'outputs'
+output_folder = 'output'
 data_folder = 'data'
 
 # Load inputs based on known filename patterns
-cpg_matrix_file = find_file(output_folder, "matrix")
-patient_list_file = find_file(data_folder, "patient")
-gene_annotation_file = find_file(output_folder, "gene_annotation")
+try:
+    cpg_matrix_file = find_file(output_folder, "matrix")
+    patient_list_file = find_file(data_folder, "patient")
+    gene_annotation_file = find_file(output_folder, "gene_annotation")
+except FileNotFoundError as e:
+    print(e)
+    exit(1)
 
 cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
 patient_df = pd.read_excel(patient_list_file)
