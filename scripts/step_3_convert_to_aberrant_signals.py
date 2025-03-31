@@ -35,14 +35,10 @@ glob20_numeric, globmin80_numeric = glob20_cleaned.astype(float).align(globmin80
 scaled_ratio = (glob20_numeric / globmin80_numeric) * 100000
 
 # STEP6: Assemble final DataFrame
-result_df = pd.DataFrame({
-    "Glob20": glob20_numeric.stack(),
-    "GlobMin80": globmin80_numeric.stack(),
-    "Scaled Ratio (x100K)": scaled_ratio.stack()
-}).reset_index()
+result_df = pd.concat([glob20_numeric, globmin80_numeric, scaled_ratio], keys=['Glob20', 'GlobMin80', 'Scaled Ratio (x100K)']).unstack(level=1)
 
 # STEP7: Export results
-output_file = os.path.join(output_dir, "scaled_fragment_ratios.xlsx")
-result_df.to_excel(output_file, index=False)
+output_file = os.path.join(output_dir, "scaled_fragment_ratios_matrix.xlsx")
+result_df.to_excel(output_file)
 
 print(f"Saved output to {output_file}")
