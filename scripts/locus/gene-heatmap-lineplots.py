@@ -10,7 +10,7 @@ import argparse
 
 # Argument parser for local execution
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots.')
-parser.add_argument('--output_dir', type=str, default='output', help='Directory to save plots')
+parser.add_argument('--output_dir', type=str, default='outputs', help='Directory to save plots')
 args = parser.parse_args()
 
 # Create output directory if it doesn't exist
@@ -24,7 +24,7 @@ def find_file(directory, keyword):
     return files[0]
 
 # Define the directories
-output_folder = 'output'
+output_folder = 'outputs'
 data_folder = 'data'
 
 # Load inputs based on known filename patterns
@@ -36,9 +36,10 @@ except FileNotFoundError as e:
     print(e)
     exit(1)
 
-cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
+# Specify the encoding to handle decoding issues
+cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='ISO-8859-1')
 patient_df = pd.read_excel(patient_list_file)
-gene_annot = pd.read_csv(gene_annotation_file)
+gene_annot = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
 
 # Function to classify sample timepoints
 def classify_timepoint(sample_name):
