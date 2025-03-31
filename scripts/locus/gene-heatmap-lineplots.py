@@ -12,18 +12,20 @@ import argparse
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots.')
 parser.add_argument('--input_dir', type=str, required=True, help='Directory containing input files')
 parser.add_argument('--output_dir', type=str, default='outputs', help='Directory to save plots')
+parser.add_argument('--data_dir', type=str, default='data', help='Directory containing data files')
 args = parser.parse_args()
 
 # Create output directory if it doesn't exist
 os.makedirs(args.output_dir, exist_ok=True)
 
 # Helper to find file containing a keyword
-find_file = lambda keyword: glob.glob(os.path.join(args.input_dir, f"*{keyword}*"))[0]
+def find_file(directory, keyword):
+    return glob.glob(os.path.join(directory, f"*{keyword}*"))[0]
 
 # Load inputs based on known filename patterns
-cpg_matrix_file = find_file("matrix")
-patient_list_file = find_file("patient")
-gene_annotation_file = find_file("gene_annotation")
+cpg_matrix_file = find_file(args.output_dir, "matrix")
+patient_list_file = find_file(args.data_dir, "patient")
+gene_annotation_file = find_file(args.output_dir, "gene_annotation")
 
 cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
 patient_df = pd.read_excel(patient_list_file)
