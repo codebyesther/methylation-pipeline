@@ -84,10 +84,20 @@ for gene in multicpg_genes:
 
 gene_matrix = pd.DataFrame(gene_means).T
 
+# Check if gene_matrix is empty
+if gene_matrix.empty:
+    print("gene_matrix is empty. No data to process.")
+    exit(1)
+
 # Plot heatmap (aggregated by timepoint)
 gene_matrix_T = gene_matrix.T
 merged = gene_matrix_T.merge(timepoint_df, left_index=True, right_index=True)
 avg_by_tp = merged.groupby("Timepoint").mean().T
+
+# Check if avg_by_tp is empty
+if avg_by_tp.empty:
+    print("avg_by_tp is empty. No data to plot.")
+    exit(1)
 
 plt.figure(figsize=(15, len(avg_by_tp)))
 sns.heatmap(avg_by_tp, cmap="coolwarm")
