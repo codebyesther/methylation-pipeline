@@ -72,4 +72,62 @@ for fname, df in methylation_dfs.items():
     cpg_island_df.rename(columns={cpg_island_df.columns[0]: "CpG_Island"}, inplace=True)
     cpg_island_df.dropna(how="all", subset=cpg_island_df.columns[1:], inplace=True)
 
-    samples = cpg_island_df ▋
+    samples = cpg_island_df.columns[1:]
+    sample_meta = pd.DataFrame({
+        "Sample": samples,
+        "Patient": [get_patient(s) for s in samples],
+        "Timepoint": [normalize_timepoint(s) for s in samples]
+    })
+    valid_samples = sample_meta.dropna()
+    valid_samples = valid_samples[valid_samples["Timepoint"] != "Healthy"]
+
+    matrix = cpg_island_df.set_index("CpG_Island")[valid_samples["Sample"].tolist()]
+    matrix.columns = pd.MultiIndex.from_frame(valid_samples[["Patient", "Timepoint"]])
+    matrix = matrix.apply(pd.to_numeric, errors='coerce')
+    collapsed = matrix.T.groupby(level=[0, 1]).mean().T
+
+    # === Top10 Differentially Methylated Subregions of CpG Islands ===
+    top_changes = []
+    for cpg in collapsed.index:
+        deltas = []
+        for patient in collapsed.columns.levels[0]:
+            if (patient, "Baseline") in collapsed.columns and (patient, "Post-Treatment") in collapsed.columns:
+                b = collapsed.loc[cpg, (patient, "Baseline")]
+                p = collapsed.loc[cpg, (patient, "Post-Treatment")]
+                if not pd.isna(b) and not pd.isna(p):
+                    deltas.append(p - b)
+        if len(deltas) >= 2:
+            top_changes.append((cpg, np.mean(deltas), len(deltas)))
+
+    top_df = pd.DataFrame(top_changes, columns=["CpG_Island", "Avg_Delta", "n"]).sort_values("Avg_Delta")
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=top_df.head(10), x="Avg_Delta", y="CpG_Island", color='darkblue')
+    plt.xlabel("Avg Change in Methylated Fragment Count")
+    plt.axvline(0, color="gray", linestyle="--")
+    plt.title(f"Top10 Differentially Methylated Subregions of CpG Islands")
+    plt.tight_layout()
+    plot1_path = os.path.join(args.outdir, "top10_diff_CGIsubregions.png")
+    plt.savefig(plot1_path)
+    plt.show()
+
+    # === Genes with More than One Affected CpG Island ===
+    top_df["Gene"] = top_df["CpG_Island"].str.extract(r"chr\w+_\d+_\d+_(.+?)_")
+    gene_df = top_df.groupby("Gene").agg(count=("CpG_Island", "count"), avg_delta=("Avg_Delta", "mean")).reset_index()
+    multi_cpg_genes = gene_df[gene_df["count"] > 1].sort_values("avg_delta")
+    
+    # Debugging statements
+    print("Gene DataFrame:")
+    print(gene_df.head())
+    print("Multi CpG Genes DataFrame:")
+    print(multi_cpg_genes.head())
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=multi_cpg_genes, x="avg_delta", y="Gene", color='darkblue')
+    plt.xlabel("Avg Change in Methylated Fragment Count")
+    plt.axvline(0, color="gray", linestyle="--")
+    plt.title(f"Genes with More than One Affected CpG Island")
+    plt.tight_layout()
+    plot2_path = os.path.join(args.outdir, "multi_CpG_genes.png")
+    plt.savefig(plot2_path)
+    plt.show()
