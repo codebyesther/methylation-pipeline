@@ -31,11 +31,11 @@ except FileNotFoundError as e:
     print(e)
     exit(1)
 
-# Read the input files with error handling for encoding issues
+# Read the input files with error handling for encoding and tokenizing issues
 try:
-    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
+    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, error_bad_lines=False, warn_bad_lines=True)
 except UnicodeDecodeError:
-    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='latin1')
+    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='latin1', error_bad_lines=False, warn_bad_lines=True)
     
 patient_df = pd.read_excel(patient_list_file)
 
