@@ -20,13 +20,6 @@ import seaborn as sns
 
 # In[13]:
 
-
-class Args:
-    methylation = "merged_output.xlsx"
-    patients = "Patient ID list.xlsx"
-    outdir = "plots"
-args = Args()
-
 class Args:
     methylation = "merged_output.xlsx"
     patients = "Patient ID list.xlsx"
