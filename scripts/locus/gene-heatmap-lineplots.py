@@ -52,10 +52,21 @@ except Exception as e:
     exit(1)
 
 # Specify the encoding to handle decoding issues
-try:
-    cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='ISO-8859-1')
-except pd.errors.ParserError as e:
-    print(f"Error parsing {cpg_matrix_file}: {e}")
+# Check the file extension to determine the appropriate read function
+if cpg_matrix_file.endswith('.csv'):
+    try:
+        cpg_matrix = pd.read_csv(cpg_matrix_file, sep="\t", index_col=0, encoding='ISO-8859-1')
+    except pd.errors.ParserError as e:
+        print(f"Error parsing {cpg_matrix_file}: {e}")
+        exit(1)
+elif cpg_matrix_file.endswith('.xlsx'):
+    try:
+        cpg_matrix = pd.read_excel(cpg_matrix_file, index_col=0)
+    except Exception as e:
+        print(f"Error reading {cpg_matrix_file}: {e}")
+        exit(1)
+else:
+    print(f"Unsupported file format: {cpg_matrix_file}")
     exit(1)
 
 try:
