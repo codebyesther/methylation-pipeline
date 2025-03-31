@@ -55,6 +55,9 @@ def generate_gene_annotation(input_excel, output_csv):
 
 # Example usage
 if __name__ == "__main__":
-    input_excel = find_excel_file("../output", "matrix")
-    output_csv = "../output/structured_gene_annotation.csv"
+    output_directory = "output"
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+    input_excel = find_excel_file(output_directory, "matrix")
+    output_csv = os.path.join(output_directory, "structured_gene_annotation.csv")
     generate_gene_annotation(input_excel, output_csv)
