@@ -1,5 +1,3 @@
-# gene_heatmap_lineplots_local.py
-
 import os
 import glob
 import pandas as pd
@@ -47,7 +45,7 @@ else:
 # Load patient list
 patient_df = pd.read_excel(patient_list_file)
 
-# Load and format gene annotation
+# Load gene annotation
 if gene_annotation_file.endswith('.csv'):
     gene_annot_raw = pd.read_csv(gene_annotation_file, encoding='ISO-8859-1')
 elif gene_annotation_file.endswith('.xlsx'):
@@ -55,17 +53,20 @@ elif gene_annotation_file.endswith('.xlsx'):
 else:
     raise ValueError("Unsupported gene annotation format")
 
-gene_cols = [col for col in gene_annot_raw.columns if col.startswith("Gene")]
-gene_annot = gene_annot_raw.melt(
-    id_vars=['chr', 'start genomic coordinate', 'end genomic coordinate'],
-    value_vars=gene_cols,
-    var_name='gene_col', value_name='gene_name'
-)
-gene_annot = gene_annot.dropna(subset=['gene_name'])
-gene_annot['cgi_id'] = gene_annot.apply(
-    lambda row: f"{row['chr']}:{int(row['start genomic coordinate'])}-{int(row['end genomic coordinate'])}", axis=1
-)
-gene_annot = gene_annot[['cgi_id', 'gene_name']].drop_duplicates()
+# Match gene names from gene_annotation_file to CpG matrix headers
+gene_annot = gene_annot_raw.copy()
+gene_annot = gene_annot[gene_annot['gene_names'].notna()]
+gene_annot['gene_names'] = gene_annot['gene_names'].astype(str)
+
+cpg_headers = cpg_matrix.index.astype(str).tolist()
+matched = []
+for _, row in gene_annot.iterrows():
+    gene = row['gene_names']
+    matched_cpgs = [h for h in cpg_headers if gene in h]
+    for cpg in matched_cpgs:
+        matched.append({'cgi_id': cpg, 'gene_name': gene})
+
+gene_annot = pd.DataFrame(matched)
 
 # Classify timepoints
 def classify_timepoint(sample):
@@ -92,12 +93,11 @@ for gene in multicpg_genes:
     gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
     if gene_data.empty:
         continue
-    weights = gene_data.notna().sum(axis=0)
     weighted_avg = gene_data.mean(axis=0)
     gene_means[gene] = weighted_avg
 
 if not gene_means:
-    print("No valid gene methylation data found. Check coordinate formats and overlap.")
+    print("No valid gene methylation data found. Check gene names and CpG headers.")
     exit(1)
 
 gene_matrix = pd.DataFrame(gene_means).T
@@ -108,7 +108,6 @@ merged = gene_matrix_T.merge(timepoint_df, left_index=True, right_index=True)
 avg_by_tp = merged.groupby("Timepoint").mean().T
 
 # Plot heatmap (average)
-os.makedirs(args.output_dir, exist_ok=True)
 plt.figure(figsize=(15, len(avg_by_tp)))
 sns.heatmap(avg_by_tp, cmap="coolwarm")
 plt.title("Average Methylation per Gene Across Timepoints")
@@ -141,7 +140,6 @@ for patient in patients:
     patient_gene_matrix['Timepoint'] = timepoints
     grouped = patient_gene_matrix.groupby("Timepoint").mean().T
 
-    # Skip if empty
     if grouped.empty:
         continue
 
