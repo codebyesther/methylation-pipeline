@@ -29,9 +29,9 @@ data_folder = 'data'
 
 # Load inputs based on known filename patterns
 try:
-    cpg_matrix_file = find_file(output_folder, "cgi_map")
+    cpg_matrix_file = find_file(output_folder, "matrix")
     patient_list_file = find_file(data_folder, "patient")
-    gene_annotation_file = find_file(output_folder, "gene_annotation")
+    gene_annotation_file = find_file(output_folder, "cgi_map")
 except FileNotFoundError as e:
     print(e)
     exit(1)
