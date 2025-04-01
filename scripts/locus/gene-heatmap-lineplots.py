@@ -3,6 +3,8 @@ import glob
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import argparse
 
@@ -108,7 +110,9 @@ merged = gene_matrix_T.merge(timepoint_df, left_index=True, right_index=True)
 avg_by_tp = merged.groupby("Timepoint").mean().T
 
 # Plot heatmap (average)
-plt.figure(figsize=(15, len(avg_by_tp)))
+max_height = 20  # cap the figure height
+fig_height = min(max_height, len(avg_by_tp))
+plt.figure(figsize=(15, fig_height))
 sns.heatmap(avg_by_tp, cmap="coolwarm")
 plt.title("Average Methylation per Gene Across Timepoints")
 plt.tight_layout()
@@ -144,7 +148,8 @@ for patient in patients:
         continue
 
     # Heatmap
-    plt.figure(figsize=(12, len(grouped)))
+    fig_height = min(max_height, len(grouped))
+    plt.figure(figsize=(12, fig_height))
     sns.heatmap(grouped, cmap="coolwarm")
     plt.title(f"Gene Methylation - {patient}")
     plt.tight_layout()
