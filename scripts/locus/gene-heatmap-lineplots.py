@@ -55,13 +55,13 @@ else:
 
 # Match gene names from gene_annotation_file to CpG matrix headers
 gene_annot = gene_annot_raw.copy()
-gene_annot = gene_annot[gene_annot['gene_names'].notna()]
-gene_annot['gene_names'] = gene_annot['gene_names'].astype(str)
+gene_annot = gene_annot[gene_annot['gene_name'].notna()]
+gene_annot['gene_name'] = gene_annot['gene_name'].astype(str)
 
 cpg_headers = cpg_matrix.index.astype(str).tolist()
 matched = []
 for _, row in gene_annot.iterrows():
-    gene = row['gene_names']
+    gene = row['gene_name']
     matched_cpgs = [h for h in cpg_headers if gene in h]
     for cpg in matched_cpgs:
         matched.append({'cgi_id': cpg, 'gene_name': gene})
