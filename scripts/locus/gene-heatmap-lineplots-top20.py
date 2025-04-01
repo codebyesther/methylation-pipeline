@@ -103,7 +103,9 @@ if not gene_means:
     print("No valid gene methylation data found. Check gene names and CpG headers.")
     exit(1)
 
-gene_matrix = pd.DataFrame(gene_means).T
+gene_matrix_all = pd.DataFrame(gene_means).T
+
+gene_matrix = gene_matrix_all.copy()
 
 # Select top 20 genes by variance
 top_genes = gene_matrix.var(axis=1).sort_values(ascending=False).head(20).index.tolist()
@@ -138,24 +140,36 @@ plt.tight_layout()
 plt.savefig(os.path.join(args.output_dir, "avg_methylation_lineplot.png"))
 plt.close()
 
+
 # Per-patient heatmap and line plot
 patients = patient_df.iloc[:, 0].dropna().unique().tolist()
 for patient in patients:
     sample_cols = [s for s in cpg_matrix.columns if patient in s]
     if not sample_cols:
         continue
-    patient_gene_matrix = gene_matrix[sample_cols].T
-    timepoints = [classify_timepoint(s) for s in patient_gene_matrix.index]
-    patient_gene_matrix['Timepoint'] = timepoints
-    grouped = patient_gene_matrix.groupby("Timepoint").mean().T
+    patient_gene_matrix_full = gene_matrix_all[sample_cols].T
+    timepoints = [classify_timepoint(s) for s in patient_gene_matrix_full.index]
+    patient_gene_matrix_full['Timepoint'] = timepoints
+    grouped_full = patient_gene_matrix_full.groupby("Timepoint").mean().T
 
-    if grouped.empty:
+    if grouped_full.empty:
         continue
+
+    # Select top 20 genes by variance for this patient
+    top_genes = grouped_full.var(axis=1).sort_values(ascending=False).head(20).index.tolist()
+    grouped = grouped_full.loc[top_genes]
+
+    # Track color scale
+    vmin = grouped.min().min()
+    vmax = grouped.max().max()
 
     # Heatmap
     fig_height = min(max_height, len(grouped))
     plt.figure(figsize=(12, fig_height))
-    sns.heatmap(grouped, cmap="coolwarm")
+    ax = sns.heatmap(grouped, cmap="coolwarm", vmin=vmin, vmax=vmax, cbar_kws={"label": "Methylation"})
+    colorbar = ax.collections[0].colorbar
+    colorbar.set_ticks([vmin, vmax])
+    colorbar.set_ticklabels([f"Min: {vmin:.2f}", f"Max: {vmax:.2f}"])
     plt.title(f"Gene Methylation - {patient}")
     plt.tight_layout()
     plt.savefig(os.path.join(args.output_dir, f"heatmap_{patient}.png"))
