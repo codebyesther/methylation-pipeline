@@ -7,37 +7,12 @@ Original file is located at
     https://colab.research.google.com/drive/1-fKb2KGMaxSqcah5i0NgBFbH85ynNxiG
 """
 
-pip install pandas matplotlib seaborn openpyxl
-
-from google.colab import files
-uploaded = files.upload()
-
-"""In these bubble plots, the x-axis represents the genomic coordinate for each CpG island, specifically its midpoint.
-
-Here’s how it’s determined:
-
-Each row in your data identifies a CpG island with a format like "CGI_chr7_123400_123900", meaning:
-
-*   Chromosome = chr7
-*   Start = 123,400
-*   End = 123,900
-
-We extract those numeric start/end coordinates and calculate the midpoint as (start + end) / 2.
-
-In your bubble plots, that midpoint value (in base pairs) goes on the x-axis to show each CpG island’s approximate position along the chromosome.
-
-So, if you see an x-axis value like 1.2345e5, that just means the CpG island’s midpoint is around 123,450 base pairs from the beginning of that chromosome. This helps you visualize the distribution of methylation across genomic locations.
-
-This part takes 4 mins to run for 5 patient IDs.
-"""
-
-import io, os, zipfile
+import io, os, zipfile, glob
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import re
-import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
 sns.set(style="whitegrid")
@@ -47,21 +22,27 @@ os.makedirs("plots", exist_ok=True)
 methylation_dfs = {}
 patient_ids = []
 
-# We'll define these once at the top:
-timepoints = ["Baseline", "On-Treatment", "Post-Treatment"]
-timepoint_positions = {
-    "Baseline": 0.85,
-    "On-Treatment": 1.0,
-    "Post-Treatment": 1.15
-} # vertical spacing between bubble plot rows
+# Automatically detect files
+output_dir = "output/"
+data_dir = "data/"
 
-for fname, fdata in uploaded.items():
-    if "patient" in fname.lower():
-        df = pd.read_excel(io.BytesIO(fdata), header=None)
-        values = df[0].dropna().astype(str).tolist()
-        patient_ids.extend([v for v in values if not v.lower().startswith("unnamed")])
-    else:
-        methylation_dfs[fname] = pd.read_excel(io.BytesIO(fdata))
+# Find files with "ratios_matrix" in their name from the output directory
+ratio_files = glob.glob(os.path.join(output_dir, "*ratios_matrix*.xlsx")) + glob.glob(os.path.join(output_dir, "*ratios_matrix*.csv"))
+
+# Find files with "patient" in their name from the data directory
+patient_files = glob.glob(os.path.join(data_dir, "*patient*.xlsx")) + glob.glob(os.path.join(data_dir, "*patient*.csv"))
+
+# Process patient files
+for file_path in patient_files:
+    df = pd.read_excel(file_path, header=None) if file_path.endswith('.xlsx') else pd.read_csv(file_path, header=None)
+    values = df[0].dropna().astype(str).tolist()
+    patient_ids.extend([v for v in values if not v.lower().startswith("unnamed")])
+
+# Process ratio files
+for file_path in ratio_files:
+    file_name = os.path.basename(file_path)
+    df = pd.read_excel(file_path) if file_path.endswith('.xlsx') else pd.read_csv(file_path)
+    methylation_dfs[file_name] = df
 
 # === Normalize sample names ===
 def normalize_timepoint(sample):
@@ -203,7 +184,7 @@ for patient in collapsed.columns.levels[0]:
         )
 
         plt.tight_layout()
-        filename_base = os.path.join(plot_dir, f"bubble_{patient}_{chrom}")
+        filename_base = os.path.join("plots", f"bubble_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
         plt.close()
@@ -282,10 +263,10 @@ for chrom in coords_df["Chr"].unique():
     )
 
     plt.tight_layout()
-    filename_base = os.path.join(plot_dir, f"bubble_{patient}_{chrom}")
-        plt.savefig(f"{filename_base}.png")
-        plt.savefig(f"{filename_base}.svg")
-        plt.close()
+    filename_base = os.path.join("plots", f"bubble_{chrom}")
+    plt.savefig(f"{filename_base}.png")
+    plt.savefig(f"{filename_base}.svg")
+    plt.close()
 
 # === Zip All Plots ===
 zipf = zipfile.ZipFile("methylation_plots.zip", "w", zipfile.ZIP_DEFLATED)
@@ -294,36 +275,10 @@ for root, dirs, files in os.walk("plots"):
         zipf.write(os.path.join(root, f), arcname=f)
 zipf.close()
 
-from google.colab import files
-files.download("methylation_plots.zip")
-
-"""(Optional) If you want to delete previous plots:"""
-
-import os
-import shutil
-
-# Check if the directory exists
-if os.path.exists("plots"):
-    # Delete all files in the directory
-    for filename in os.listdir("plots"):
-        file_path = os.path.join("plots", filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
-    print("All files in 'plots' directory deleted successfully.")
-else:
-    print("'plots' directory does not exist.")
-
 # === Create ZIP of all plots ===
-import zipfile
-
 zip_path = os.path.join("plots", "bubbleplots.zip")
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-    for root, _, files in os.walk(plot_dir):
+    for root, _, files in os.walk("plots"):
         for file in files:
             file_path = os.path.join(root, file)
             arcname = os.path.relpath(file_path, start="plots")
