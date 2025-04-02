@@ -37,7 +37,7 @@ patient_files = glob.glob(os.path.join(data_dir, "*patient*.xlsx")) + glob.glob(
 for file_path in tqdm(patient_files, desc="Processing patient files"):
     df = pd.read_excel(file_path, header=None) if file_path.endswith('.xlsx') else pd.read_csv(file_path, header=None)
     values = df[0].dropna().astype(str).tolist()
-    patient_ids.extend([v for v in values if not v.lower().startswith("unnamed")])
+    patient_ids.extend([v for v in values if not v.lower().startsWith("unnamed")])
     
 # Process ratio files
 for file_path in tqdm(ratio_files, desc="Processing ratio files"):
@@ -216,7 +216,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             scatterpoints=1,
             markerscale=1,
         )
-plt.tight_layout()
+        plt.tight_layout()
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
@@ -229,7 +229,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     all_rows = []
     for tp in timepoints_chromosome:
         # Find columns that end with e.g. "_Baseline"
-        cols = [c for c in chr_data.columns if c.endswith(f"_{tp}")]
+        cols = [c for c in chr_data.columns if c.endsWith(f"_{tp}")]
         if not cols:
             continue
         avg = chr_data[cols].mean(axis=1)
@@ -335,7 +335,7 @@ zip_path = os.path.join("plots", "bubbleplots.zip")
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
     for root, _, files in os.walk("plots"):
         for file in files:
-            if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
+            if file.startsWith("bubbleplot_") and (file.endsWith(".png") or file.endsWith(".svg")):
                 file_path = os.path.join(root, file)
                 arcname = os.path.relpath(file_path, start="plots")
                 zipf.write(file_path, arcname=arcname)
@@ -345,7 +345,7 @@ print(f"All bubble plot files zipped and saved to: {zip_path}")
 # === Remove individual plot files after zipping ===
 for root, _, files in os.walk("plots"):
     for file in files:
-        if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
+        if file.startsWith("bubbleplot_") and (file.endsWith(".png") or file.endsWith(".svg")):
             file_path = os.path.join(root, file)
             if file_path != zip_path:
                 os.remove(file_path)
