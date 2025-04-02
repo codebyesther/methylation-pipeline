@@ -141,7 +141,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Create figure with 2 columns:
         # - Left col = main bubble plot
         # - Right col = sub-gridspec for colorbar (top) + bubble legend (bottom)
-        fig = plt.figure(figsize=(14, 6))
+        fig = plt.figure(figsize=(16, 8))  # Increased figure size to prevent cropping
         gs = GridSpec(nrows=1, ncols=2, width_ratios=[5, 1], figure=fig)
 
         # Main axis on the left
@@ -167,7 +167,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
                 cmap="viridis",
                 alpha=0.6,
                 vmin=0,  # lower bound of color scale
-                vmax=170    # upper bound of color scale
+                vmax=300    # increased upper bound of color scale
             )
 
         # Format main axis
@@ -252,7 +252,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     subset_df = pd.concat(all_rows, ignore_index=True)
 
-    fig = plt.figure(figsize=(14, 6))
+    fig = plt.figure(figsize=(16, 8))  # Increased figure size to prevent cropping
     gs = GridSpec(nrows=1, ncols=2, width_ratios=[5, 1], figure=fig)
 
     ax_main = fig.add_subplot(gs[0, 0])
@@ -273,7 +273,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             cmap="viridis",
             alpha=0.6,
             vmin=0,  # lower bound of color scale
-            vmax=170    # upper bound of color scale
+            vmax=300    # increased upper bound of color scale
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
