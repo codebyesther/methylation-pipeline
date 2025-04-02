@@ -202,7 +202,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         )
 
         plt.tight_layout()
-        filename_base = os.path.join("plots", f"bubble_{patient}_{chrom}")
+        filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
         plt.close()
@@ -281,7 +281,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     )
 
     plt.tight_layout()
-    filename_base = os.path.join("plots", f"bubble_{chrom}")
+    filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
     plt.savefig(f"{filename_base}.svg")
     plt.close()
@@ -291,17 +291,19 @@ zip_path = os.path.join("plots", "bubbleplots.zip")
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
     for root, _, files in os.walk("plots"):
         for file in files:
-            file_path = os.path.join(root, file)
-            arcname = os.path.relpath(file_path, start="plots")
-            zipf.write(file_path, arcname=arcname)
+            if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, start="plots")
+                zipf.write(file_path, arcname=arcname)
 
-print(f"All plots zipped and saved to: {zip_path}")
+print(f"All bubble plot files zipped and saved to: {zip_path}")
 
 # === Remove individual plot files after zipping ===
 for root, _, files in os.walk("plots"):
     for file in files:
-        file_path = os.path.join(root, file)
-        if file_path != zip_path:
-            os.remove(file_path)
+        if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
+            file_path = os.path.join(root, file)
+            if file_path != zip_path:
+                os.remove(file_path)
 
-print(f"Individual plot files removed, only zip file retained.")
+print(f"Individual bubble plot files removed, only zip file retained.")
