@@ -195,7 +195,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Calculate positions for equal spacing
-        bubble_radii = [np.sqrt(size) * 5 for size in sizes]
+        bubble_radii = [np.sqrt(size) * 1 for size in sizes]    # spacing between the bubble markers
         current_position = 0
         positions = []
         for radius in bubble_radii:
@@ -289,7 +289,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Calculate positions for equal spacing
-    bubble_radii = [np.sqrt(size) * 5 for size in sizes]
+    bubble_radii = [np.sqrt(size) * 1 for size in sizes]    # spacing between the bubble markers
     current_position = 0
     positions = []
     for radius in bubble_radii:
