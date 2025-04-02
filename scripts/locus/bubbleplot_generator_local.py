@@ -185,12 +185,24 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
         handles, labels = [], []
-        for s in [1, 15, 150]:
-            h = ax_legend.scatter([], [], s=s**0.5 * 50, color="gray", alpha=0.5)
-            handles.append(h)
-            labels.append(str(s))
+        sizes = [1, 15, 150]
+        bubble_sizes = [size**0.5 * 50 for size in sizes]
+        bubble_radii = [np.sqrt(size) * 5 for size in sizes]
+        current_position = 0
+        positions = []
+        for radius in bubble_radii:
+            current_position += radius
+            positions.append(current_position)
+            current_position += radius
+        positions = np.array(positions)
+        positions = (positions - positions.min()) / (positions.max() - positions.min())
 
-        ax_legend.legend(
+        for size, pos in zip(sizes, positions):
+            h = ax_legend.scatter([], [], s=size**0.5 * 50, color="gray", alpha=0.5)
+            handles.append(h)
+            labels.append(str(size))
+
+        legend = ax_legend.legend(
             handles,
             labels,
             title="Bubble Size\n(Fragment Count)",
@@ -198,8 +210,14 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             handletextpad=2.0,
             borderpad=1.3,
             loc="center",
-            bbox_to_anchor=(0.5, 0.5)
+            bbox_to_anchor=(0.5, 0.5),
+            scatterpoints=1,
+            markerscale=1,
         )
+
+        for handle, text, pos in zip(legend.legendHandles, legend.get_texts(), positions):
+            handle.set_offsets([0.5, pos])
+            text.set_position((0.7, pos))
 
         plt.tight_layout()
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
@@ -264,12 +282,24 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     ax_legend.axis("off")
     handles, labels = [], []
-    for s in [1, 15, 150]:
-        h = ax_legend.scatter([], [], s=s**0.5 * 50, color="gray", alpha=0.5)
-        handles.append(h)
-        labels.append(str(s))
+    sizes = [1, 15, 150]
+    bubble_sizes = [size**0.5 * 50 for size in sizes]
+    bubble_radii = [np.sqrt(size) * 5 for size in sizes]
+    current_position = 0
+    positions = []
+    for radius in bubble_radii:
+        current_position += radius
+        positions.append(current_position)
+        current_position += radius
+    positions = np.array(positions)
+    positions = (positions - positions.min()) / (positions.max() - positions.min())
 
-    ax_legend.legend(
+    for size, pos in zip(sizes, positions):
+        h = ax_legend.scatter([], [], s=size**0.5 * 50, color="gray", alpha=0.5)
+        handles.append(h)
+        labels.append(str(size))
+
+    legend = ax_legend.legend(
         handles,
         labels,
         title="Bubble Size\n(Fragment Count)",
@@ -277,8 +307,14 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         handletextpad=2.0,
         borderpad=1.3,
         loc="center",
-        bbox_to_anchor=(0.5, 0.5)
+        bbox_to_anchor=(0.5, 0.5),
+        scatterpoints=1,
+        markerscale=1,
     )
+
+    for handle, text, pos in zip(legend.legendHandles, legend.get_texts(), positions):
+        handle.set_offsets([0.5, pos])
+        text.set_position((0.7, pos))
 
     plt.tight_layout()
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
