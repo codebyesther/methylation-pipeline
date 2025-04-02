@@ -62,15 +62,15 @@ timepoints_chromosome = ["Baseline", "On-Treatment", "Post-Treatment"]  # Per-ch
 
 # Define timepoint positions for plotting with increased spacing
 timepoint_positions_patient = {
-    "Baseline": 0.5,
+    "Baseline": 0.6,
     "On-Treatment": 1.0,
-    "Post-Treatment": 1.5
+    "Post-Treatment": 1.4
 }
 
 timepoint_positions_chromosome = {
-    "Baseline": 0.5,
+    "Baseline": 0.6,
     "On-Treatment": 1.0,
-    "Post-Treatment": 1.5
+    "Post-Treatment": 1.4
 }
 
 # === Process Files ===
@@ -186,7 +186,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_legend.axis("off")  # hide ticks and background
         handles, labels = [], []
         for s in [1, 15, 150]:
-            h = ax_legend.scatter([], [], s=s**0.5 * 150, color="gray", alpha=0.5)
+            h = ax_legend.scatter([], [], s=s**0.5 * 50, color="gray", alpha=0.5)
             handles.append(h)
             labels.append(str(s))
 
