@@ -215,7 +215,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     all_rows = []
     for tp in timepoints_chromosome:
         # Find columns that end with e.g. "_Baseline"
-        cols = [c for c in chr_data.columns if c.endsWith(f"_{tp}")]
+        cols = [c for c in chr_data.columns if c.endswith(f"_{tp}")]
         if not cols:
             continue
         avg = chr_data[cols].mean(axis=1)
@@ -258,7 +258,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_main.set_ylim(0.75, 1.25) # set y-limits so large bubbles have padding above & below
     ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
     ax_main.set_ylabel("Timepoint")
-    ax_main.set_title("DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)")
+    ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}")
 
     if sc is not None:
         fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
