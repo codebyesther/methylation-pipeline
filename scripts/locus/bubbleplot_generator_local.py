@@ -297,3 +297,14 @@ with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             zipf.write(file_path, arcname=arcname)
 
 print(f"All plots zipped and saved to: {zip_path}")
+
+# === Remove individual plot files after zipping ===
+for root, _, files in os.walk("plots"):
+    for file in files:
+        file_path = os.path.join(root, file)
+        if file_path != zip_path:
+            os.remove(file_path)
+
+print(f"Individual plot files removed, only zip file retained.")
+
+print(f"All plots zipped and saved to: {zip_path}")
