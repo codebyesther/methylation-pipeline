@@ -173,7 +173,16 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Format main axis
         ax_main.set_yticks(list(timepoint_positions_patient.values()))  # Ensure the number of ticks matches the number of labels
         ax_main.set_yticklabels(timepoints_patient)
-        ax_main.set_ylim(0.3, 1.7)  # set y-limits so large bubbles have padding above & below
+        max_bubble_size = max(subset_df["value"].max()**0.5 * 50, 50)
+        padding = max_bubble_size / 300
+        max_bubble_size = max(subset_df["value"].max()**0.5 * 50, 50)
+        padding = max_bubble_size / 300
+        ax_main.set_ylim(
+            min(timepoint_positions_chromosome.values()) - padding,
+            max(timepoint_positions_chromosome.values()) + padding
+        )) - padding,
+            max(timepoint_positions_patient.values()) + padding
+        )  # set y-limits so large bubbles have padding above & below
         ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
         ax_main.set_ylabel("Timepoint")
         ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment\nPatient: {patient}, Chromosome: {chrom}")
@@ -183,20 +192,21 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
 
         
-        # Create bubble-size legend in ax_legend
-        ax_legend.axis("off")  # hide ticks and background
+        # === Custom bubble-size legend using manual layout ===
+        ax_legend.axis("off")
         sizes = [1, 15, 150]
-        bubble_sizes = [size**0.5 * 50 for size in sizes]
-        vertical_positions = np.linspace(0.2, 0.8, len(sizes))  # even spacing
+        bubble_sizes = [s**0.5 * 50 for s in sizes]
+        y_positions = np.linspace(0.7, 0.3, len(sizes))  # top to bottom
 
-        for size, y in zip(sizes, vertical_positions):
-            ax_legend.scatter(0.5, y, s=size**0.5 * 50, color="gray", alpha=0.5)
-            ax_legend.text(0.65, y, str(size), va="center")
+        for y, size, bsize in zip(y_positions, sizes, bubble_sizes):
+            ax_legend.scatter(0.5, y, s=bsize, color="gray", alpha=0.5)
+            ax_legend.text(0.7, y, str(size), va="center", ha="left")
 
         ax_legend.set_xlim(0, 1)
         ax_legend.set_ylim(0, 1)
 
         plt.tight_layout()
+
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
