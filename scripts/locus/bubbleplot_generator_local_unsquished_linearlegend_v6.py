@@ -200,8 +200,6 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Legend title slightly above top bubble
         ax_legend.text(0.5, positions[-1] + 0.12, "Bubble Size\n(Fragment Count)",
                        horizontalalignment='center', verticalalignment='center', fontweight='bold')
-(Fragment Count)",
-                       horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
         fig.subplots_adjust(left=0.08, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
