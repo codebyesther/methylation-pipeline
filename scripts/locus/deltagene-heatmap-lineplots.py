@@ -113,8 +113,8 @@ for gene in tqdm(top_genes, desc="Computing gene matrix"):
 gene_matrix = pd.DataFrame(gene_means).T
 
 # Compute global min/max for all heatmaps
-global_min = gene_matrix.min().min()
-global_max = gene_matrix.max().max()
+global_min = int(gene_matrix.min().min())  # Ensure global min is an integer
+global_max = int(gene_matrix.max().max())  # Ensure global max is an integer
 
 # Heatmap and lineplot (average)
 sample_timepoints = {sample: classify_timepoint(sample) for sample in cpg_matrix.columns}
@@ -133,7 +133,7 @@ plt.figure(figsize=(15, fig_height))
 ax = sns.heatmap(avg_by_tp, cmap="coolwarm", vmin=global_min, vmax=global_max)
 cbar = ax.collections[0].colorbar
 cbar.set_ticks([global_min, global_max])
-cbar.set_ticklabels([f"{global_min:.2f}", f"{global_max:.2f}"])
+cbar.set_ticklabels([f"{global_min}", f"{global_max}"])  # Ensure tick labels are integers
 plt.title("Average Methylation per Gene Across Timepoints (Top 10 by Δ Baseline → Post-Tx)")
 plt.tight_layout()
 plt.savefig(os.path.join(args.output_dir, "avg_methylation_heatmap.png"))
@@ -168,7 +168,7 @@ for patient in tqdm(patient_ids, desc="Generating per-patient plots and matrices
     ax = sns.heatmap(grouped, cmap="coolwarm", vmin=global_min, vmax=global_max)
     cbar = ax.collections[0].colorbar
     cbar.set_ticks([global_min, global_max])
-    cbar.set_ticklabels([f"{global_min:.2f}", f"{global_max:.2f}"])
+    cbar.set_ticklabels([f"{global_min}", f"{global_max}"])  # Ensure tick labels are integers
     plt.title(f"Gene Methylation - {patient} (Top 10 by Δ Baseline → Post-Tx)")
     plt.tight_layout()
     plt.savefig(os.path.join(args.output_dir, f"heatmap_{patient}.png"))
