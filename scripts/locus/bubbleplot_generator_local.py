@@ -287,13 +287,6 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     plt.savefig(f"{filename_base}.svg")
     plt.close()
 
-# === Zip All Plots ===
-zipf = zipfile.ZipFile("bubble_plots.zip", "w", zipfile.ZIP_DEFLATED)
-for root, dirs, files in os.walk("plots"):
-    for f in files:
-        zipf.write(os.path.join(root, f), arcname=f)
-zipf.close()
-
 # === Create ZIP of all plots ===
 zip_path = os.path.join("plots", "bubbleplots.zip")
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
