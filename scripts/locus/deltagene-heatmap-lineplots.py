@@ -1,5 +1,3 @@
-# Updated script: gene-heatmap-lineplots-top10.py (delta-based logic + per-patient exports + stats)
-
 import os
 import glob
 import pandas as pd
@@ -10,6 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import argparse
 from scipy.stats import ttest_rel
+from tqdm import tqdm  # Import tqdm for progress bars
 
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots based on delta values.')
 parser.add_argument('--output_dir', type=str, default='plots/heatmaps-lineplots', help='Directory to save plots')
@@ -45,7 +44,7 @@ gene_annot['gene_name'] = gene_annot['gene_name'].astype(str)
 cpg_headers = cpg_matrix.index.astype(str).tolist()
 
 matched = []
-for _, row in gene_annot.iterrows():
+for _, row in tqdm(gene_annot.iterrows(), total=gene_annot.shape[0], desc="Matching CpGs"):
     gene = row['gene_name']
     matched_cpgs = [h for h in cpg_headers if gene in h]
     for cpg in matched_cpgs:
@@ -80,7 +79,7 @@ def get_patient(sample):
 def calculate_deltas(tp1, tp2):
     deltas = {}
     stats = []
-    for gene in multicpg_genes:
+    for gene in tqdm(multicpg_genes, desc=f"Calculating deltas for {tp1} vs {tp2}"):
         cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
         gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
         if gene_data.empty:
@@ -124,7 +123,7 @@ top_genes = pd.Series(baseline_post).abs().sort_values(ascending=False).head(10)
 
 # Compute gene matrix
 gene_means = {}
-for gene in top_genes:
+for gene in tqdm(top_genes, desc="Computing gene matrix"):
     cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
     gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
     gene_means[gene] = gene_data.mean(axis=0)
@@ -165,7 +164,7 @@ plt.savefig(os.path.join(args.output_dir, "avg_methylation_lineplot.png"))
 plt.close()
 
 # Per-patient heatmap, line plot, and matrix export
-for patient in patient_ids:
+for patient in tqdm(patient_ids, desc="Generating per-patient plots and matrices"):
     sample_cols = [s for s in cpg_matrix.columns if patient in s]
     if not sample_cols:
         continue
