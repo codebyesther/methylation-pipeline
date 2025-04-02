@@ -177,7 +177,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Add x-axis padding to avoid bubble clipping
         x_min, x_max = subset_df['Midpoint'].min(), subset_df['Midpoint'].max()
         x_range = x_max - x_min
-        ax_main.set_xlim(x_min - 0.1 * x range, x_max + 0.1 * x range)  # Increase x-axis padding
+        ax_main.set_xlim(x_min - 0.1 * x_range, x_max + 0.1 * x_range)  # Increase x-axis padding
 
         ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
         ax_main.set_ylabel("Timepoint")
@@ -273,7 +273,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Add x-axis padding to avoid bubble clipping
     x_min, x_max = subset_df['Midpoint'].min(), subset_df['Midpoint'].max()
     x_range = x_max - x_min
-    ax_main.set_xlim(x_min - 0.1 * x range, x_max + 0.1 * x range)  # Increase x-axis padding
+    ax_main.set_xlim(x_min - 0.1 * x_range, x_max + 0.1 * x_range)  # Increase x-axis padding
 
     ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
     ax_main.set_ylabel("Timepoint")
