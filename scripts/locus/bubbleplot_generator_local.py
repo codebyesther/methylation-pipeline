@@ -215,7 +215,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             markerscale=1,
         )
 
-        for handle, text, pos in zip(legend.legendHandles, legend.get_texts(), positions):
+        for handle, text, pos in zip(legend.legend_handles, legend.get_texts(), positions):
             handle.set_offsets([0.5, pos])
             text.set_position((0.7, pos))
 
@@ -312,7 +312,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         markerscale=1,
     )
 
-    for handle, text, pos in zip(legend.legendHandles, legend.get_texts(), positions):
+    for handle, text, pos in zip(legend.legend_handles, legend.get_texts(), positions):
         handle.set_offsets([0.5, pos])
         text.set_position((0.7, pos))
 
