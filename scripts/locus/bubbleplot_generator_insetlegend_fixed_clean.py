@@ -37,7 +37,7 @@ patient_files = glob.glob(os.path.join(data_dir, "*patient*.xlsx")) + glob.glob(
 for file_path in tqdm(patient_files, desc="Processing patient files"):
     df = pd.read_excel(file_path, header=None) if file_path.endswith('.xlsx') else pd.read_csv(file_path, header=None)
     values = df[0].dropna().astype(str).tolist()
-    patient_ids.extend([v for v in values if not v.lower().startsWith("unnamed")])
+    patient_ids.extend([v for v in values if not v.lower().startswith("unnamed")])
     
 # Process ratio files
 for file_path in tqdm(ratio_files, desc="Processing ratio files"):
