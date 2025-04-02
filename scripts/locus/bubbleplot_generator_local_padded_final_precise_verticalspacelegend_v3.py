@@ -191,7 +191,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_legend.axis("off")  # hide ticks and background
 
         # Define the sizes and calculate bubble sizes
-        sizes = [1, 15, 150]
+        sizes = [1, 50, 150]  # Adjusted to have a more even spacing
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Calculate positions for equal spacing
@@ -213,7 +213,8 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.scatter(0.5, pos, s=size**0.5 * 50, color="gray", alpha=0.5)
             ax_legend.text(0.7, pos, str(size), verticalalignment='center')
 
-        ax_legend.text(0.5, positions.max() + 0.2, "Bubble Size\n(Fragment Count)", horizontalalignment='center', verticalalignment='center', fontweight='bold')
+        # Adjust the placement of the legend title
+        ax_legend.text(0.5, positions[-1] + 0.15, "Bubble Size\n(Fragment Count)", horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
         plt.tight_layout()
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
@@ -284,7 +285,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_legend.axis("off")
 
     # Define the sizes and calculate bubble sizes
-    sizes = [1, 15, 150]
+    sizes = [1, 50, 150]  # Adjusted to have a more even spacing
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Calculate positions for equal spacing
@@ -306,7 +307,8 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.scatter(0.5, pos, s=size**0.5 * 50, color="gray", alpha=0.5)
         ax_legend.text(0.7, pos, str(size), verticalalignment='center')
 
-    ax_legend.text(0.5, positions.max() + 0.2, "Bubble Size\n(Fragment Count)", horizontalalignment='center', verticalalignment='center', fontweight='bold')
+    # Adjust the placement of the legend title
+    ax_legend.text(0.5, positions[-1] + 0.15, "Bubble Size\n(Fragment Count)", horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
     plt.tight_layout()
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
