@@ -138,19 +138,8 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         subset_df = pd.concat(all_rows, ignore_index=True)
 
-        # Create figure with 2 columns:
-        # - Left col = main bubble plot
-        # - Right col = sub-gridspec for colorbar (top) + bubble legend (bottom)
-        fig = plt.figure(figsize=(16, 8))  # Increased figure size to prevent cropping
-        gs = GridSpec(nrows=1, ncols=2, width_ratios=[5, 1], figure=fig)
-
-        # Main axis on the left
-        ax_main = fig.add_subplot(gs[0, 0])
-
-        # Sub-gridspec on the right: 2 rows (colorbar top, legend bottom)
-        gs_right = gs[0, 1].subgridspec(nrows=2, ncols=1, height_ratios=[0.5, 0.5])
-        ax_cbar = fig.add_subplot(gs_right[0, 0])
-        ax_legend = fig.add_subplot(gs_right[1, 0])
+        # Create figure
+        fig, ax_main = plt.subplots(figsize=(16, 8))  # Increased figure size to prevent cropping
 
         # Plot each row in subset_df
         sc = None
@@ -183,24 +172,19 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_main.set_ylabel("Timepoint")
         ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment\nPatient: {patient}, Chromosome: {chrom}")
 
-        # If we got at least one scatter point, make the colorbar in ax_cbar
+        # If we got at least one scatter point, make the colorbar
         if sc is not None:
-            fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
+            fig.colorbar(sc, ax=ax_main, label="Fragment Count")
 
-        
-        # === Custom bubble-size legend using manual layout ===
-        ax_legend.axis("on")  # Ensure the axis for the legend is visible
-        ax_legend.set_frame_on(True)  # Ensure the frame (box) around the legend is on
+        # Add legend
+        handles, labels = [], []
         sizes = [1, 15, 150]
-        bubble_sizes = [s**0.5 * 50 for s in sizes]
-        y_positions = np.linspace(0.7, 0.3, len(sizes))  # top to bottom
-
-        for y, size, bsize in zip(y_positions, sizes, bubble_sizes):
-            ax_legend.scatter(0.5, y, s=bsize, color="gray", alpha=0.5)
-            ax_legend.text(0.7, y, str(size), va="center", ha="left")
-
-        ax_legend.set_xlim(0, 1)
-        ax_legend.set_ylim(0, 1)
+        bubble_sizes = [size**0.5 * 50 for size in sizes]
+        for size, bubble_size in zip(sizes, bubble_sizes):
+            handles.append(ax_main.scatter([], [], s=bubble_size, color="gray", alpha=0.5))
+            labels.append(str(size))
+        
+        ax_main.legend(handles, labels, title="Bubble Size\n(Fragment Count)", labelspacing=1.5, handletextpad=2.0, borderpad=1.3, loc="upper right")
 
         plt.tight_layout()
 
@@ -230,13 +214,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     subset_df = pd.concat(all_rows, ignore_index=True)
 
-    fig = plt.figure(figsize=(16, 8))  # Increased figure size to prevent cropping
-    gs = GridSpec(nrows=1, ncols=2, width_ratios=[5, 1], figure=fig)
-
-    ax_main = fig.add_subplot(gs[0, 0])
-    gs_right = gs[0, 1].subgridspec(nrows=2, ncols=1, height_ratios=[0.5, 0.5])
-    ax_cbar = fig.add_subplot(gs_right[0, 0])
-    ax_legend = fig.add_subplot(gs_right[1, 0])
+    fig, ax_main = plt.subplots(figsize=(16, 8))  # Increased figure size to prevent cropping
 
     sc = None
     for _, row in subset_df.iterrows():
@@ -262,44 +240,16 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}")
 
     if sc is not None:
-        fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
+        fig.colorbar(sc, ax=ax_main, label="Fragment Count")
 
-    ax_legend.axis("on")  # Ensure the axis for the legend is visible
-    ax_legend.set_frame_on(True)  # Ensure the frame (box) around the legend is on
     handles, labels = [], []
     sizes = [1, 15, 150]
     bubble_sizes = [size**0.5 * 50 for size in sizes]
-    bubble_radii = [np.sqrt(size) * 5 for size in sizes]
-    current_position = 0
-    positions = []
-    for radius in bubble_radii:
-        current_position += radius
-        positions.append(current_position)
-        current_position += radius
-    positions = np.array(positions)
-    positions = (positions - positions.min()) / (positions.max() - positions.min())
-
-    for size, pos in zip(sizes, positions):
-        h = ax_legend.scatter([], [], s=size**0.5 * 50, color="gray", alpha=0.5)
-        handles.append(h)
+    for size, bubble_size in zip(sizes, bubble_sizes):
+        handles.append(ax_main.scatter([], [], s=bubble_size, color="gray", alpha=0.5))
         labels.append(str(size))
-
-    legend = ax_legend.legend(
-        handles,
-        labels,
-        title="Bubble Size\n(Fragment Count)",
-        labelspacing=1.5,
-        handletextpad=2.0,
-        borderpad=1.3,
-        loc="center",
-        bbox_to_anchor=(0.5, 0.5),
-        scatterpoints=1,
-        markerscale=1,
-    )
-
-    for handle, text, pos in zip(legend.legend_handles, legend.get_texts(), positions):
-        handle.set_offsets([0.5, pos])
-        text.set_position((0.7, pos))
+    
+    ax_main.legend(handles, labels, title="Bubble Size\n(Fragment Count)", labelspacing=1.5, handletextpad=2.0, borderpad=1.3, loc="upper right")
 
     plt.tight_layout()
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
