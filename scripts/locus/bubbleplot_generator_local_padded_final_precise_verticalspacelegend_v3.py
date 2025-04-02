@@ -203,15 +203,15 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             positions.append(current_position)
             current_position += radius
         positions = np.array(positions)
-        positions = (positions - positions.min()) / (positions.max() - positions.min())
+        positions = (positions - positions.min()) / (positions.max() - positions.min()) * 0.8  # Adjust for more even spacing
 
         # Manually adjust the position of the largest handle (last element)
-        positions[-1] += 1  # Increase this value as needed to add more vertical space
+        positions[-1] += 0.2  # Increase this value as needed to add more vertical space
 
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
             ax_legend.scatter(0.5, pos, s=size**0.5 * 50, color="gray", alpha=0.5)
-            ax_legend.text(0.7, pos, str(size), verticalalignment='center')
+            ax_legend.text(0.6, pos, str(size), verticalalignment='center', horizontalalignment='left')  # Adjust horizontal alignment to 'left'
 
         # Adjust the placement of the legend title
         ax_legend.text(0.5, positions[-1] + 0.15, "Bubble Size\n(Fragment Count)", horizontalalignment='center', verticalalignment='center', fontweight='bold')
@@ -297,15 +297,15 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         positions.append(current_position)
         current_position += radius
     positions = np.array(positions)
-    positions = (positions - positions.min()) / (positions.max() - positions.min())
+    positions = (positions - positions.min()) / (positions.max() - positions.min()) * 0.8  # Adjust for more even spacing
 
     # Manually adjust the position of the largest handle (last element)
-    positions[-1] += 1  # Increase this value as needed to add more vertical space
+    positions[-1] += 0.2  # Increase this value as needed to add more vertical space
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
         ax_legend.scatter(0.5, pos, s=size**0.5 * 50, color="gray", alpha=0.5)
-        ax_legend.text(0.7, pos, str(size), verticalalignment='center')
+        ax_legend.text(0.6, pos, str(size), verticalalignment='center', horizontalalignment='left')  # Adjust horizontal alignment to 'left'
 
     # Adjust the placement of the legend title
     ax_legend.text(0.5, positions[-1] + 0.15, "Bubble Size\n(Fragment Count)", horizontalalignment='center', verticalalignment='center', fontweight='bold')
