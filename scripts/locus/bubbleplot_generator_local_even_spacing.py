@@ -189,7 +189,8 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         
         # === Custom bubble-size legend using manual layout ===
-        ax_legend.axis("off")
+        ax_legend.axis("on")  # Ensure the axis for the legend is visible
+        ax_legend.set_frame_on(True)  # Ensure the frame (box) around the legend is on
         sizes = [1, 15, 150]
         bubble_sizes = [s**0.5 * 50 for s in sizes]
         y_positions = np.linspace(0.7, 0.3, len(sizes))  # top to bottom
@@ -263,7 +264,8 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     if sc is not None:
         fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
 
-    ax_legend.axis("off")
+    ax_legend.axis("on")  # Ensure the axis for the legend is visible
+    ax_legend.set_frame_on(True)  # Ensure the frame (box) around the legend is on
     handles, labels = [], []
     sizes = [1, 15, 150]
     bubble_sizes = [size**0.5 * 50 for size in sizes]
