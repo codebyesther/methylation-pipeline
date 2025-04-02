@@ -209,7 +209,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         positions = (positions - positions.min()) / (positions.max() - positions.min())
 
         # Manually adjust the position of the largest handle (last element)
-        positions[-1] += 0.3  # Increase this value as needed to add more vertical space
+        positions[-1] += 1  # Increase this value as needed to add more vertical space
 
         # Create the legend with adjusted spacings
         for size, pos in zip(sizes, positions):
@@ -319,7 +319,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     positions = (positions - positions.min()) / (positions.max() - positions.min())
 
     # Manually adjust the position of the largest handle (last element)
-    positions[-1] += 0.3  # Increase this value as needed to add more vertical space
+    positions[-1] += 1  # Increase this value as needed to add more vertical space
 
     for size, pos in zip(sizes, positions):
         h = ax_legend.scatter([], [], s=size**0.5 * 50, color="gray", alpha=0.5)
