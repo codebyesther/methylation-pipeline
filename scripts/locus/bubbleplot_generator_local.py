@@ -56,6 +56,17 @@ def normalize_timepoint(sample):
     else:
         return "On-Treatment"
 
+# Define timepoints
+timepoints = ["Baseline", "On-Treatment", "Post-Treatment", "Healthy"]
+
+# Define timepoint positions for plotting
+timepoint_positions = {
+    "Baseline": 1.0,
+    "On-Treatment": 0.9,
+    "Post-Treatment": 1.1,
+    "Healthy": 1.2
+}
+
 # === Process Files ===
 for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation files"):
     print(f"\n=== Processing file: {fname} ===")
