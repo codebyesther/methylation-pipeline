@@ -57,10 +57,17 @@ def normalize_timepoint(sample):
         return "On-Treatment"
 
 # Define timepoints
-timepoints = ["Baseline", "On-Treatment", "Post-Treatment", "Healthy"]
+timepoints_patient = ["Baseline", "On-Treatment", "Post-Treatment"]  # Per-patient plots
+timepoints_chromosome = ["Baseline", "On-Treatment", "Post-Treatment", "Healthy"]  # Per-chromosome plots
 
 # Define timepoint positions for plotting
-timepoint_positions = {
+timepoint_positions_patient = {
+    "Baseline": 1.0,
+    "On-Treatment": 0.9,
+    "Post-Treatment": 1.1
+}
+
+timepoint_positions_chromosome = {
     "Baseline": 1.0,
     "On-Treatment": 0.9,
     "Post-Treatment": 1.1,
@@ -115,7 +122,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Collect rows for all timepoints in a single DataFrame
         all_rows = []
-        for tp in timepoints:
+        for tp in timepoints_patient:
             col = f"{patient}_{tp}"
             if col not in chr_data.columns:
                 print(f"[WARNING] Column {col} not found for {patient}, {chrom}, skipping.")
@@ -150,7 +157,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         sc = None
         for _, row in subset_df.iterrows():
             tp = row["Timepoint"]
-            y = timepoint_positions[tp]
+            y = timepoint_positions_patient[tp]
             # Increase bubble scale factor for bigger bubbles
             bubble_size = row["value"]**0.5 * 150
             sc = ax_main.scatter(
@@ -165,12 +172,12 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             )
 
         # Format main axis
-        ax_main.set_yticks(list(timepoint_positions.values()))  # Ensure the number of ticks matches the number of labels
-        ax_main.set_yticklabels(timepoints)
+        ax_main.set_yticks(list(timepoint_positions_patient.values()))  # Ensure the number of ticks matches the number of labels
+        ax_main.set_yticklabels(timepoints_patient)
         ax_main.set_ylim(0.75, 1.25) # set y-limits so large bubbles have padding above & below
         ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
         ax_main.set_ylabel("Timepoint")
-        ax_main.set_title("DNA Hypermethylation Profiles Throughout Treatment")
+        ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment\nPatient: {patient}, Chromosome: {chrom}")
 
         # If we got at least one scatter point, make the colorbar in ax_cbar
         if sc is not None:
@@ -206,7 +213,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     chr_data = bubble_data[bubble_data["Chr"] == chrom]
 
     all_rows = []
-    for tp in timepoints:
+    for tp in timepoints_chromosome:
         # Find columns that end with e.g. "_Baseline"
         cols = [c for c in chr_data.columns if c.endswith(f"_{tp}")]
         if not cols:
@@ -233,7 +240,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     sc = None
     for _, row in subset_df.iterrows():
         tp = row["Timepoint"]
-        y = timepoint_positions[tp]
+        y = timepoint_positions_chromosome[tp]
         bubble_size = row["value"]**0.5 * 50
         sc = ax_main.scatter(
             row["Midpoint"],
@@ -246,12 +253,12 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             vmax=170    # upper bound of color scale
         )
 
-    ax_main.set_yticks(list(timepoint_positions.values()))  # Ensure the number of ticks matches the number of labels
-    ax_main.set_yticklabels(timepoints)
+    ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
+    ax_main.set_yticklabels(timepoints_chromosome)
     ax_main.set_ylim(0.75, 1.25) # set y-limits so large bubbles have padding above & below
     ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
     ax_main.set_ylabel("Timepoint")
-    ax_main.set_title("DNA Hypermethylation Profiles Throughout Treatment")
+    ax_main.set_title("DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)")
 
     if sc is not None:
         fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
