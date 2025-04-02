@@ -165,7 +165,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             )
 
         # Format main axis
-        ax_main.set_yticks([0.85, 1.0, 1.15]) # define fixed ticks & labels, so that the labels have the same vertical spacing as the bubble rows
+        ax_main.set_yticks(list(timepoint_positions.values()))  # Ensure the number of ticks matches the number of labels
         ax_main.set_yticklabels(timepoints)
         ax_main.set_ylim(0.75, 1.25) # set y-limits so large bubbles have padding above & below
         ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
@@ -246,7 +246,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             vmax=170    # upper bound of color scale
         )
 
-    ax_main.set_yticks([0.85, 1.0, 1.15]) # define fixed ticks & labels, so that the labels are at the same height as the bubble rows
+    ax_main.set_yticks(list(timepoint_positions.values()))  # Ensure the number of ticks matches the number of labels
     ax_main.set_yticklabels(timepoints)
     ax_main.set_ylim(0.75, 1.25) # set y-limits so large bubbles have padding above & below
     ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
