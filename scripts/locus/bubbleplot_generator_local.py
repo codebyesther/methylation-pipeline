@@ -185,8 +185,12 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
         handles, labels = [], []
+
+        # Define the sizes and calculate bubble sizes and radii
         sizes = [1, 15, 150]
         bubble_sizes = [size**0.5 * 50 for size in sizes]
+
+        # Calculate positions for equal spacing
         bubble_radii = [np.sqrt(size) * 5 for size in sizes]
         current_position = 0
         positions = []
@@ -197,6 +201,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         positions = np.array(positions)
         positions = (positions - positions.min()) / (positions.max() - positions.min())
 
+        # Create the legend with adjusted spacings
         for size, pos in zip(sizes, positions):
             h = ax_legend.scatter([], [], s=size**0.5 * 50, color="gray", alpha=0.5)
             handles.append(h)
@@ -206,8 +211,8 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             handles,
             labels,
             title="Bubble Size\n(Fragment Count)",
-            labelspacing=1.5,
-            handletextpad=2.0,
+            labelspacing=1.5,  # Adjust spacing between labels
+            handletextpad=2.0,  # Adjust padding between handle and text
             borderpad=1.3,
             loc="center",
             bbox_to_anchor=(0.5, 0.5),
@@ -215,6 +220,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             markerscale=1,
         )
 
+        # Adjust the positions of the legend items
         for handle, text, pos in zip(legend.legend_handles, legend.get_texts(), positions):
             handle.set_offsets([0.5, pos])
             text.set_position((0.7, pos))
