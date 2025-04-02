@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import re
 from matplotlib.gridspec import GridSpec
+from tqdm import tqdm  # Import tqdm for progress bars
 
 sns.set(style="whitegrid")
 os.makedirs("plots", exist_ok=True)
@@ -33,13 +34,13 @@ ratio_files = glob.glob(os.path.join(output_dir, "*ratios_matrix*.xlsx")) + glob
 patient_files = glob.glob(os.path.join(data_dir, "*patient*.xlsx")) + glob.glob(os.path.join(data_dir, "*patient*.csv"))
 
 # Process patient files
-for file_path in patient_files:
+for file_path in tqdm(patient_files, desc="Processing patient files"):
     df = pd.read_excel(file_path, header=None) if file_path.endswith('.xlsx') else pd.read_csv(file_path, header=None)
     values = df[0].dropna().astype(str).tolist()
     patient_ids.extend([v for v in values if not v.lower().startswith("unnamed")])
 
 # Process ratio files
-for file_path in ratio_files:
+for file_path in tqdm(ratio_files, desc="Processing ratio files"):
     file_name = os.path.basename(file_path)
     df = pd.read_excel(file_path) if file_path.endswith('.xlsx') else pd.read_csv(file_path)
     methylation_dfs[file_name] = df
@@ -56,7 +57,7 @@ def normalize_timepoint(sample):
         return "On-Treatment"
 
 # === Process Files ===
-for fname, df in methylation_dfs.items():
+for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation files"):
     print(f"\n=== Processing file: {fname} ===")
     start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
     cpg_df = df.iloc[start_idx:].reset_index(drop=True)
@@ -96,7 +97,7 @@ for fname, df in methylation_dfs.items():
     bubble_data = pd.merge(collapsed_flat, coords_df.reset_index(), on="CpG_Island").set_index("CpG_Island")
 
 # === Bubble plots per patient per chromosome ===
-for patient in collapsed.columns.levels[0]:
+for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots per patient"):
     for chrom in coords_df["Chr"].unique():
         # Build a subset for each timepoint, merging them
         chr_data = bubble_data[bubble_data["Chr"] == chrom]
@@ -190,7 +191,7 @@ for patient in collapsed.columns.levels[0]:
         plt.close()
 
 # === Bubble plots per chromosome (averaged across patients) ===
-for chrom in coords_df["Chr"].unique():
+for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per chromosome"):
     chr_data = bubble_data[bubble_data["Chr"] == chrom]
 
     all_rows = []
