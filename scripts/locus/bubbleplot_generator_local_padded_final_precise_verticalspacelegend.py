@@ -189,7 +189,9 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
-        handles, labels = []
+
+        # Initialize handles and labels as empty lists
+        handles, labels = [], []
 
         # Define the sizes and calculate bubble sizes and radii
         sizes = [1, 15, 150]
@@ -300,7 +302,10 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
 
     ax_legend.axis("off")
-    handles, labels = []
+
+    # Initialize handles and labels as empty lists
+    handles, labels = [], []
+
     sizes = [1, 15, 150]
     bubble_sizes = [size**0.5 * 50 for size in sizes]
     bubble_radii = [np.sqrt(size) * 5 for size in sizes]
