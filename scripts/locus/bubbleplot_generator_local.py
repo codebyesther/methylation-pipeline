@@ -60,18 +60,18 @@ def normalize_timepoint(sample):
 timepoints_patient = ["Baseline", "On-Treatment", "Post-Treatment"]  # Per-patient plots
 timepoints_chromosome = ["Baseline", "On-Treatment", "Post-Treatment", "Healthy"]  # Per-chromosome plots
 
-# Define timepoint positions for plotting
+# Define timepoint positions for plotting with increased spacing
 timepoint_positions_patient = {
     "Baseline": 1.0,
-    "On-Treatment": 0.9,
-    "Post-Treatment": 1.1
+    "On-Treatment": 0.7,
+    "Post-Treatment": 1.3
 }
 
 timepoint_positions_chromosome = {
     "Baseline": 1.0,
-    "On-Treatment": 0.9,
-    "Post-Treatment": 1.1,
-    "Healthy": 1.2
+    "On-Treatment": 0.7,
+    "Post-Treatment": 1.3,
+    "Healthy": 1.6
 }
 
 # === Process Files ===
@@ -80,7 +80,7 @@ for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation file
     start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
     cpg_df = df.iloc[start_idx:].reset_index(drop=True)
     cpg_df.rename(columns={cpg_df.columns[0]: "CpG_Island"}, inplace=True)
-    cpg_df.dropna(how="all", subset=cpg_df.columns[1:], inplace=True)
+    cpg_df.dropna(how="all", subset=cpg_df.columns[1:], inplace()
 
     samples = cpg_df.columns[1:]
     def get_patient(s): return next((pid for pid in patient_ids if pid in s), None)
@@ -174,7 +174,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Format main axis
         ax_main.set_yticks(list(timepoint_positions_patient.values()))  # Ensure the number of ticks matches the number of labels
         ax_main.set_yticklabels(timepoints_patient)
-        ax_main.set_ylim(0.75, 1.25) # set y-limits so large bubbles have padding above & below
+        ax_main.set_ylim(0.5, 1.7) # set y-limits so large bubbles have padding above & below
         ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
         ax_main.set_ylabel("Timepoint")
         ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment\nPatient: {patient}, Chromosome: {chrom}")
@@ -255,7 +255,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
     ax_main.set_yticklabels(timepoints_chromosome)
-    ax_main.set_ylim(0.75, 1.25) # set y-limits so large bubbles have padding above & below
+    ax_main.set_ylim(0.5, 1.7) # set y-limits so large bubbles have padding above & below
     ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
     ax_main.set_ylabel("Timepoint")
     ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}")
