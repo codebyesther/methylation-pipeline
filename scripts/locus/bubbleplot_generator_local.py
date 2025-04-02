@@ -58,7 +58,7 @@ def normalize_timepoint(sample):
 
 # Define timepoints
 timepoints_patient = ["Baseline", "On-Treatment", "Post-Treatment"]  # Per-patient plots
-timepoints_chromosome = ["Baseline", "On-Treatment", "Post-Treatment", "Healthy"]  # Per-chromosome plots
+timepoints_chromosome = ["Baseline", "On-Treatment", "Post-Treatment"]  # Per-chromosome plots (removed "Healthy")
 
 # Define timepoint positions for plotting with increased spacing
 timepoint_positions_patient = {
@@ -70,8 +70,7 @@ timepoint_positions_patient = {
 timepoint_positions_chromosome = {
     "Baseline": 1.0,
     "On-Treatment": 0.7,
-    "Post-Treatment": 1.3,
-    "Healthy": 1.6
+    "Post-Treatment": 1.3
 }
 
 # === Process Files ===
@@ -80,7 +79,7 @@ for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation file
     start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
     cpg_df = df.iloc[start_idx:].reset_index(drop=True)
     cpg_df.rename(columns={cpg_df.columns[0]: "CpG_Island"}, inplace=True)
-    cpg_df.dropna(how="all", subset=cpg_df.columns[1:], inplace()
+    cpg_df.dropna(how="all", subset=cpg_df.columns[1:], inplace=True)
 
     samples = cpg_df.columns[1:]
     def get_patient(s): return next((pid for pid in patient_ids if pid in s), None)
@@ -306,5 +305,3 @@ for root, _, files in os.walk("plots"):
             os.remove(file_path)
 
 print(f"Individual plot files removed, only zip file retained.")
-
-print(f"All plots zipped and saved to: {zip_path}")
