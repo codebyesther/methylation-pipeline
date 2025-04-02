@@ -151,4 +151,41 @@ plt.tight_layout()
 plt.savefig(os.path.join(args.output_dir, "avg_methylation_lineplot.png"))
 plt.close()
 
-print("✅ All plots generated with fixed heatmap order, color scaling, and colorbar tickmarks.")
+# Per-patient heatmap, line plot, and matrix export
+for patient in tqdm(patient_ids, desc="Generating per-patient plots and matrices"):
+    sample_cols = [s for s in cpg_matrix.columns if patient in s]
+    if not sample_cols:
+        continue
+    patient_gene_matrix = gene_matrix[sample_cols].T
+    timepoints = [classify_timepoint(s) for s in patient_gene_matrix.index]
+    patient_gene_matrix['Timepoint'] = timepoints
+    grouped = patient_gene_matrix.groupby("Timepoint").mean().T
+    if grouped.empty:
+        continue
+    grouped = grouped[[tp for tp in tp_order if tp in grouped.columns]]
+    fig_height = min(20, len(grouped))
+    plt.figure(figsize=(12, fig_height))
+    ax = sns.heatmap(grouped, cmap="coolwarm", vmin=global_min, vmax=global_max)
+    cbar = ax.collections[0].colorbar
+    cbar.set_ticks([global_min, global_max])
+    cbar.set_ticklabels([f"{global_min:.2f}", f"{global_max:.2f}"])
+    plt.title(f"Gene Methylation - {patient} (Top 10 by Δ Baseline → Post-Tx)")
+    plt.tight_layout()
+    plt.savefig(os.path.join(args.output_dir, f"heatmap_{patient}.png"))
+    plt.close()
+
+    plt.figure(figsize=(12, 5))
+    for gene in grouped.index:
+        plt.plot(grouped.columns, grouped.loc[gene], label=gene)
+    plt.title(f"Methylation Trends - {patient}")
+    plt.ylabel("Methylation")
+    plt.xticks(rotation=45)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.savefig(os.path.join(args.output_dir, f"lineplot_{patient}.png"))
+    plt.close()
+
+    # Save patient-specific methylation matrix
+    patient_gene_matrix.drop(columns='Timepoint').T.to_csv(os.path.join(args.output_dir, f"methylation_matrix_{patient}.csv"))
+
+print("✅ All plots generated with fixed heatmap order, color scaling, colorbar tickmarks, and per-patient plots restored.")
