@@ -63,14 +63,14 @@ timepoints_chromosome = ["Baseline", "On-Treatment", "Post-Treatment"]  # Per-ch
 # Define timepoint positions for plotting with increased spacing
 timepoint_positions_patient = {
     "Baseline": 0.6,
-    "On-Treatment": 1.0,
-    "Post-Treatment": 1.4
+    "On-Treatment": 1.2,
+    "Post-Treatment": 1.8
 }
 
 timepoint_positions_chromosome = {
     "Baseline": 0.6,
-    "On-Treatment": 1.0,
-    "Post-Treatment": 1.4
+    "On-Treatment": 1.2,
+    "Post-Treatment": 1.8
 }
 
 # === Process Files ===
@@ -184,10 +184,10 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             handles.append(ax_main.scatter([], [], s=bubble_size, color="gray", alpha=0.5))
             labels.append(str(size))
         
-        ax_main.legend(handles, labels, title="Bubble Size\n(Fragment Count)", labelspacing=1.5, handletextpad=2.0, borderpad=1.3, loc="upper right")
-
+        ax_main.legend(handles, labels, title="Bubble Size\n(Fragment Count)", labelspacing=1.5, handletextpad=2.0, borderpad=1.3, loc="center left", bbox_to_anchor=(1, 0.5))
+        
         plt.tight_layout()
-
+        
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
@@ -249,8 +249,8 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         handles.append(ax_main.scatter([], [], s=bubble_size, color="gray", alpha=0.5))
         labels.append(str(size))
     
-    ax_main.legend(handles, labels, title="Bubble Size\n(Fragment Count)", labelspacing=1.5, handletextpad=2.0, borderpad=1.3, loc="upper right")
-
+    ax_main.legend(handles, labels, title="Bubble Size\n(Fragment Count)", labelspacing=1.5, handletextpad=2.0, borderpad=1.3, loc="center left", bbox_to_anchor=(1, 0.5))
+    
     plt.tight_layout()
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
