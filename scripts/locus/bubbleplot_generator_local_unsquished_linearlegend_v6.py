@@ -190,7 +190,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Tightly spaced vertical positions
-        positions = np.linspace(0.18, 0.65, len(sizes))
+        positions = np.linspace(0.18, 0.5, len(sizes))
 
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
