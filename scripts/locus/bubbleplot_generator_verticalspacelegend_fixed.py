@@ -268,8 +268,8 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     ax_main = fig.add_subplot(gs[0, 0])
     gs_right = gs[0, 1].subgridspec(nrows=10, ncols=1)
-        ax_cbar = fig.add_subplot(gs_right[0:3, 0])
-        ax_legend = fig.add_subplot(gs_right[3:, 0])
+    ax_cbar = fig.add_subplot(gs_right[0:3, 0])
+    ax_legend = fig.add_subplot(gs_right[3:, 0])
     ax_cbar = fig.add_subplot(gs_right[0, 0])
     ax_legend = fig.add_subplot(gs_right[1, 0])
 
