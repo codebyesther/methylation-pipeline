@@ -175,12 +175,8 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_main.set_yticklabels(timepoints_patient)
         max_bubble_size = max(subset_df["value"].max()**0.5 * 50, 50)
         padding = max_bubble_size / 300
-        max_bubble_size = max(subset_df["value"].max()**0.5 * 50, 50)
-        padding = max_bubble_size / 300
         ax_main.set_ylim(
-            min(timepoint_positions_chromosome.values()) - padding,
-            max(timepoint_positions_chromosome.values()) + padding
-        ) - padding,
+            min(timepoint_positions_patient.values()) - padding,
             max(timepoint_positions_patient.values()) + padding
         )  # set y-limits so large bubbles have padding above & below
         ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
