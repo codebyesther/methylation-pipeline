@@ -158,7 +158,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             tp = row["Timepoint"]
             y = timepoint_positions_patient[tp]
             # Increase bubble scale factor for bigger bubbles
-            bubble_size = row["value"]**0.5 * 150
+            bubble_size = row["value"]**0.5 * 50
             sc = ax_main.scatter(
                 row["Midpoint"],
                 y,
