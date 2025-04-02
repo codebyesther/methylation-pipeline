@@ -180,8 +180,6 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         if sc is not None:
             fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
 
-        
-        
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
 
@@ -190,7 +188,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Tightly spaced vertical positions
-        positions = np.linspace(0.18, 0.5, len(sizes))
+        positions = np.linspace(0.18, 0.65, len(sizes))
 
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
@@ -269,31 +267,21 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     ax_legend.axis("off")
 
-    # Define the sizes and calculate bubble sizes
-    sizes = [1, 50, 150]  # Adjusted to have a more even spacing
+    # Use the same logic as the per-patient plots for legend spacing
+    sizes = [1, 50, 150]
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
-    # Calculate positions for equal spacing
-    bubble_radii = [np.sqrt(size) * 5 for size in sizes]
-    current_position = 0
-    positions = []
-    for radius in bubble_radii:
-        current_position += radius
-        positions.append(current_position)
-        current_position += radius
-    positions = np.array(positions)
-    positions = (positions - positions.min()) / (positions.max() - positions.min()) * 0.8  # Adjust for more even spacing
-
-    # Manually adjust the position of the largest handle (last element)
-    positions[-1] += 0.2  # Increase this value as needed to add more vertical space
+    # Tightly spaced vertical positions
+    positions = np.linspace(0.18, 0.65, len(sizes))
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
         ax_legend.scatter(0.5, pos, s=size**0.5 * 50, color="gray", alpha=0.5)
-        ax_legend.text(0.6, pos, str(size), verticalalignment='center', horizontalalignment='left')  # Adjust horizontal alignment to 'left'
+        ax_legend.text(0.65, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=10)
 
-    # Adjust the placement of the legend title
-    ax_legend.text(0.5, positions[-1] + 0.15, "Bubble Size\n(Fragment Count)", horizontalalignment='center', verticalalignment='center', fontweight='bold')
+    # Legend title slightly above top bubble
+    ax_legend.text(0.5, positions[-1] + 0.12, "Bubble Size\n(Fragment Count)",
+                   horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
     fig.subplots_adjust(left=0.08, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
