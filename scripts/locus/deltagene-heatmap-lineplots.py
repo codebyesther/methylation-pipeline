@@ -141,6 +141,8 @@ avg_by_tp = merged.groupby("Timepoint").mean().T
 
 # Heatmap
 max_height = 20
+tp_order = ['Healthy', 'Baseline', 'On-Treatment', 'Post-Treatment']
+avg_by_tp = avg_by_tp[[tp for tp in tp_order if tp in avg_by_tp.columns]]
 fig_height = min(max_height, len(avg_by_tp))
 plt.figure(figsize=(15, fig_height))
 sns.heatmap(avg_by_tp, cmap="coolwarm")
