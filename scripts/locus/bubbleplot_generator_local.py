@@ -288,7 +288,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     plt.close()
 
 # === Zip All Plots ===
-zipf = zipfile.ZipFile("methylation_plots.zip", "w", zipfile.ZIP_DEFLATED)
+zipf = zipfile.ZipFile("bubble_plots.zip", "w", zipfile.ZIP_DEFLATED)
 for root, dirs, files in os.walk("plots"):
     for f in files:
         zipf.write(os.path.join(root, f), arcname=f)
