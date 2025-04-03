@@ -193,7 +193,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Calculate proportional vertical positions based on bubble radii
         cumulative_height = np.cumsum([size**0.5 for size in sizes])
         total_height = cumulative_height[-1]
-        positions = cumulative_height / total_height * 0.8 + 0.1  # Scale to fit within the [0.1, 0.9] range
+        positions = [0, 1, 2, 3]/10 * total_height/len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(0, 1)
