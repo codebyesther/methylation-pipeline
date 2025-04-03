@@ -340,4 +340,4 @@ for root, _, files in os.walk("plots"):
             if file_path != zip_path:
                 os.remove(file_path)
 
-print(f"Individual bubble plot files
+print(f"Individual bubble plot files have been removed after zipping.")
