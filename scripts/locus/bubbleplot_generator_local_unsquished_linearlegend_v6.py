@@ -188,7 +188,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
         
         # Tightly spaced vertical positions
-        positions = np.linspace(0.18, 0.45, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.45
+        positions = np.linspace(0.18, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
         
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
@@ -275,7 +275,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Tightly spaced vertical positions
-    positions = np.linspace(0.18, 0.45, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.45
+    positions = np.linspace(0.18, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
