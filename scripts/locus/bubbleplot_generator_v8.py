@@ -212,7 +212,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.18, "Bubble Size\n(Fragment Count)",    # title is 0.18 above the top bubble
+        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Fragment Count)",    # title is 0.3 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=12)
 
         # Adjust y-limits to ensure no clipping
@@ -312,7 +312,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.18, "Bubble Size\n(Fragment Count)",    # title is 0.18 above the top bubble
+    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Fragment Count)",    # title is 0.3 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
     # Adjust y-limits to ensure no clipping
