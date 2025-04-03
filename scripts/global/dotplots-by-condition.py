@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 import os
 import glob
 
-# Set up directories
+# === Setup ===
 input_dir = "output"
 plot_dir = os.path.join("plots", "dotplots")
 os.makedirs(plot_dir, exist_ok=True)
 
-# Define condition classifier
+# === Sample classification function ===
 def classify_condition(name):
     if "INNOV" in name:
         return "Healthy"
@@ -19,7 +19,7 @@ def classify_condition(name):
     else:
         return "On-Treatment"
 
-# Define plotting order and color palette
+# === Plot settings ===
 order = ["Healthy", "Baseline", "On-Treatment", "Post-Treatment"]
 palette = {
     "Healthy": "#3B0A45",
@@ -28,28 +28,40 @@ palette = {
     "Post-Treatment": "#D7542D",
 }
 
-# Find all matching Excel files
-excel_files = glob.glob(os.path.join(input_dir, "*scaled_fragment_ratios_matrix*.xlsx"))
+# === Search for matching Excel files ===
+excel_files = glob.glob(os.path.join(input_dir, "*fragment_ratios_matrix*.xlsx"))
 
 if not excel_files:
     print("⚠️ No matching Excel files found in the 'output/' directory.")
 else:
     for filepath in excel_files:
         filename = os.path.basename(filepath)
-        print(f"Processing: {filename}")
+        print(f"\n🔍 Processing: {filename}")
 
-        # Load and clean data
-        df = pd.read_excel(filepath)
-        df.columns = ['Sample', 'Glob20', 'GlobMin80', 'Scaled_Ratio']
-        df['Condition'] = df['Sample'].apply(classify_condition)
+        # === Load and reformat the scaled matrix ===
+        raw_df = pd.read_excel(filepath, header=None)
+
+        # Row 0 = sample names, Row 1 = scaled ratios
+        samples = raw_df.iloc[0, 1:]  # skip first column "Header"
+        ratios = raw_df.iloc[1, 1:]
+
+        df = pd.DataFrame({
+            "Sample": samples.values,
+            "Scaled_Ratio": ratios.values
+        })
+
+        # === Annotate and prepare for plotting ===
+        df["Condition"] = df["Sample"].apply(classify_condition)
         x_labels = [f"{cond}\n(n={len(df[df['Condition'] == cond])})" for cond in order]
 
-        # Plot 1: Median scatter plot
+        # === Plot 1: Median Scatter Plot ===
         plt.figure(figsize=(8, 6))
         for i, cond in enumerate(order):
             group = df[df['Condition'] == cond]['Scaled_Ratio']
-            plt.scatter([i]*len(group), group, color=palette[cond], s=60, alpha=0.8, edgecolors='k', linewidth=0.5)
-            plt.plot([i - 0.2, i + 0.2], [group.median()] * 2, color=palette[cond], lw=3)
+            plt.scatter([i]*len(group), group, color=palette[cond], s=60,
+                        alpha=0.8, edgecolors='k', linewidth=0.5)
+            plt.plot([i - 0.2, i + 0.2], [group.median()] * 2,
+                     color=palette[cond], lw=3)
         plt.xticks(range(len(order)), x_labels)
         plt.ylabel("CpG Methylation\n(Scaled Ratio x100K)", fontsize=12)
         plt.xlabel("Sample Condition", fontsize=12)
@@ -60,14 +72,16 @@ else:
         plt.savefig(median_path, dpi=300)
         plt.close()
 
-        # Plot 2: Mean ± SD scatter plot
+        # === Plot 2: Mean ± SD Scatter Plot ===
         plt.figure(figsize=(8, 6))
         for i, cond in enumerate(order):
             group = df[df['Condition'] == cond]['Scaled_Ratio']
             mean = group.mean()
             sd = group.std()
-            plt.scatter([i]*len(group), group, color=palette[cond], s=60, alpha=0.8, edgecolors='k', linewidth=0.5)
-            plt.plot([i - 0.2, i + 0.2], [mean] * 2, color=palette[cond], lw=3)
+            plt.scatter([i]*len(group), group, color=palette[cond], s=60,
+                        alpha=0.8, edgecolors='k', linewidth=0.5)
+            plt.plot([i - 0.2, i + 0.2], [mean] * 2,
+                     color=palette[cond], lw=3)
             plt.errorbar(i, mean, yerr=sd, fmt='none', ecolor='gray', capsize=5, lw=1.5)
         plt.xticks(range(len(order)), x_labels)
         plt.ylabel("CpG Methylation\n(Scaled Ratio x100K)", fontsize=12)
@@ -79,6 +93,6 @@ else:
         plt.savefig(mean_sd_path, dpi=300)
         plt.close()
 
-        print(f"✔️ Saved plots to:\n  - {median_path}\n  - {mean_sd_path}")
+        print(f"✅ Saved plots to:\n  - {median_path}\n  - {mean_sd_path}")
 
-print("✅ Done.")
+print("\n🎉 All done!")
