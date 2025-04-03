@@ -193,7 +193,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Calculate proportional vertical positions based on bubble radii
         cumulative_height = np.cumsum([size**0.5 for size in sizes])
         total_height = cumulative_height[-1]
-        positions = np.array([0.1, 1, 2, 3.5]) / 100 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+        positions = np.array([0.1, 1, 2, 3.4]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(0, 1)
@@ -293,7 +293,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Calculate proportional vertical positions based on bubble radii
     cumulative_height = np.cumsum([size**0.5 for size in sizes])
     total_height = cumulative_height[-1]
-    positions = np.array([0.1, 1, 2, 3.5]) / 100 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+    positions = np.array([0.1, 1, 2, 3.4]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(0, 1)
