@@ -181,7 +181,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
 
         # Define the x-coordinate for the legend title and scatter plot positions
-        legend_x_coord = 0.45
+        legend_x_coord = 0.25
 
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
