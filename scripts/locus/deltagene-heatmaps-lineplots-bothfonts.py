@@ -127,14 +127,14 @@ avg_by_tp = avg_by_tp[[tp for tp in tp_order if tp in avg_by_tp.columns]]
 fig_height = min(20, len(avg_by_tp))
 plt.figure(figsize=(15, fig_height))
 ax = sns.heatmap(avg_by_tp, cmap="coolwarm", cbar_kws={'label': 'Methylation', 'shrink': 0.5})
-ax.set_xlabel("Timepoint", fontsize=18)  # Increase font size for x-axis label
-ax.set_ylabel("Gene", fontsize=18)       # Increase font size for y-axis label
+ax.set_xlabel("Timepoint", fontsize=14)  # Increase font size for x-axis label
+ax.set_ylabel("Gene", fontsize=14)       # Increase font size for y-axis label
 ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)  # Increase font size for x-axis tick labels
 ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)  # Increase font size for y-axis tick labels
 cbar = ax.collections[0].colorbar
-cbar.ax.tick_params(labelsize=12)
+cbar.ax.tick_params(labelsize=14)
 cbar.set_label("Methylation", fontsize=14)
-plt.title("Average Methylation per Gene Across Timepoints (Top 10 by ∆ Baseline → Post-Tx)", fontsize=16)
+plt.title("Average Methylation per Gene Across Timepoints (Top 10 by ∆ Baseline → Post-Tx)", fontsize=14)
 plt.tight_layout()
 plt.savefig(os.path.join(args.output_dir, "avg_methylation_heatmap.png"))
 plt.close()
@@ -143,12 +143,12 @@ plt.close()
 plt.figure(figsize=(15, 6))
 for gene in avg_by_tp.index:
     plt.plot(avg_by_tp.columns, avg_by_tp.loc[gene], label=gene)
-plt.title("Methylation Trends Across Timepoints (Top 10 by ∆ Baseline → Post-Tx)", fontsize=16)
+plt.title("Methylation Trends Across Timepoints (Top 10 by ∆ Baseline → Post-Tx)", fontsize=14)
 plt.ylabel("Average Methylation", fontsize=14)
-plt.xlabel("Timepoint", fontsize=18)  # Add this line to set xlabel
-plt.xticks(rotation=45, fontsize=14)  # Increase font size for x-axis tick labels
+plt.xlabel("Timepoint", fontsize=14)  # Add this line to set xlabel
+plt.xticks(rotation=0, fontsize=14)  # Increase font size for x-axis tick labels
 plt.yticks(fontsize=14)               # Increase font size for y-axis tick labels
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=14)
 plt.tight_layout()
 plt.savefig(os.path.join(args.output_dir, "avg_methylation_lineplot.png"))
 plt.close()
@@ -168,14 +168,14 @@ for patient in tqdm(patient_ids, desc="Generating per-patient plots and matrices
     fig_height = min(20, len(grouped))
     plt.figure(figsize=(12, fig_height))
     ax = sns.heatmap(grouped, cmap="coolwarm", cbar_kws={'label': 'Methylation', 'shrink': 0.5})
-    ax.set_xlabel("Timepoint", fontsize=18)  # Increase font size for x-axis label
-    ax.set_ylabel("Gene", fontsize=18)       # Increase font size for y-axis label
+    ax.set_xlabel("Timepoint", fontsize=14)  # Increase font size for x-axis label
+    ax.set_ylabel("Gene", fontsize=14)       # Increase font size for y-axis label
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)  # Increase font size for x-axis tick labels
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)  # Increase font size for y-axis tick labels
     cbar = ax.collections[0].colorbar
-    cbar.ax.tick_params(labelsize=12)
+    cbar.ax.tick_params(labelsize=14)
     cbar.set_label("Methylation", fontsize=14)
-    plt.title(f"Gene Methylation - {patient} (Top 10 by ∆ Baseline → Post-Tx)", fontsize=16)
+    plt.title(f"Gene Methylation - {patient} (Top 10 by ∆ Baseline → Post-Tx)", fontsize=14)
     plt.tight_layout()
     plt.savefig(os.path.join(args.output_dir, f"heatmap_{patient}.png"))
     plt.close()
@@ -185,10 +185,10 @@ for patient in tqdm(patient_ids, desc="Generating per-patient plots and matrices
         plt.plot(grouped.columns, grouped.loc[gene], label=gene)
     plt.title(f"Methylation Trends - {patient}", fontsize=16)
     plt.ylabel("Methylation", fontsize=14)
-    plt.xlabel("Timepoint", fontsize=18)  # Add this line to set xlabel
-    plt.xticks(rotation=45, fontsize=14)  # Increase font size for x-axis tick labels
+    plt.xlabel("Timepoint", fontsize=14)  # Add this line to set xlabel
+    plt.xticks(rotation=0, fontsize=14)  # Increase font size for x-axis tick labels
     plt.yticks(fontsize=14)               # Increase font size for y-axis tick labels
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=14)
     plt.tight_layout()
     plt.savefig(os.path.join(args.output_dir, f"lineplot_{patient}.png"))
     plt.close()
