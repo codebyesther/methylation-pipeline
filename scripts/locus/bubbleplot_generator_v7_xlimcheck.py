@@ -160,7 +160,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
                 cmap="viridis",
                 alpha=0.6,
                 vmin=0,  # lower bound of color scale
-                vmax=1000    # increased upper bound of color scale
+                vmax=2000    # increased upper bound of color scale
             )
 
         # Format main axis
@@ -191,7 +191,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Tightly spaced vertical positions
-        positions = np.linspace(0.02, 0.62, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
+        positions = np.linspace(0.02, 0.82, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(0, 1)
@@ -210,7 +210,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.2, "Bubble Size\n(Fragment Count)",    # title is 0.1 above the top bubble
+        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.18, "Bubble Size\n(Fragment Count)",    # title is 0.18 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=12)
 
         # Adjust y-limits to ensure no clipping
@@ -264,7 +264,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             cmap="viridis",
             alpha=0.6,
             vmin=0,  # lower bound of color scale
-            vmax=1000    # increased upper bound of color scale
+            vmax=2000    # increased upper bound of color scale
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
@@ -289,7 +289,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Tightly spaced vertical positions
-    positions = np.linspace(0.02, 0.62, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
+    positions = np.linspace(0.02, 0.82, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(0, 1)
@@ -308,7 +308,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.2, "Bubble Size\n(Fragment Count)",    # title is 0.2 above the top bubble
+    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.18, "Bubble Size\n(Fragment Count)",    # title is 0.18 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
     # Adjust y-limits to ensure no clipping
