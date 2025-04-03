@@ -70,7 +70,7 @@ timepoint_positions_chromosome = {
 for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation files"):
     print(f"\n=== Processing file: {fname} ===")
     start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
-    cpg_df = df.iloc(start_idx:].reset_index(drop=True)
+    cpg_df = df.iloc[start_idx:].reset_index(drop=True)
     cpg_df.rename(columns={cpg_df.columns[0]: "CpG_Island"}, inplace=True)
     cpg_df.dropna(how="all", subset=cpg_df.columns[1:], inplace=True)
 
