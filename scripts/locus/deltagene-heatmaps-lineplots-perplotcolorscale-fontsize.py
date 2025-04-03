@@ -126,7 +126,7 @@ avg_by_tp = avg_by_tp[[tp for tp in tp_order if tp in avg_by_tp.columns]]
 # Heatmap
 fig_height = min(20, len(avg_by_tp))
 plt.figure(figsize=(15, fig_height))
-ax = sns.heatmap(avg_by_tp, cmap="coolwarm", yticklabels={'size': 14}, xticklabels={'size': 14})
+ax = sns.heatmap(avg_by_tp, cmap="coolwarm")
 plt.title("Average Methylation per Gene Across Timepoints (Top 10 by Δ Baseline → Post-Tx)", fontsize=16)
 plt.tight_layout()
 plt.savefig(os.path.join(args.output_dir, "avg_methylation_heatmap.png"))
@@ -158,7 +158,7 @@ for patient in tqdm(patient_ids, desc="Generating per-patient plots and matrices
     grouped = grouped[[tp for tp in tp_order if tp in grouped.columns]]
     fig_height = min(20, len(grouped))
     plt.figure(figsize=(12, fig_height))
-    ax = sns.heatmap(grouped, cmap="coolwarm", yticklabels={'size': 14}, xticklabels={'size': 14})
+    ax = sns.heatmap(grouped, cmap="coolwarm")
     plt.title(f"Gene Methylation - {patient} (Top 10 by Δ Baseline → Post-Tx)", fontsize=16)
     plt.tight_layout()
     plt.savefig(os.path.join(args.output_dir, f"heatmap_{patient}.png"))
