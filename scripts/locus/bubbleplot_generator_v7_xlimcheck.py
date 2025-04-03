@@ -160,7 +160,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
                 cmap="viridis",
                 alpha=0.6,
                 vmin=0,  # lower bound of color scale
-                vmax=500    # increased upper bound of color scale
+                vmax=800    # increased upper bound of color scale
             )
 
         # Format main axis
@@ -187,7 +187,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_legend.axis("off")  # hide ticks and background
 
         # Define the sizes and calculate bubble sizes
-        sizes = [1, 50, 500]
+        sizes = [1, 80, 800]
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Tightly spaced vertical positions
@@ -264,7 +264,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             cmap="viridis",
             alpha=0.6,
             vmin=0,  # lower bound of color scale
-            vmax=500    # increased upper bound of color scale
+            vmax=800    # increased upper bound of color scale
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
@@ -285,7 +285,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_legend.axis("off")
 
     # Use the same logic as the per-patient plots for legend spacing
-    sizes = [1, 50, 500]
+    sizes = [1, 80, 800]
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Tightly spaced vertical positions
