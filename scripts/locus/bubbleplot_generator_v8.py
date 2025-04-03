@@ -191,7 +191,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Calculate proportional vertical positions based on bubble radii
-        cumulative_height = np.cumsum([(size**0.5)/2 for size in sizes])
+        cumulative_height = np.cumsum([size**0.5 for size in sizes])
         total_height = cumulative_height[-1]
         positions = cumulative_height / total_height * 0.8 + 0.1  # Scale to fit within the [0.1, 0.9] range
 
@@ -291,7 +291,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Calculate proportional vertical positions based on bubble radii
-    cumulative_height = np.cumsum([(size**0.5)/2 for size in sizes])
+    cumulative_height = np.cumsum([size**0.5 for size in sizes])
     total_height = cumulative_height[-1]
     positions = cumulative_height / total_height * 0.8 + 0.1  # Scale to fit within the [0.1, 0.9] range
 
