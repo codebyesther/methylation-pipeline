@@ -28,21 +28,24 @@ palette = {
     "Post-Treatment": "#D7542D",
 }
 
-# === Search for matching Excel files ===
-excel_files = glob.glob(os.path.join(input_dir, "*fragment_ratios_matrix*.xlsx"))
+# === Find all valid Excel files ===
+excel_files = [
+    f for f in glob.glob(os.path.join(input_dir, "*fragment_ratios_matrix*.xlsx"))
+    if not os.path.basename(f).startswith("~$")
+]
 
 if not excel_files:
     print("⚠️ No matching Excel files found in the 'output/' directory.")
 else:
     for filepath in excel_files:
         filename = os.path.basename(filepath)
+        base_name = filename.replace('.xlsx', '')
         print(f"\n🔍 Processing: {filename}")
 
         # === Load and reformat the scaled matrix ===
         raw_df = pd.read_excel(filepath, header=None)
 
-        # Row 0 = sample names, Row 1 = scaled ratios
-        samples = raw_df.iloc[0, 1:]  # skip first column "Header"
+        samples = raw_df.iloc[0, 1:]  # skip "Header" column
         ratios = raw_df.iloc[1, 1:]
 
         df = pd.DataFrame({
@@ -53,6 +56,21 @@ else:
         # === Annotate and prepare for plotting ===
         df["Condition"] = df["Sample"].apply(classify_condition)
         x_labels = [f"{cond}\n(n={len(df[df['Condition'] == cond])})" for cond in order]
+
+        # === Export Summary Stats ===
+        stats = []
+        for cond in order:
+            group = df[df["Condition"] == cond]["Scaled_Ratio"]
+            stats.append({
+                "Condition": cond,
+                "n": len(group),
+                "Mean": round(group.mean(), 2),
+                "Median": round(group.median(), 2),
+                "SD": round(group.std(), 2)
+            })
+        stats_df = pd.DataFrame(stats)
+        stats_path = os.path.join(plot_dir, f"{base_name}_summary_stats.csv")
+        stats_df.to_csv(stats_path, index=False)
 
         # === Plot 1: Median Scatter Plot ===
         plt.figure(figsize=(8, 6))
@@ -68,7 +86,7 @@ else:
         plt.ylim(bottom=0)
         plt.title(f"{filename} - Median Lines", fontsize=14)
         plt.tight_layout()
-        median_path = os.path.join(plot_dir, f"{filename.replace('.xlsx', '')}_median_dotplot.png")
+        median_path = os.path.join(plot_dir, f"{base_name}_median_dotplot.png")
         plt.savefig(median_path, dpi=300)
         plt.close()
 
@@ -89,10 +107,13 @@ else:
         plt.ylim(bottom=0)
         plt.title(f"{filename} - Mean ± SD", fontsize=14)
         plt.tight_layout()
-        mean_sd_path = os.path.join(plot_dir, f"{filename.replace('.xlsx', '')}_mean_sd_dotplot.png")
+        mean_sd_path = os.path.join(plot_dir, f"{base_name}_mean_sd_dotplot.png")
         plt.savefig(mean_sd_path, dpi=300)
         plt.close()
 
-        print(f"✅ Saved plots to:\n  - {median_path}\n  - {mean_sd_path}")
+        print(f"✅ Saved outputs:")
+        print(f"  - {median_path}")
+        print(f"  - {mean_sd_path}")
+        print(f"  - {stats_path}")
 
 print("\n🎉 All done!")
