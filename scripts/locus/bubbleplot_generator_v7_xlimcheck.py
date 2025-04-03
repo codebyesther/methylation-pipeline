@@ -193,6 +193,9 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Tightly spaced vertical positions
         positions = np.linspace(0.18, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
 
+        # Set the x-axis limits explicitly for the legend axis
+        ax_legend.set_xlim(0, 1)
+
         # Print the axis limits to check if legend_x_coord is within range
         x_min, x_max = ax_legend.get_xlim()
         print(f"Legend x-axis limits: min={x_min}, max={x_max}")
@@ -288,6 +291,9 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Tightly spaced vertical positions
     positions = np.linspace(0.18, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
 
+    # Set the x-axis limits explicitly for the legend axis
+    ax_legend.set_xlim(0, 1)
+
     # Print the axis limits to check if legend_x_coord is within range
     x_min, x_max = ax_legend.get_xlim()
     print(f"Legend x-axis limits: min={x_min}, max={x_max}")
@@ -334,4 +340,4 @@ for root, _, files in os.walk("plots"):
             if file_path != zip_path:
                 os.remove(file_path)
 
-print(f"Individual bubble plot files removed, only zip file retained.")
+print(f"Individual bubble plot files
