@@ -191,7 +191,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Tightly spaced vertical positions
-        positions = np.linspace(0.12, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
+        positions = np.linspace(0.02, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(0, 1)
@@ -210,11 +210,11 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",    # Use legend_x_coord
+        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.4, "Bubble Size\n(Fragment Count)",    # title is 0.1 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=12)
 
         # Adjust y-limits to ensure no clipping
-        ax_legend.set_ylim(0, positions[-1] + 0.2)
+        ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
         fig.subplots_adjust(left=0.08, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
@@ -289,7 +289,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Tightly spaced vertical positions
-    positions = np.linspace(0.12, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
+    positions = np.linspace(0.02, 0.42, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.42
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(0, 1)
@@ -308,11 +308,11 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",
+    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.4, "Bubble Size\n(Fragment Count)",    # title is 0.1 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
     # Adjust y-limits to ensure no clipping
-    ax_legend.set_ylim(0, positions[-1] + 0.2)
+    ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
     fig.subplots_adjust(left=0.08, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
