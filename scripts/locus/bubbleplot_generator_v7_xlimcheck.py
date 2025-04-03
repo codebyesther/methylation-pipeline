@@ -207,10 +207,10 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
             ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
-            ax_legend.text(legend_x_coord + 0.6, pos, str(size), verticalalignment='center', horizontalalignment='right', fontsize=12)    # Adjust text position based on legend_x_coord
+            ax_legend.text(legend_x_coord + 0.6, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(legend_x_coord, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",    # Use legend_x_coord
+        ax_legend.text(legend_x_coord + 0.3, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",    # Use legend_x_coord
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=12)
 
         # Adjust y-limits to ensure no clipping
@@ -305,10 +305,10 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
         ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
-        ax_legend.text(legend_x_coord + 0.6, pos, str(size), verticalalignment='center', horizontalalignment='right', fontsize=12)    # Adjust text position based on legend_x_coord
+        ax_legend.text(legend_x_coord + 0.6, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(legend_x_coord, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",
+    ax_legend.text(legend_x_coord + 0.3, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",
                 horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
     # Adjust y-limits to ensure no clipping
