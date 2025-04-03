@@ -192,7 +192,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
-            ax_legend.scatter(0.45, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # 0.45 is the x-coordinate within the legend for the gray bubbles
+            ax_legend.scatter(0.35, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # 0.35 is the x-coordinate within the legend for the gray bubbles
             ax_legend.text(0.75, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=12)    # 0.75 is the x-coordinate within the legend for the fragment count texts
         
         # Legend title slightly above top bubble, adjust the position as needed
@@ -279,7 +279,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
-        ax_legend.scatter(0.45, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # 0.45 is the x-coordinate within the legend for the gray bubbles
+        ax_legend.scatter(0.35, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # 0.35 is the x-coordinate within the legend for the gray bubbles
         ax_legend.text(0.75, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=10)    # 0.75 is the x-coordinate within the legend for the fragment count texts
 
     # Legend title slightly above top bubble, adjust the position as needed
