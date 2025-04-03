@@ -188,15 +188,15 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 50 for size in sizes]
         
         # Tightly spaced vertical positions
-        positions = np.linspace(0.18, 0.4, len(sizes))
+        positions = np.linspace(0.18, 0.45, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.45
         
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
-            ax_legend.scatter(0.5, pos, s=size**0.5 * 50, color="gray", alpha=0.5)
-            ax_legend.text(0.7, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=12)
+            ax_legend.scatter(0.45, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # 0.45 is the x-coordinate within the legend for the gray bubbles
+            ax_legend.text(0.75, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=12)    # 0.75 is the x-coordinate within the legend for the fragment count texts
         
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(0.5, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",
+        ax_legend.text(0.45, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",    # 0.45 is the x-coordinate within the legend for the title
                        horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=12)
         
         # Adjust y-limits to ensure no clipping
@@ -275,12 +275,12 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Tightly spaced vertical positions
-    positions = np.linspace(0.18, 0.4, len(sizes))
+    positions = np.linspace(0.18, 0.45, len(sizes))    # marker bubbles evenly spaced vertically from 0.18 to 0.45
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
-        ax_legend.scatter(0.5, pos, s=size**0.5 * 50, color="gray", alpha=0.5)
-        ax_legend.text(0.65, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=10)
+        ax_legend.scatter(0.45, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # 0.45 is the x-coordinate within the legend for the gray bubbles
+        ax_legend.text(0.75, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=10)    # 0.75 is the x-coordinate within the legend for the fragment count texts
 
     # Legend title slightly above top bubble, adjust the position as needed
     ax_legend.text(0.5, positions[-1] + 0.1, "Bubble Size\n(Fragment Count)",
