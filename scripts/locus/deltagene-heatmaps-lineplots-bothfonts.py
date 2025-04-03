@@ -126,7 +126,7 @@ avg_by_tp = avg_by_tp[[tp for tp in tp_order if tp in avg_by_tp.columns]]
 # Heatmap
 fig_height = min(20, len(avg_by_tp))
 plt.figure(figsize=(15, fig_height))
-ax = sns.heatmap(avg_by_tp, cmap="coolwarm", cbar_kws={'label': 'Methylation', 'shrink': 0.5})
+ax = sns.heatmap(avg_by_tp, cmap="coolwarm", cbar_kws={'label': 'Methylation', 'shrink': 1})    # do not shrink the colorbar (full-size: 1)
 ax.set_xlabel("Timepoint", fontsize=14)  # Increase font size for x-axis label
 ax.set_ylabel("Gene", fontsize=14)       # Increase font size for y-axis label
 ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)  # Increase font size for x-axis tick labels
@@ -167,7 +167,7 @@ for patient in tqdm(patient_ids, desc="Generating per-patient plots and matrices
     grouped = grouped[[tp for tp in tp_order if tp in grouped.columns]]
     fig_height = min(20, len(grouped))
     plt.figure(figsize=(12, fig_height))
-    ax = sns.heatmap(grouped, cmap="coolwarm", cbar_kws={'label': 'Methylation', 'shrink': 0.5})
+    ax = sns.heatmap(grouped, cmap="coolwarm", cbar_kws={'label': 'Methylation', 'shrink': 0.5})    # do not shrink the colorbar (full-size: 1)
     ax.set_xlabel("Timepoint", fontsize=14)  # Increase font size for x-axis label
     ax.set_ylabel("Gene", fontsize=14)       # Increase font size for y-axis label
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)  # Increase font size for x-axis tick labels
