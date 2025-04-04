@@ -178,7 +178,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # If we got at least one scatter point, make the colorbar in ax_cbar
         if sc is not None:
-            fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
+            fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio")
 
         # Define the x-coordinate for the legend title and scatter plot positions
         legend_x_coord = 0.25
@@ -212,7 +212,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Fragment Count)",    # title is 0.3 above the top bubble
+        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=12)
 
         # Adjust y-limits to ensure no clipping
@@ -282,7 +282,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}")
 
     if sc is not None:
-        fig.colorbar(sc, cax=ax_cbar, label="Fragment Count")
+        fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio")
 
     ax_legend.axis("off")
 
@@ -312,7 +312,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=12)    # Adjust text position based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Fragment Count)",    # title is 0.3 above the top bubble
+    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold')
 
     # Adjust y-limits to ensure no clipping
