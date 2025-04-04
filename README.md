@@ -44,6 +44,7 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 - Script: `scripts/build_gene_cgi_map.py`
 - Required only if you are going to run `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py` later.
 - Auto-detect file(s): .xlsx and .csv files in the output directory that contain the term "gene_annotation" in their filename
+  - You had to have run Step 4 of the Preprocessing Steps (`scripts/step_4_generate_gene_annotation.py`) for this file to have been generated in your output directory.
 - Processes these files to create a mapping of genes to CGI identifiers:
   - The script selects the first file from the list of matching files and prints its name.
   - The script identifies all columns in the DataFrame that start with "Gene".
@@ -62,6 +63,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
 - Auto-detect file(s):
   - Patient file: a "patient" file in the data directory
   - Methylation file: a "scaled" methylation file in the output directory
+    - You had to have run Step 3 of the Preprocessing Steps (`scripts/step_3_convert_to_aberrant_signals.py`) for this file to have been generated in your output directory.
 - Data Processing Steps:
   - Loads the patient file and extracts patient IDs.
   - Loads the methylation data file and prepares it for analysis by extracting CpG island data.
@@ -80,6 +82,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
 - Auto-detect file(s):
   - Patient file: a "patient" file in the data directory (both .xlsx and .csv formats)
   - Methylation file: a "ratios_matrix" methylation file in the output directory (both .xlsx and .csv formats)
+    - You had to have run Step 3 of the Preprocessing Steps (`scripts/step_3_convert_to_aberrant_signals.py`) for this file to have been generated in your output directory.
 - Data Processing Steps:
   - Normalizes sample names to standard timepoints such as "Baseline", "On-Treatment", and "Post-Treatment".
   - Processes each methylation data file to extract CpG Island coordinates and associated values, and merges this data with sample metadata.
