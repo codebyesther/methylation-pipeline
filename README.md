@@ -146,6 +146,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
 - Auto-detect file(s):
   - Patient Files: It searches for Excel files containing the term "patient id" in the data directory.
   - Methylation Matrix Files: It searches for Excel files containing the term "matrix" in the output directory.
+    - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
 - Data Processing Steps:
   - Extracts CpG island data from the matrix file.
   - Generates metadata for each sample, including patient ID and treatment timepoint (Baseline, On-Treatment, Post-Treatment, Healthy).
@@ -174,6 +175,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
 ### Generate Dotplots by Condition/Timepoint
 - Script: `scripts/global/dotplots-by-condition.py`
 - Auto-detect file(s): Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name
+  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
 - Data Processing Steps:
   - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
   - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
@@ -183,7 +185,8 @@ This workflow focuses on overall methylation trends per patient or treatment con
 
 ### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
 - Script: `scripts/global/lineplots-perpatient_v3.py`
-- Auto-detect file(s): .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name.
+- Auto-detect file(s): .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name
+  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
 - Generated file(s):
   - Main Plot Directory: plots/lineplots
     - methylation_longitudinal_plot.png
