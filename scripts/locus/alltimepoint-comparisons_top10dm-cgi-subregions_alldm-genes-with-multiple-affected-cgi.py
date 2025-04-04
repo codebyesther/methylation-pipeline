@@ -103,7 +103,7 @@ for fname, df in methylation_dfs.items():
     def plot_top10_diff_cgi_subregions(df, title, filename):
         plt.figure(figsize=(10, 6))
         sns.barplot(data=df.head(10), x="Avg_Delta", y="CpG_Island", color='darkblue')
-        plt.xlabel("Avg Change in Methylated Fragment Count")
+        plt.xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
         plt.axvline(0, color="gray", linestyle="--")
         plt.title(title)
         plt.tight_layout()
@@ -118,7 +118,7 @@ for fname, df in methylation_dfs.items():
         
         plt.figure(figsize=(10, 6))
         sns.barplot(data=multi_cpg_genes, x="avg_delta", y="Gene", color='darkblue')
-        plt.xlabel("Avg Change in Methylated Fragment Count")
+        plt.xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
         plt.axvline(0, color="gray", linestyle="--")
         plt.title(title)
         plt.tight_layout()
