@@ -222,7 +222,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-        fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)  # Adjusted left margin
+        fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.5, hspace=0.5)  # Adjusted left margin
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
@@ -326,7 +326,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Adjust y-limits to ensure no clipping
     ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-    fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)  # Adjusted left margin
+    fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.5, hspace=0.5)  # Adjusted left margin
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
     plt.savefig(f"{filename_base}.svg")
