@@ -167,20 +167,20 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Format main axis
         ax_main.set_yticks(list(timepoint_positions_patient.values()))  # Ensure the number of ticks matches the number of labels
-        ax_main.set_yticklabels(timepoints_patient)
+        ax_main.set_yticklabels(timepoints_patient, fontsize=14)
         ax_main.set_ylim(0.3, 1.7)  # set y-limits so large bubbles have padding above & below
         # Add x-axis padding to avoid bubble clipping
         x_min, x_max = subset_df['Midpoint'].min(), subset_df['Midpoint'].max()
         x_range = x_max - x_min
         ax_main.set_xlim(x_min - 0.1 * x_range, x_max + 0.1 * x_range)  # Increase x-axis padding
 
-        ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
-        ax_main.set_ylabel("Timepoint")
-        ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment\nPatient: {patient}, Chromosome: {chrom}")
+        ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)", fontsize=16)
+        ax_main.set_ylabel("Timepoint", fontsize=16)
+        ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment\nPatient: {patient}, Chromosome: {chrom}", fontsize=18)
 
         # If we got at least one scatter point, make the colorbar in ax_cbar
         if sc is not None:
-            fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio")
+            fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio", fontsize=14)
 
         # Define the x-coordinate for the legend title and scatter plot positions
         legend_x_coord = 0.25
@@ -215,7 +215,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Legend title slightly above top bubble, adjust the position as needed
         ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
-                    horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
+                    horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=16)
 
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
@@ -274,19 +274,19 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
-    ax_main.set_yticklabels(timepoints_chromosome)
+    ax_main.set_yticklabels(timepoints_chromosome, fontsize=14)
     ax_main.set_ylim(0.3, 1.7)  # set y-limits so large bubbles have padding above & below
     # Add x-axis padding to avoid bubble clipping
     x_min, x_max = subset_df['Midpoint'].min(), subset_df['Midpoint'].max()
     x_range = x_max - x_min
     ax_main.set_xlim(x_min - 0.1 * x_range, x_max + 0.1 * x_range)  # Increase x-axis padding
 
-    ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)")
-    ax_main.set_ylabel("Timepoint")
-    ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}")
+    ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)", fontsize=16)
+    ax_main.set_ylabel("Timepoint", fontsize=16)
+    ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}", fontsize=18)
 
     if sc is not None:
-        fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio")
+        fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio", fontsize=14)
 
     ax_legend.axis("off")
 
@@ -317,7 +317,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Legend title slightly above top bubble, adjust the position as needed
     ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
-                horizontalalignment='center', verticalalignment='center', fontweight='bold')
+                horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=16)
 
     # Adjust y-limits to ensure no clipping
     ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
@@ -334,17 +334,4 @@ with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
     for root, _, files in os.walk("plots"):
         for file in files:
             if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
-                file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, start="plots")
-                zipf.write(file_path, arcname=arcname)
-
-print(f"All bubble plot files zipped and saved to: {zip_path}")
-
-# === Remove individual plot files after zipping ===
-for root, _, files in os.walk("plots"):
-    for file in files:
-        if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
-            file_path = os.path.join(root, file)
-            if file_path != zip_path:
-                os.remove(file_path)
-print(f"Individual bubble plot files have been removed after zipping.")
+                file
