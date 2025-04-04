@@ -28,9 +28,9 @@ def assign_patient_id(name):
 def simplify_timepoint(name):
     if "INNOV" in name:
         return None
-    elif name.endswith("Baseline"):
+    elif "Baseline" in name:
         return "Baseline"
-    elif name.endswith("Off-tx"):
+    elif "Off-tx" in name:
         return "Post-Treatment"
     else:
         return "On-Treatment"
@@ -129,6 +129,8 @@ df_long = pd.DataFrame({
 })
 df_long["Patient_ID"] = df_long["Sample"].apply(assign_patient_id)
 df_long["Timepoint"] = df_long["Sample"].apply(simplify_timepoint)
+
+# Drop invalid rows and apply proper timepoint order
 df_long = df_long.dropna(subset=["Patient_ID", "Timepoint"])
 df_long["Timepoint"] = pd.Categorical(df_long["Timepoint"], categories=time_order, ordered=True)
 
@@ -136,11 +138,11 @@ df_long["Timepoint"] = pd.Categorical(df_long["Timepoint"], categories=time_orde
 df_long[["Sample", "Patient_ID", "Timepoint"]].to_csv(metadata_path, index=False)
 print(f"✅ Saved sample metadata to: {metadata_path}")
 
-# === Filter for valid patients with ≥2 timepoints ===
+# === Filter for patients with ≥2 timepoints ===
 valid = df_long["Patient_ID"].value_counts()
 df_long = df_long[df_long["Patient_ID"].isin(valid[valid > 1].index)]
 
-# === Save Summary Statistics ===
+# === Save Summary Stats ===
 summary_stats = df_long.groupby("Timepoint")["Scaled_Ratio"].agg(["count", "mean", "median", "std"]).reindex(time_order)
 summary_stats.to_csv(summary_stats_path)
 print(f"✅ Saved summary stats to: {summary_stats_path}")
