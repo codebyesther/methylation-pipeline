@@ -84,7 +84,7 @@ else:
         plt.ylabel("CpG Methylation\n(Scaled Ratio x100K)", fontsize=12)
         plt.xlabel("Sample Condition", fontsize=12)
         plt.ylim(bottom=0)
-        plt.title(f"​CpG Methylation by Condition (Median Lines)", fontsize=14)
+        plt.title(f"​CpG Methylation by Condition (Median)", fontsize=14)
         plt.tight_layout()
         median_path = os.path.join(plot_dir, f"{base_name}_median_dotplot.png")
         plt.savefig(median_path, dpi=300)
