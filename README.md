@@ -50,8 +50,15 @@ This workflow zooms into locus-specific (CpG island or gene-level) methylation d
 
 This workflow focuses on overall methylation trends per patient or treatment condition.
 
+### Generate Dotplots by Condition
+- Script: `scripts/global/dotplots-by-condition.py`
+- Processes Excel files located in the output directory that contains "fragment_ratios_matrix" in its name.
+- Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
+- Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
+- A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
+- Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
+
 ### Step 3 (Update Coming): Visualize Chromosome-Level Methylation Change
-- Script: `scripts/global/step_3_chr_avg_overlay_global_local.py`
 - Visualizes average methylation change across chromosomes using bar plots (Baseline → On-Tx, On-Tx → Post-Tx) and a line plot (Baseline → Post-Tx).
 - Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation.
 
@@ -70,7 +77,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
   pip install pandas numpy openpyxl matplotlib seaborn scipy tqdm
   ```
 - Place your input `.xlsx` files in a `data/` folder.
-- Run the script:
+- Run the script (e.g. `step_1_filter_patients.py`):
   ```bash
   python scripts/step_1_filter_patients.py
   ```
