@@ -38,48 +38,7 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 - Produces `structured_gene_annotation.csv` in the output directory.
 
 ## 🔍 Locus-Level (CpG Island / Gene) Analysis
-
 This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
-
-### Step 3 (Update Coming): Visualize Methylation by Region
-- Script: `scripts/locus/step_3_cpg_subregion_gene_plots_darkblue_local.py`
-- Generate plots per CpG island, gene, or genomic region.
-- Includes bar plots, heatmaps, line plots, and longitudinal summaries.
-
-### Step 3 (Update Coming): Visualize Chromosome-Level Methylation Change
-- Visualizes average methylation change across chromosomes using bar plots (Baseline → On-Tx, On-Tx → Post-Tx) and a line plot (Baseline → Post-Tx).
-- Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation.
-
-## 🌐 Global-Level (Patient / Timepoint) Analysis
-
-This workflow focuses on overall methylation trends per patient or treatment condition.
-
-### Generate Dotplots by Condition/Timepoint
-- Script: `scripts/global/dotplots-by-condition.py`
-- Processes Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name.
-  - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
-  - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
-- A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
-- Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
-
-### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
-- Script: `scripts/global/lineplots-perpatient_v3.py`
-- Input file(s): Processes .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name.
-- Generated file(s):
-  - Main Plot Directory: plots/lineplots
-    - methylation_longitudinal_plot.png
-    - average_trajectory.png
-    - boxplot_by_timepoint.png
-    - violinplot_by_timepoint.png
-  - Per Patient Plot Directory: plots/lineplots/per_patient
-    - Individual patient plots in the format {Patient_ID}.png
-  - Replicate Table Directory: output/per_patient_tables
-    - Replicate tables for each patient in the format {Patient_ID}.csv
-  - Metadata and Summary Files Directory: output
-    - sample_metadata.csv
-    - summary_statistics.csv
-    - per_patient_summary.csv
-    - boxplot_summary_by_timepoint.csv
 
 ### Generate Heatmaps and Lineplots of Top 10 Genes by Condition/Timepoint
 - Script: `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py`
@@ -148,6 +107,49 @@ This workflow focuses on overall methylation trends per patient or treatment con
   - multi_CpG_genes_baseline_on.png
   - top10_diff_CGIsubregions_on_post.png
   - multi_CpG_genes_on_post.png
+
+
+### Step 3 (Update Coming): Visualize Methylation by Region
+- Script: `scripts/locus/step_3_cpg_subregion_gene_plots_darkblue_local.py`
+- Generate plots per CpG island, gene, or genomic region.
+- Includes bar plots, heatmaps, line plots, and longitudinal summaries.
+
+### Step 3 (Update Coming): Visualize Chromosome-Level Methylation Change
+- Visualizes average methylation change across chromosomes using bar plots (Baseline → On-Tx, On-Tx → Post-Tx) and a line plot (Baseline → Post-Tx).
+- Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation.
+
+## 🌐 Global-Level (Patient / Timepoint) Analysis
+
+This workflow focuses on overall methylation trends per patient or treatment condition.
+
+### Generate Dotplots by Condition/Timepoint
+- Script: `scripts/global/dotplots-by-condition.py`
+- Processes Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name.
+  - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
+  - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
+- A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
+- Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
+
+### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
+- Script: `scripts/global/lineplots-perpatient_v3.py`
+- Input file(s): Processes .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name.
+- Generated file(s):
+  - Main Plot Directory: plots/lineplots
+    - methylation_longitudinal_plot.png
+    - average_trajectory.png
+    - boxplot_by_timepoint.png
+    - violinplot_by_timepoint.png
+  - Per Patient Plot Directory: plots/lineplots/per_patient
+    - Individual patient plots in the format {Patient_ID}.png
+  - Replicate Table Directory: output/per_patient_tables
+    - Replicate tables for each patient in the format {Patient_ID}.csv
+  - Metadata and Summary Files Directory: output
+    - sample_metadata.csv
+    - summary_statistics.csv
+    - per_patient_summary.csv
+    - boxplot_summary_by_timepoint.csv
+
+
 
 ---
 
