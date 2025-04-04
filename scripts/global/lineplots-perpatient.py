@@ -8,7 +8,7 @@ input_dir = "output"
 plot_dir = os.path.join("plots", "lineplots")
 os.makedirs(plot_dir, exist_ok=True)
 
-# Detect the correct Excel file
+# Step 1: Find the file
 file_to_use = None
 for fname in os.listdir(input_dir):
     if "scaled_fragment_ratios_matrix" in fname.lower() and fname.endswith((".xlsx", ".xls")):
@@ -18,17 +18,28 @@ for fname in os.listdir(input_dir):
 if file_to_use is None:
     raise FileNotFoundError("No file with 'scaled_fragment_ratios_matrix' found in the output/ directory.")
 
-# Load data
-df = pd.read_excel(file_to_use)
+# Step 2: Load first two rows only
+df_raw = pd.read_excel(file_to_use, header=None, nrows=2)
 
-# Clean column names
-df.columns = ['Sample', 'Glob20', 'GlobMin80', 'Scaled_Ratio']
+# Extract sample names (row 0, skip first column if index)
+sample_names = df_raw.iloc[0, 1:].tolist()
 
-# Assign patient ID
+# Extract scaled methylation values (row 1, skip first column if index)
+scaled_ratios = df_raw.iloc[1, 1:].tolist()
+
+# Build DataFrame
+df_long = pd.DataFrame({
+    "Sample": sample_names,
+    "Scaled_Ratio": scaled_ratios
+})
+
+# Step 3: Extract patient and timepoint
 def assign_patient_id(name):
-    return name if "INNOV" in name else name.split('_')[0]
+    if "INNOV" in name:
+        return name
+    else:
+        return "_".join(name.split('_')[:2])  # ← fixed logic here
 
-# Assign simplified timepoint
 def simplify_timepoint(name):
     if "INNOV" in name:
         return None
@@ -39,32 +50,28 @@ def simplify_timepoint(name):
     else:
         return "On-Treatment"
 
-# Apply transformations
-df['Patient_ID'] = df['Sample'].apply(assign_patient_id)
-df['Timepoint'] = df['Sample'].apply(simplify_timepoint)
+df_long['Patient_ID'] = df_long['Sample'].apply(assign_patient_id)
+df_long['Timepoint'] = df_long['Sample'].apply(simplify_timepoint)
 
-# Drop healthy and invalid entries
-df = df.dropna(subset=['Timepoint'])
+# Drop rows with undefined timepoints (e.g., INNOV)
+df_long = df_long.dropna(subset=['Timepoint'])
 
-# Average duplicate On-Tx entries
-df_avg = df.groupby(['Patient_ID', 'Timepoint'], as_index=False)['Scaled_Ratio'].mean()
+# Keep only patients with at least 2 timepoints
+valid = df_long['Patient_ID'].value_counts()
+df_long = df_long[df_long['Patient_ID'].isin(valid[valid > 1].index)]
 
-# Keep only patients with 2+ timepoints
-valid = df_avg['Patient_ID'].value_counts()
-df_avg = df_avg[df_avg['Patient_ID'].isin(valid[valid > 1].index)]
-
-# Sort timepoints
+# Order timepoints
 time_order = ['Baseline', 'On-Treatment', 'Post-Treatment']
-df_avg['Timepoint'] = pd.Categorical(df_avg['Timepoint'], categories=time_order, ordered=True)
+df_long['Timepoint'] = pd.Categorical(df_long['Timepoint'], categories=time_order, ordered=True)
 
-# Plot
-unique_patients = df_avg['Patient_ID'].unique()
+# Step 4: Plot
+unique_patients = df_long['Patient_ID'].unique()
 palette_cb = sns.color_palette("colorblind", len(unique_patients))
 markers = ['o', 's', 'D', '^', 'v', 'P', '*', 'X', 'H', '8', '<', '>']
 linestyles = ['-', '--', '-.', ':']
 
 fig, ax = plt.subplots(figsize=(10, 6))
-for i, (pid, group) in enumerate(df_avg.groupby('Patient_ID')):
+for i, (pid, group) in enumerate(df_long.groupby('Patient_ID')):
     group = group.sort_values('Timepoint')
     ax.plot(
         group['Timepoint'],
@@ -90,7 +97,7 @@ ax.legend(
     title_fontsize=12
 )
 
-# Save figure
+# Step 5: Save
 plot_path = os.path.join(plot_dir, "methylation_longitudinal_plot.png")
 fig.savefig(plot_path, dpi=300, bbox_inches='tight')
-print(f"Saved plot to {plot_path}")
+print(f"✅ Saved plot to: {plot_path}")
