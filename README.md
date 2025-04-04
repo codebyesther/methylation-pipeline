@@ -32,8 +32,9 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 - Takes the cpgi methylation fragment counts in Glob20 Excel files and divides them by corresponding values in GlobMin80 Excel files to create methylation fragment ratios. Then, scales those numbers up to >1 by multiplying 1000 each.
 - Produces `scaled_fragment_ratios_matrix.xlsx` in the output directory.
 
-### Step 4: Annotate Genes
+### Step 4 (Optional): Annotate Genes
 - Script: `scripts/step_4_generate_gene_annotation.py`
+- Required only if you are going to run `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py` later.
 - Auto-detect file(s): an Excel file containing "matrix" in its name
 - Reads an Excel file containing "matrix" in its name and processes its content to generate a CSV file with structured gene annotation data:
   - Extracts CGI names from the first column, filtering those starting with "CGI_".
