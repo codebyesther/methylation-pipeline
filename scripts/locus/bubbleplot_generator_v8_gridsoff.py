@@ -70,7 +70,7 @@ timepoint_positions_chromosome = {
 for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation files"):
     print(f"\n=== Processing file: {fname} ===")
     start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
-    cpg_df = df.iloc[start_idx:].reset_index(drop=True)
+    cpg_df = df.iloc(start_idx:].reset_index(drop=True)
     cpg_df.rename(columns={cpg_df.columns[0]: "CpG_Island"}, inplace=True)
     cpg_df.dropna(how="all", subset=cpg_df.columns[1:], inplace=True)
 
@@ -177,6 +177,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)", fontsize=16)
         ax_main.set_ylabel("Timepoint", fontsize=16)
         ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment\nPatient: {patient}, Chromosome: {chrom}", fontsize=18)
+        ax_main.tick_params(axis='x', labelsize=14)  # Enlarge x-axis tick markers
 
         # If we got at least one scatter point, make the colorbar in ax_cbar
         if sc is not None:
@@ -221,7 +222,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-        fig.subplots_adjust(left=0.08, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)
+        fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)  # Adjusted left margin
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
@@ -280,11 +281,12 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Add x-axis padding to avoid bubble clipping
     x_min, x_max = subset_df['Midpoint'].min(), subset_df['Midpoint'].max()
     x_range = x_max - x_min
-    ax_main.set_xlim(x_min - 0.1 * x_range, x_max + 0.1 * x_range)  # Increase x-axis padding
+    ax_main.set_xlim(x_min - 0.1 * x range, x_max + 0.1 * x range)  # Increase x-axis padding
 
     ax_main.set_xlabel("CpG Island Genomic Coordinate Midpoint (bp)", fontsize=16)
     ax_main.set_ylabel("Timepoint", fontsize=16)
     ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}", fontsize=18)
+    ax_main.tick_params(axis='x', labelsize=14)  # Enlarge x-axis tick markers
 
     if sc is not None:
         cbar = fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio")
@@ -299,7 +301,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Calculate proportional vertical positions based on bubble radii
     cumulative_height = np.cumsum([size**0.5 for size in sizes])
     total_height = cumulative_height[-1]
-    positions = np.array([0.1, 1, 2, 3.4]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+    positions = np.array([0.1, 1, 2, 3.4]) * 9/ 1000 * total height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(0, 1)
@@ -324,7 +326,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Adjust y-limits to ensure no clipping
     ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-    fig.subplots_adjust(left=0.08, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)
+    fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.3, hspace=0.5)  # Adjusted left margin
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
     plt.savefig(f"{filename_base}.svg")
@@ -336,4 +338,18 @@ with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
     for root, _, files in os.walk("plots"):
         for file in files:
             if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
-                file
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, start="plots")
+                zipf.write(file_path, arcname=arcname)
+
+print(f"All bubble plot files zipped and saved to: {zip_path}")
+
+# === Remove individual plot files after zipping ===
+for root, _, files in os.walk("plots"):
+    for file in files:
+        if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
+            file_path = os.path.join(root, file)
+            if file_path != zip_path:
+                os.remove(file_path)
+
+print(f"Individual bubble plot files have been removed after zipping.")
