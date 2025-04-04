@@ -124,6 +124,31 @@ This workflow focuses on overall methylation trends per patient or treatment con
     - lineplot_{patient}.png
     - methylation_matrix_{patient}.csv
 
+### Identify Top 10 Differentially Methylated CGI Subregions and Top 10 Differentially Methylated Genes
+- Script: `scripts/locus/alltimepoint-comparisons_top10dm-cgi-subregions_alldm-genes-with-multiple-affected-cgi.py`
+- Input file(s):
+  - Patient Files: It searches for Excel files containing the term "patient id" in the data directory.
+  - Methylation Matrix Files: It searches for Excel files containing the term "matrix" in the output directory.
+- Data Processing Steps:
+  - Extracts CpG island data from the matrix file.
+  - Generates metadata for each sample, including patient ID and treatment timepoint (Baseline, On-Treatment, Post-Treatment, Healthy).
+  - Filters samples to exclude those labeled as "Healthy".
+  - Constructs a matrix with methylation data, grouped by patient and timepoint.
+  - Collapses the matrix to average methylation levels for each CpG island across patients and timepoints.
+  - Calculates average changes in methylation levels between different treatment timepoints (Baseline vs Post-Treatment, Baseline vs On-Treatment, On-Treatment vs Post-Treatment).
+- Data Visualization Steps:
+- Top 10 Differentially Methylated CpG Subregions:
+  - Plots bar charts for the top 10 CpG islands with the highest average changes in methylation levels between treatment timepoints. Saves these plots as PNG files in the plots directory.
+- Genes with Multiple Affected CpG Islands:
+  - Identifies genes with more than one affected CpG island and plots bar charts for these genes. Saves these plots as PNG files in the plots directory.
+- Generated file(s): plots directory
+  - top10_diff_CGIsubregions_baseline_post.png
+  - multi_CpG_genes_baseline_post.png
+  - top10_diff_CGIsubregions_baseline_on.png
+  - multi_CpG_genes_baseline_on.png
+  - top10_diff_CGIsubregions_on_post.png
+  - multi_CpG_genes_on_post.png
+
 ---
 
 ## ▶️ How to Use
