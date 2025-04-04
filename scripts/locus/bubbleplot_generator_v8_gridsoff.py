@@ -216,11 +216,11 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=14)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
+        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
         # Adjust y-limits to ensure no clipping
-        ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
+        ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
         fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.5, hspace=0.5)  # Adjusted left margin
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
@@ -320,11 +320,11 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=14)    # Adjust text position based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
+    ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
     # Adjust y-limits to ensure no clipping
-    ax_legend.set_ylim(0, positions[-1] + 0.3)    # legend y-axis limit should be larger than the distance between top bubble and title
+    ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
     fig.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.1, wspace=0.5, hspace=0.5)  # Adjusted left margin
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
