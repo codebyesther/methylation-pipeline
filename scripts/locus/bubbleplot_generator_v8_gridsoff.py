@@ -287,7 +287,8 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_main.set_title(f"DNA Hypermethylation Profiles Throughout Treatment (Averaged Across Patients)\nChromosome: {chrom}", fontsize=18)
 
     if sc is not None:
-        fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio", fontsize=14)
+        cbar = fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio")
+        cbar.set_label("Scaled Fragment Count Ratio", fontsize=14)
 
     ax_legend.axis("off")
 
