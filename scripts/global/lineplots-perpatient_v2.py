@@ -19,11 +19,12 @@ def assign_patient_id(name):
     if "INNOV" in name:
         return None
     elif name.startswith("LOI") and name.count('_') >= 2:
-        return name.split('_')[1]
+        base = name.split('_')[1]
     elif "_" in name:
-        return name.split('_')[0]
+        base = name.split('_')[0]
     else:
         return None
+    return base.split("-MVS")[0] if "-MVS" in base else base
 
 def simplify_timepoint(name):
     if "INNOV" in name:
