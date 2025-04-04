@@ -81,7 +81,7 @@ else:
             plt.plot([i - 0.2, i + 0.2], [group.median()] * 2,
                      color=palette[cond], lw=3)
         plt.xticks(range(len(order)), x_labels)
-        plt.ylabel("CpG Methylation\n(Scaled Ratio x1000)", fontsize=12)
+        plt.ylabel("CpG Methylation\n(Scaled Ratio)", fontsize=12)
         plt.xlabel("Sample Condition", fontsize=12)
         plt.ylim(bottom=0)
         plt.title(f"​CpG Methylation by Condition (Median)", fontsize=14)
@@ -102,7 +102,7 @@ else:
                      color=palette[cond], lw=3)
             plt.errorbar(i, mean, yerr=sd, fmt='none', ecolor='gray', capsize=5, lw=1.5)
         plt.xticks(range(len(order)), x_labels)
-        plt.ylabel("CpG Methylation\n(Scaled Ratio x1000)", fontsize=12)
+        plt.ylabel("CpG Methylation\n(Scaled Ratio)", fontsize=12)
         plt.xlabel("Sample Condition", fontsize=12)
         plt.ylim(bottom=0)
         plt.title(f"​CpG Methylation by Condition (Mean ± SD)", fontsize=14)
