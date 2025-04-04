@@ -46,6 +46,10 @@ This workflow zooms into locus-specific (CpG island or gene-level) methylation d
 - Generate plots per CpG island, gene, or genomic region.
 - Includes bar plots, heatmaps, line plots, and longitudinal summaries.
 
+### Step 3 (Update Coming): Visualize Chromosome-Level Methylation Change
+- Visualizes average methylation change across chromosomes using bar plots (Baseline → On-Tx, On-Tx → Post-Tx) and a line plot (Baseline → Post-Tx).
+- Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation.
+
 ## 🌐 Global-Level (Patient / Timepoint) Analysis
 
 This workflow focuses on overall methylation trends per patient or treatment condition.
@@ -77,9 +81,48 @@ This workflow focuses on overall methylation trends per patient or treatment con
     - per_patient_summary.csv
     - boxplot_summary_by_timepoint.csv
 
-### Step 3 (Update Coming): Visualize Chromosome-Level Methylation Change
-- Visualizes average methylation change across chromosomes using bar plots (Baseline → On-Tx, On-Tx → Post-Tx) and a line plot (Baseline → Post-Tx).
-- Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation.
+### Generate Heatmaps and Lineplots of Top 10 Genes by Condition/Timepoint
+- Script: `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py`
+- Input file(s):
+  - CpG Methylation Matrix
+    - Directory: output
+    - Identifier: Contains the keyword "matrix"
+    - Format: .xlsx or .txt
+  - Patient List
+    - Directory: data
+    - Identifier: Contains the keyword "patient"
+    - Format: .xlsx
+  - Gene Annotation Map
+    - Directory: output
+    - Identifier: Contains the keyword "cgi_map"
+    - Format: .xlsx or .csv
+- Data Processing Steps:
+  - Loads CpG methylation matrix, patient list, and gene annotation map.
+  - Matches CpGs to genes and filters genes with multiple CpGs.
+  - Calculates delta methylation values between specified timepoints and performs paired t-tests.
+  - Generates delta values and statistical comparison results for:
+    - Baseline vs Post-Treatment
+    - Baseline vs On-Treatment
+    - On-Treatment vs Post-Treatment
+  - Saves delta values and t-test results to CSV files in the plots/heatmaps-lineplots directory.
+  - Identifies top 10 genes with highest delta values (Baseline to Post-Treatment).
+  - Computes average gene methylation values and constructs a gene matrix.
+- Data Visualization Steps:
+  - Generates heatmaps and line plots for average gene methylation across timepoints.
+  - Saves heatmaps and line plots to the plots/heatmaps-lineplots directory.
+- Generated file(s): plots/heatmaps-lineplots directory
+  - Delta Values and T-Test Results
+    - gene_deltas_all_comparisons.csv
+    - baseline_vs_post_ttest.csv
+    - baseline_vs_on_ttest.csv
+    - on_vs_post_ttest.csv
+  - Visualizations
+    - avg_methylation_heatmap.png
+    - avg_methylation_lineplot.png
+  - Per-Patient Visualizations and Matrices
+    - heatmap_{patient}.png
+    - lineplot_{patient}.png
+    - methylation_matrix_{patient}.csv
 
 ---
 
