@@ -181,7 +181,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # If we got at least one scatter point, make the colorbar in ax_cbar
         if sc is not None:
-            cb = fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio")
+            cb = fig.colorbar(sc, cax=ax_cbar, label="Scaled Fragment Count Ratio", pad=0.1)  # Adjust the pad value as needed
             cb.set_label("Scaled Fragment Count Ratio", fontsize=14)
 
         # Define the x-coordinate for the legend title and scatter plot positions
