@@ -116,7 +116,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
     - baseline_vs_post_ttest.csv
     - baseline_vs_on_ttest.csv
     - on_vs_post_ttest.csv
-  - Visualizations
+  - Average Visualizations (Across Patients)
     - avg_methylation_heatmap.png
     - avg_methylation_lineplot.png
   - Per-Patient Visualizations and Matrices
