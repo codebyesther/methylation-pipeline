@@ -55,6 +55,42 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
   - The script saves the gene_cgi_map DataFrame as a CSV file in the output directory.
 - Generated file(s): `gene_cgi_map.csv` in the output directory
 
+## 🌐 Global-Level (Patient / Timepoint) Analysis
+
+This workflow focuses on overall methylation trends per patient or treatment condition.
+
+### Generate Dotplots by Condition/Timepoint
+- Script: `scripts/global/dotplots-by-condition.py`
+- Auto-detect file(s): Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name
+  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
+- Data Processing Steps:
+  - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
+  - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
+- Generated file(s):
+  - A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
+  - Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
+
+### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
+- Script: `scripts/global/lineplots-perpatient_v3.py`
+- Auto-detect file(s): .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name
+  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
+- Generated file(s):
+  - Main Plot Directory: plots/lineplots
+    - methylation_longitudinal_plot.png
+    - average_trajectory.png
+    - boxplot_by_timepoint.png
+    - violinplot_by_timepoint.png
+  - Per Patient Plot Directory: plots/lineplots/per_patient
+    - Individual patient plots in the format {Patient_ID}.png
+  - Replicate Table Directory: output/per_patient_tables
+    - Replicate tables for each patient in the format {Patient_ID}.csv
+  - Metadata and Summary Files Directory: output
+    - sample_metadata.csv
+    - summary_statistics.csv
+    - per_patient_summary.csv
+    - boxplot_summary_by_timepoint.csv
+
+
 ## 🔍 Locus-Level (CpG Island / Gene) Analysis
 This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
 
@@ -167,44 +203,6 @@ Looking across chromosomes, we can identify global trends—such as whether cert
   - multi_CpG_genes_baseline_on.png
   - top10_diff_CGIsubregions_on_post.png
   - multi_CpG_genes_on_post.png
- 
-
-## 🌐 Global-Level (Patient / Timepoint) Analysis
-
-This workflow focuses on overall methylation trends per patient or treatment condition.
-
-### Generate Dotplots by Condition/Timepoint
-- Script: `scripts/global/dotplots-by-condition.py`
-- Auto-detect file(s): Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name
-  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
-- Data Processing Steps:
-  - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
-  - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
-- Generated file(s):
-  - A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
-  - Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
-
-### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
-- Script: `scripts/global/lineplots-perpatient_v3.py`
-- Auto-detect file(s): .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name
-  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
-- Generated file(s):
-  - Main Plot Directory: plots/lineplots
-    - methylation_longitudinal_plot.png
-    - average_trajectory.png
-    - boxplot_by_timepoint.png
-    - violinplot_by_timepoint.png
-  - Per Patient Plot Directory: plots/lineplots/per_patient
-    - Individual patient plots in the format {Patient_ID}.png
-  - Replicate Table Directory: output/per_patient_tables
-    - Replicate tables for each patient in the format {Patient_ID}.csv
-  - Metadata and Summary Files Directory: output
-    - sample_metadata.csv
-    - summary_statistics.csv
-    - per_patient_summary.csv
-    - boxplot_summary_by_timepoint.csv
-
-
 
 ---
 
@@ -229,22 +227,6 @@ This workflow focuses on overall methylation trends per patient or treatment con
 
 ---
 
-## 📦 Dependencies
-
-Install all requirements at once:
-
-```bash
-pip install -r requirements.txt
-```
-
-- `pandas`
-- `numpy`
-- `openpyxl`
-- `matplotlib`
-- `seaborn`
-- `scipy`
-- `tqdm`
-
 ## 📂 Project Structure
 
 ```
@@ -267,11 +249,30 @@ methylation-pipeline/
 │       ├── bubbleplot_generator_v8.py
 │       ├── deltagene-heatmaps-lineplots-bothfonts-labels.py
 │       └── alltimepoint-comparisons_top10dm-cgi-subregions_alldm-genes-with-multiple-affected-cgi.py
-├── README.md
 ├── .gitignore
-├── requirements.txt
 ├── CITATION.cff
+├── LICENSE
+├── README.md
+└── requirements.txt
+
 ```
+
+## 📦 Dependencies
+
+Install all requirements at once:
+
+```bash
+pip install -r requirements.txt
+```
+
+- `pandas`
+- `numpy`
+- `openpyxl`
+- `matplotlib`
+- `seaborn`
+- `scipy`
+- `tqdm`
+
 
 ## 🧠 Additional Context: Data Annotation Format
 A breakdown of CGI names (i.e. `CGI_chr1_778604_779167_LOC100288069_0`) can be done to interpret CGI identifiers:
