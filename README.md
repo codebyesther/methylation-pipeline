@@ -57,10 +57,28 @@ Looking across chromosomes, we can identify global trends—such as whether cert
   - Calculates the average methylation levels for each chromosome.
   - Computes the changes (deltas) in methylation levels between different timepoints for each patient and chromosome.
   - Summarizes the mean changes in methylation levels for each chromosome and comparison. Saves the summary data as an Excel file in the plots directory.
-  - Creates bar and line plots to visualize the average methylation changes per chromosome for different comparisons. Saves the plots as PNG files in the plots directory.
+  - Creates bar and line plots to visualize the average methylation changes per chromosome for different comparisons. Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation. Saves the plots as PNG files in the plots directory.
 - Generated file(s):
   - Plot: A PNG file named chr_avg_overlay_<base_fname>_aligned.png saved in the plots directory.
   - Excel Summary: An Excel file named chr_avg_summary_<base_fname>.xlsx saved in the plots directory.
+
+### Generate Bubble Plots for Visualization of Longitudinal DNA Hypermethylation Profiles per Chromosome
+- Script: `scripts/locus/bubbleplot_generator_v8_gridsoff.py`
+- Auto-detect file(s):
+  - Patient file: a "patient" file in the data directory (both .xlsx and .csv formats)
+  - Methylation file: a "ratios_matrix" methylation file in the output directory (both .xlsx and .csv formats)
+- Data Processing Steps:
+  - Normalizes sample names to standard timepoints such as "Baseline", "On-Treatment", and "Post-Treatment".
+  - Processes each methylation data file to extract CpG Island coordinates and associated values, and merges this data with sample metadata.
+- Data Visualization Steps:
+- Per Patient Per Chromosome: Generates bubble plots for each patient and chromosome combination, showing the DNA hypermethylation profiles across different timepoints.
+- Per Chromosome (Averaged Across Patients): Generates bubble plots for each chromosome, averaged across all patients, to visualize overall methylation patterns.
+- Saves the generated plots as PNG and SVG files in the plots directory.
+- Creates a ZIP file (bubbleplots.zip) containing all the plot files.
+- Deletes the individual plot files after zipping to save space.
+- Generated file(s):
+  - Bubble plots saved as PNG and SVG files in the plots directory.
+  - A ZIP file (bubbleplots.zip) containing all the plot files.
 
 ### Generate Heatmaps and Lineplots of Top 10 Genes by Condition/Timepoint
 - Script: `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py`
@@ -129,16 +147,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
   - multi_CpG_genes_baseline_on.png
   - top10_diff_CGIsubregions_on_post.png
   - multi_CpG_genes_on_post.png
-
-
-### Step 3 (Update Coming): Visualize Methylation by Region
-- Script: `scripts/locus/step_3_cpg_subregion_gene_plots_darkblue_local.py`
-- Generate plots per CpG island, gene, or genomic region.
-- Includes bar plots, heatmaps, line plots, and longitudinal summaries.
-
-### Step 3 (Update Coming): Visualize Chromosome-Level Methylation Change
-- Visualizes average methylation change across chromosomes using bar plots (Baseline → On-Tx, On-Tx → Post-Tx) and a line plot (Baseline → Post-Tx).
-- Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation.
+ 
 
 ## 🌐 Global-Level (Patient / Timepoint) Analysis
 
