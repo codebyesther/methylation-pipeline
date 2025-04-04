@@ -116,7 +116,7 @@ ax.plot(x, line_vals, marker="o", color=colors["Baseline → Post-Tx"], label="B
 ax.set_xticks(x)
 ax.set_xticklabels(chr_order)
 ax.set_xlabel("Chromosome")
-ax.set_ylabel("Mean Methylation Delta")
+ax.set_ylabel("Mean Scaled Methylation Fragment Count Ratio Delta")
 ax.set_title("Avg Methylation Change per Chromosome")
 ax.axhline(0, color="gray", linestyle="--")
 ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False)
