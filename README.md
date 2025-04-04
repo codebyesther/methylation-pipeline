@@ -41,7 +41,7 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 - Produces `structured_gene_annotation.csv` in the output directory.
 
 ### Step 5 (Optional): Build a CGI Map
-- Script: `scripts/build_gene_cgi_map.py`
+- Script: `scripts/step_5_build_gene_cgi_map.py`
 - Required only if you are going to run `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py` later.
 - Auto-detect file(s): .xlsx and .csv files in the output directory that contain the term "gene_annotation" in their filename
   - You had to have run Step 4 of the Preprocessing Steps (`scripts/step_4_generate_gene_annotation.py`) for this file to have been generated in your output directory.
@@ -112,7 +112,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
     - Directory: output
     - Identifier: Contains the keyword "cgi_map"
     - Format: .xlsx or .csv
-    - You have to have run Step 5 of the Preprocessing Steps (`scripts/build_gene_cgi_map.py`) for this file to have been generated in your output directory.
+    - You have to have run Step 5 of the Preprocessing Steps (`scripts/step_5_build_gene_cgi_map.py`) for this file to have been generated in your output directory.
 - Data Processing Steps:
   - Loads CpG methylation matrix, patient list, and gene annotation map.
   - Matches CpGs to genes and filters genes with multiple CpGs.
