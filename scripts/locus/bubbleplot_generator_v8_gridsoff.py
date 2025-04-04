@@ -222,7 +222,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-        fig.subplots_adjust(left=0.25, right=0.95, top=0.9, bottom=0.1, wspace=0.6, hspace=0.6)  # Adjusted left margin of the legend and increased wspace between the main plot area and the legend
+        fig.subplots_adjust(left=0.25, right=0.95, top=0.9, bottom=0.1, wspace=0.6, hspace=0.6)  # Adjusted left margin of the legend, increased wspace between the main plot area and the legend, increased hspace
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
