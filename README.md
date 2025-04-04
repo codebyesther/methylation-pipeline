@@ -33,8 +33,8 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 ### Step 4: Annotate Genes
 - Script: `scripts/step_3_convert_to_aberrant_signals.py`
 - Reads an Excel file containing "matrix" in its name and processes its content to generate a CSV file with structured gene annotation data:
--   Extracts CGI names from the first column, filtering those starting with "CGI_".
--   Processes each CGI name by splitting it into parts and extracting chromosome, start and end genomic coordinates, gene names, and probe IDs.
+  - Extracts CGI names from the first column, filtering those starting with "CGI_".
+  - Processes each CGI name by splitting it into parts and extracting chromosome, start and end genomic coordinates, gene names, and probe IDs.
 - Produces `structured_gene_annotation.csv` in the output directory.
 
 ## 🔍 Locus-Level (CpG Island / Gene) Analysis
@@ -53,8 +53,8 @@ This workflow focuses on overall methylation trends per patient or treatment con
 ### Generate Dotplots by Condition
 - Script: `scripts/global/dotplots-by-condition.py`
 - Processes Excel files located in the output directory that contains "fragment_ratios_matrix" in its name.
-- Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
-- Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
+  - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
+  - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
 - A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
 - Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
 
