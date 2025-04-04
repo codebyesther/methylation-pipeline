@@ -188,7 +188,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
 
 ## ▶️ How to Use
 
-### Option 1: Run Locally
+### Run Locally
 - Clone the repository:
   ```bash
   git clone https://github.com/codebyesther/methylation-pipeline.git
@@ -204,10 +204,6 @@ This workflow focuses on overall methylation trends per patient or treatment con
   python scripts/step_1_filter_patients.py
   ```
 
-### Option 2: Google Colab (if using the Colab version)
-- Open the `.ipynb` file in Colab
-- Upload your files when prompted
-- Download the filtered results
 
 ---
 
