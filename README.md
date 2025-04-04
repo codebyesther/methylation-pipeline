@@ -293,12 +293,13 @@ This project is licensed under the MIT License.
 ## 🧾 Citation
 
 Please cite this work if you use any scripts or plots from this repository.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15150516.svg)](https://doi.org/10.5281/zenodo.15150516)
 
 **Suggested citation:**
+```
+Choi, E. (2025). *Methylation-Pipeline* (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.15150516
+```
 
-```
-Choi, E. (2025). Methylation Pipeline for Visualizing Longitudinal Methylation Changes. GitHub repository. https://github.com/codebyesther/methylation-pipeline
-```
 You can also find formal citation formats in the `CITATION.cff` file or by clicking **"Cite this repository"** on GitHub.
 
 If you use or adapt specific components, please mention the relevant script in your methods or supplementary material.
