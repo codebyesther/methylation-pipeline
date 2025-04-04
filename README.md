@@ -255,10 +255,18 @@ methylation-pipeline/
 ├── scripts/
 │   ├── step_1_filter_patients_local.py
 │   ├── step_2_merge_filtered_files.py
-│   └── global/
-│       └── step_3_chr_avg_overlay_global_local.py
+│   ├── step_3_convert_to_aberrant_signals.py
+│   ├── step_4_generate_gene_annotation.py
+│   ├── step_5_build_gene_cgi_map.py
+│   ├── global/
+│   │   ├── dotplots-by-condition.py
+│   │   └── lineplots-perpatient_v3.py
 │   └── locus/
-│       └── step_3_cpg_subregion_gene_plots_darkblue_local.py
+│       ├── intuitive_storytelling_avg_methylation_local.py
+│       ├── bubbleplot_generator_v8_gridsoff.py
+│       ├── bubbleplot_generator_v8.py
+│       ├── deltagene-heatmaps-lineplots-bothfonts-labels.py
+│       └── alltimepoint-comparisons_top10dm-cgi-subregions_alldm-genes-with-multiple-affected-cgi.py
 ├── README.md
 ├── .gitignore
 ├── requirements.txt
