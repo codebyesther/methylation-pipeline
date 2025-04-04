@@ -62,7 +62,7 @@ def make_main_plot_with_box(df, save_path):
             color=palette_cb[i % len(palette_cb)],
             label=pid
         )
-    ax.set_ylabel("Scaled Ratio (x100K)", fontsize=12)
+    ax.set_ylabel("Scaled Ratio", fontsize=12)
     ax.set_xlabel("Treatment Timepoint", fontsize=12)
     ax.set_title("CpG Methylation Trajectories by Patient", fontsize=14)
     ax.tick_params(axis='x', labelrotation=0, labelsize=11)
@@ -86,7 +86,7 @@ def make_per_patient_plots(df, save_dir):
             label=pid
         )
         ax.set_title(f"Patient: {pid}")
-        ax.set_ylabel("Scaled Ratio (x100K)")
+        ax.set_ylabel("Scaled Ratio")
         ax.set_xlabel("Treatment Timepoint")
         ax.set_ylim(0, df["Scaled_Ratio"].max() * 1.2)
         ax.legend()
@@ -109,7 +109,7 @@ def make_average_trajectory_plot(df, save_path):
         label="Average"
     )
     ax.set_title("Average Methylation Trajectory Across Patients")
-    ax.set_ylabel("Scaled Ratio (x100K)")
+    ax.set_ylabel("Scaled Ratio")
     ax.set_xlabel("Treatment Timepoint")
     ax.set_ylim(0, max(agg["mean"].max(), df["Scaled_Ratio"].max()) * 1.2)
     ax.legend()
@@ -121,7 +121,7 @@ def make_standalone_boxplot(df, save_path):
     fig, ax = plt.subplots(figsize=(7, 5))
     sns.boxplot(data=df, x="Timepoint", y="Scaled_Ratio", palette="pastel", ax=ax)
     ax.set_title("Distribution of Methylation by Timepoint (Boxplot)")
-    ax.set_ylabel("Scaled Ratio (x100K)")
+    ax.set_ylabel("Scaled Ratio")
     ax.set_xlabel("Treatment Timepoint")
     fig.tight_layout()
     fig.savefig(save_path, dpi=300)
@@ -132,7 +132,7 @@ def make_violin_plot(df, save_path):
     sns.violinplot(data=df, x="Timepoint", y="Scaled_Ratio", palette="pastel", ax=ax, cut=0, inner=None)
     sns.swarmplot(data=df, x="Timepoint", y="Scaled_Ratio", color="k", size=4, ax=ax)
     ax.set_title("Distribution of Methylation by Timepoint (Violin + Swarm)")
-    ax.set_ylabel("Scaled Ratio (x100K)")
+    ax.set_ylabel("Scaled Ratio")
     ax.set_xlabel("Treatment Timepoint")
     fig.tight_layout()
     fig.savefig(save_path, dpi=300)
