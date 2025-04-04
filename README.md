@@ -22,16 +22,19 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 
 ### Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
 - Script: `scripts/step_2_merge_filtered_files.py`
+- Auto-detect file(s):
 - Required only if you have `.xlsx` outputs from multiple different EMseq batches.
 - Produces one merged file for unified analysis in the output directory (e.g. `merged_output_glob20.xlsx`, `merged_output_globmin80.xlsx`)
 
 ### Step 3: Convert to Aberrant Signals
 - Script: `scripts/step_4_generate_gene_annotation.py`
+- Auto-detect file(s):
 - Takes the cpgi methylation fragment counts in Glob20 Excel files and divides them by corresponding values in GlobMin80 Excel files to create methylation fragment ratios. Then, scales those numbers up to >1 by multiplying 1000 each.
 - Produces `scaled_fragment_ratios_matrix.xlsx` in the output directory.
 
 ### Step 4: Annotate Genes
 - Script: `scripts/step_3_convert_to_aberrant_signals.py`
+- Auto-detect file(s): an Excel file containing "matrix" in its name
 - Reads an Excel file containing "matrix" in its name and processes its content to generate a CSV file with structured gene annotation data:
   - Extracts CGI names from the first column, filtering those starting with "CGI_".
   - Processes each CGI name by splitting it into parts and extracting chromosome, start and end genomic coordinates, gene names, and probe IDs.
@@ -40,9 +43,28 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 ## 🔍 Locus-Level (CpG Island / Gene) Analysis
 This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
 
+### Generate Average Methylation Change per Chromosome
+Looking across chromosomes, we can identify global trends—such as whether certain chromosomes are more epigenetically active or suppressed in response to treatment.​
+- Script: `scripts/locus/intuitive_storytelling_avg_methylation_local.py`
+- Auto-detect file(s):
+  - Patient file: a "patient" file in the data directory
+  - Methylation file: a "scaled" methylation file in the output directory
+- Data Processing Steps:
+  - Loads the patient file and extracts patient IDs.
+  - Loads the methylation data file and prepares it for analysis by extracting CpG island data.
+  - Identifies and normalizes timepoints in the sample data (e.g., Baseline, On-Treatment, Post-Treatment, Healthy).
+  - Filters and structures the data for valid samples, excluding "Healthy" samples.
+  - Calculates the average methylation levels for each chromosome.
+  - Computes the changes (deltas) in methylation levels between different timepoints for each patient and chromosome.
+  - Summarizes the mean changes in methylation levels for each chromosome and comparison. Saves the summary data as an Excel file in the plots directory.
+  - Creates bar and line plots to visualize the average methylation changes per chromosome for different comparisons. Saves the plots as PNG files in the plots directory.
+- Generated file(s):
+  - Plot: A PNG file named chr_avg_overlay_<base_fname>_aligned.png saved in the plots directory.
+  - Excel Summary: An Excel file named chr_avg_summary_<base_fname>.xlsx saved in the plots directory.
+
 ### Generate Heatmaps and Lineplots of Top 10 Genes by Condition/Timepoint
 - Script: `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py`
-- Input file(s):
+- Auto-detect file(s):
   - CpG Methylation Matrix
     - Directory: output
     - Identifier: Contains the keyword "matrix"
@@ -85,7 +107,7 @@ This workflow zooms into locus-specific (CpG island or gene-level) methylation d
 
 ### Identify Top 10 Differentially Methylated CGI Subregions and Top 10 Differentially Methylated Genes
 - Script: `scripts/locus/alltimepoint-comparisons_top10dm-cgi-subregions_alldm-genes-with-multiple-affected-cgi.py`
-- Input file(s):
+- Auto-detect file(s):
   - Patient Files: It searches for Excel files containing the term "patient id" in the data directory.
   - Methylation Matrix Files: It searches for Excel files containing the term "matrix" in the output directory.
 - Data Processing Steps:
@@ -124,15 +146,17 @@ This workflow focuses on overall methylation trends per patient or treatment con
 
 ### Generate Dotplots by Condition/Timepoint
 - Script: `scripts/global/dotplots-by-condition.py`
-- Processes Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name.
+- Auto-detect file(s): Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name
+- Data Processing Steps:
   - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
   - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
-- A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
-- Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
+- Generated file(s):
+  - A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
+  - Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
 
 ### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
 - Script: `scripts/global/lineplots-perpatient_v3.py`
-- Input file(s): Processes .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name.
+- Auto-detect file(s): .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name.
 - Generated file(s):
   - Main Plot Directory: plots/lineplots
     - methylation_longitudinal_plot.png
