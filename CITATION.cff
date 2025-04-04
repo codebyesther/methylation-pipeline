@@ -4,9 +4,11 @@ authors:
   - family-names: Choi
     given-names: Esther
     affiliation: Yale University
+    orcid: https://orcid.org/0000-0002-6885-7700
 title: "Methylation Pipeline"
-version: "0.1.0"
-date-released: 2025-03-29
+version: "1.0.0"
+doi: 10.5281/zenodo.15150516
+date-released: 2025-04-04
 repository-code: https://github.com/codebyesther/methylation-pipeline
 license: MIT
 type: software
