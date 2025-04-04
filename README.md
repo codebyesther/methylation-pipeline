@@ -40,6 +40,19 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
   - Processes each CGI name by splitting it into parts and extracting chromosome, start and end genomic coordinates, gene names, and probe IDs.
 - Produces `structured_gene_annotation.csv` in the output directory.
 
+### Step 5 (Optional): Build a CGI Map
+- Script: `scripts/build_gene_cgi_map.py`
+- Required only if you are going to run `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py` later.
+- Auto-detect file(s): .xlsx and .csv files in the output directory that contain the term "gene_annotation" in their filename
+- Processes these files to create a mapping of genes to CGI identifiers:
+  - The script selects the first file from the list of matching files and prints its name.
+  - The script identifies all columns in the DataFrame that start with "Gene".
+  - It reshapes the DataFrame into a long format where each row represents a gene and its associated CGI.
+  - The script creates a cgi_id column in the format chr:start-end
+  - The final gene_cgi_map DataFrame is created by selecting the cgi_id and gene_name columns and removing duplicates.
+  - The script saves the gene_cgi_map DataFrame as a CSV file in the output directory.
+- Generated file(s): `gene_cgi_map.csv` in the output directory
+
 ## 🔍 Locus-Level (CpG Island / Gene) Analysis
 This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
 
