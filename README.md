@@ -27,13 +27,13 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 - Produces one merged file for unified analysis in the output directory (e.g. `merged_output_glob20.xlsx`, `merged_output_globmin80.xlsx`)
 
 ### Step 3: Convert to Aberrant Signals
-- Script: `scripts/step_4_generate_gene_annotation.py`
+- Script: `scripts/step_3_convert_to_aberrant_signals.py` 
 - Auto-detect file(s):
 - Takes the cpgi methylation fragment counts in Glob20 Excel files and divides them by corresponding values in GlobMin80 Excel files to create methylation fragment ratios. Then, scales those numbers up to >1 by multiplying 1000 each.
 - Produces `scaled_fragment_ratios_matrix.xlsx` in the output directory.
 
 ### Step 4: Annotate Genes
-- Script: `scripts/step_3_convert_to_aberrant_signals.py`
+- Script: `scripts/step_4_generate_gene_annotation.py`
 - Auto-detect file(s): an Excel file containing "matrix" in its name
 - Reads an Excel file containing "matrix" in its name and processes its content to generate a CSV file with structured gene annotation data:
   - Extracts CGI names from the first column, filtering those starting with "CGI_".
@@ -100,6 +100,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
     - Directory: output
     - Identifier: Contains the keyword "matrix"
     - Format: .xlsx or .txt
+    - You had to have run Step 3 of the Preprocessing Steps (`scripts/step_3_convert_to_aberrant_signals.py`) for this file to have been generated in your output directory.
   - Patient List
     - Directory: data
     - Identifier: Contains the keyword "patient"
@@ -108,6 +109,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
     - Directory: output
     - Identifier: Contains the keyword "cgi_map"
     - Format: .xlsx or .csv
+    - You have to have run Step 5 of the Preprocessing Steps (`scripts/build_gene_cgi_map.py`) for this file to have been generated in your output directory.
 - Data Processing Steps:
   - Loads CpG methylation matrix, patient list, and gene annotation map.
   - Matches CpGs to genes and filters genes with multiple CpGs.
