@@ -69,6 +69,9 @@ This workflow focuses on overall methylation trends per patient or treatment con
 - Generated file(s):
   - A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
   - Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
+- Example output:
+  - ![Median Dotplot](sampleimages/scaled_fragment_ratios_matrix_median_dotplot.png)
+  - ![Mean ± SD Dotplot](sampleimages/scaled_fragment_ratios_matrix_mean_sd_dotplot.png)
 
 ### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
 - Script: `scripts/global/lineplots-perpatient_v3.py`
