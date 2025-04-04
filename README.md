@@ -155,10 +155,10 @@ Looking across chromosomes, we can identify global trends—such as whether cert
   - Collapses the matrix to average methylation levels for each CpG island across patients and timepoints.
   - Calculates average changes in methylation levels between different treatment timepoints (Baseline vs Post-Treatment, Baseline vs On-Treatment, On-Treatment vs Post-Treatment).
 - Data Visualization Steps:
-- Top 10 Differentially Methylated CpG Subregions:
-  - Plots bar charts for the top 10 CpG islands with the highest average changes in methylation levels between treatment timepoints. Saves these plots as PNG files in the plots directory.
-- Genes with Multiple Affected CpG Islands:
-  - Identifies genes with more than one affected CpG island and plots bar charts for these genes. Saves these plots as PNG files in the plots directory.
+  - Top 10 Differentially Methylated CpG Subregions:
+    - Plots bar charts for the top 10 CpG islands with the highest average changes in methylation levels between treatment timepoints. Saves these plots as PNG files in the plots directory.
+  - Genes with Multiple Affected CpG Islands:
+    - Identifies genes with more than one affected CpG island and plots bar charts for these genes. Saves these plots as PNG files in the plots directory.
 - Generated file(s): plots directory
   - top10_diff_CGIsubregions_baseline_post.png
   - multi_CpG_genes_baseline_post.png
