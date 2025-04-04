@@ -341,6 +341,7 @@ with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
 print(f"All bubble plot files zipped and saved to: {zip_path}")
 
 # === Remove individual plot files after zipping ===
+# === Remove individual plot files after zipping ===
 for root, _, files in os.walk("plots"):
     for file in files:
         if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
@@ -348,6 +349,3 @@ for root, _, files in os.walk("plots"):
             if file_path != zip_path:
                 os.remove(file_path)
 print(f"Individual bubble plot files have been removed after zipping.")
-    for file in files:
-        if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
-            file_path = os.path.join
