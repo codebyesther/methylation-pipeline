@@ -166,41 +166,41 @@ This workflow focuses on overall methylation trends per patient or treatment con
     - boxplot_summary_by_timepoint.csv
 - Sample output(s):
 
-sample_metadata.csv (See below)
-
-| Sample                    | Patient_ID   | Timepoint      | Replicate_ID   |
-|:--------------------------|:-------------|:---------------|:---------------|
-| LOI_FM999-485_Baseline    | FM999-485    | Baseline       | Baseline       |
-| LOI_FM999-485_C1D4-7      | FM999-485    | On-Treatment   | C1D4-7         |
-| LOI_FM999-485_C4D1        | FM999-485    | On-Treatment   | C4D1           |
-| LOI_FM999-485_C8D1        | FM999-485    | On-Treatment   | C8D1           |
-| LOI_FM999-485_C9D1-Off-tx | FM999-485    | Post-Treatment | C9D1-Off-tx    |
-
-summary_statistics.csv (See below)
-
-| Patient_ID   |   Baseline |   On-Treatment |   Post-Treatment |
-|:-------------|-----------:|---------------:|-----------------:|
-| AM002-908    |          1 |              1 |                1 |
-| AP000-765    |          1 |              1 |                2 |
-| DV110-203    |          1 |              1 |                2 |
-| EC001-911    |          1 |              1 |                1 |
-| FM999-485    |          1 |              3 |                1 |
-
-per_patient_tables\patientID.csv (See below)
-
-| Sample                        | Timepoint      | Replicate_ID   |   Scaled_Ratio |
-|:------------------------------|:---------------|:---------------|---------------:|
-| AM002-908_Baseline_2018.05.23 | Baseline       | 2018.05.23     |       2066.79  |
-| AM002-908_C2D1_2018.06.28     | On-Treatment   | 2018.06.28     |        198.589 |
-| AM002-908_Off-tx_2018.07.18   | Post-Treatment | 2018.07.18     |       1112.34  |
-
-boxplot_summary_by_timepoint.csv (See below)
-
-| Timepoint      |   count |     mean |    median |      std |
-|:---------------|--------:|---------:|----------:|---------:|
-| Baseline       |       6 |  946.991 |  759.261  |  876.291 |
-| On-Treatment   |       9 |  221.524 |   90.1857 |  216.875 |
-| Post-Treatment |       7 | 1672.06  | 1112.34   | 1527.55  |
+  sample_metadata.csv (See below)
+  
+  | Sample                    | Patient_ID   | Timepoint      | Replicate_ID   |
+  |:--------------------------|:-------------|:---------------|:---------------|
+  | LOI_FM999-485_Baseline    | FM999-485    | Baseline       | Baseline       |
+  | LOI_FM999-485_C1D4-7      | FM999-485    | On-Treatment   | C1D4-7         |
+  | LOI_FM999-485_C4D1        | FM999-485    | On-Treatment   | C4D1           |
+  | LOI_FM999-485_C8D1        | FM999-485    | On-Treatment   | C8D1           |
+  | LOI_FM999-485_C9D1-Off-tx | FM999-485    | Post-Treatment | C9D1-Off-tx    |
+  
+  summary_statistics.csv (See below)
+  
+  | Patient_ID   |   Baseline |   On-Treatment |   Post-Treatment |
+  |:-------------|-----------:|---------------:|-----------------:|
+  | AM002-908    |          1 |              1 |                1 |
+  | AP000-765    |          1 |              1 |                2 |
+  | DV110-203    |          1 |              1 |                2 |
+  | EC001-911    |          1 |              1 |                1 |
+  | FM999-485    |          1 |              3 |                1 |
+  
+  per_patient_tables\patientID.csv (See below)
+  
+  | Sample                        | Timepoint      | Replicate_ID   |   Scaled_Ratio |
+  |:------------------------------|:---------------|:---------------|---------------:|
+  | AM002-908_Baseline_2018.05.23 | Baseline       | 2018.05.23     |       2066.79  |
+  | AM002-908_C2D1_2018.06.28     | On-Treatment   | 2018.06.28     |        198.589 |
+  | AM002-908_Off-tx_2018.07.18   | Post-Treatment | 2018.07.18     |       1112.34  |
+  
+  boxplot_summary_by_timepoint.csv (See below)
+  
+  | Timepoint      |   count |     mean |    median |      std |
+  |:---------------|--------:|---------:|----------:|---------:|
+  | Baseline       |       6 |  946.991 |  759.261  |  876.291 |
+  | On-Treatment   |       9 |  221.524 |   90.1857 |  216.875 |
+  | Post-Treatment |       7 | 1672.06  | 1112.34   | 1527.55  |
 
 <img src="sampleimages/average_trajectory.png" width="500"/>
 <img src="sampleimages/methylation_longitudinal_plot.png" width="700"/>
