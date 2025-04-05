@@ -93,11 +93,10 @@ This workflow focuses on overall methylation trends per patient or treatment con
     - per_patient_summary.csv
     - boxplot_summary_by_timepoint.csv
 - Sample output(s):
-<img src="average_trajectory.png" width="500"/>
-
-<img src="methylation_longitudinal_plot.png" width="500"/>
-<img src="boxplot_by_timepoint.png" width="500"/>
-<img src="violinplot_by_timepoint.png" width="500"/>
+<img src="sampleimages/average_trajectory.png" width="500"/>
+<img src="sampleimages/methylation_longitudinal_plot.png" width="500"/>
+<img src="sampleimages/boxplot_by_timepoint.png" width="500"/>
+<img src="sampleimages/violinplot_by_timepoint.png" width="500"/>
 
 ## 🔍 Locus-Level (CpG Island / Gene) Analysis
 This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
