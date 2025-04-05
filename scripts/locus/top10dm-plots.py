@@ -68,7 +68,7 @@ for fname, df in methylation_dfs.items():
 
     # Locate locus-level matrix
     start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
-    cpg_island_df = df.iloc[start_idx:].reset_index(drop=True)
+    cpg_island_df = df.iloc[start_idx:].reset_index(drop=true)
     cpg_island_df.rename(columns={cpg_island_df.columns[0]: "CpG_Island"}, inplace=True)
     cpg_island_df.dropna(how="all", subset=cpg_island_df.columns[1:], inplace=True)
 
@@ -107,7 +107,8 @@ for fname, df in methylation_dfs.items():
         ax.axvline(0, color="gray", linestyle="--")
         # Remove the default title and use Figure.text to position it manually
         ax.set_title("")  # Remove the default title
-        fig.text(0.01, 0.96, title, ha='left', va='top', fontsize=12)
+        fig.subplots_adjust(top=0.85)
+        fig.text(0.10, 0.95, title, ha='left', va='top', fontsize=12)
         fig.tight_layout()
         plot_path = os.path.join(args.outdir, filename)
         fig.savefig(plot_path)
