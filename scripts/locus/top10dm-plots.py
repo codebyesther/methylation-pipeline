@@ -107,9 +107,9 @@ for fname, df in methylation_dfs.items():
         ax.axvline(0, color="gray", linestyle="--")
         # Remove the default title and use Figure.text to position it manually
         ax.set_title("")  # Remove the default title
-        fig.text(0.20, 0.98, title, ha='left', va='top', fontsize=12)
+        fig.text(0.17, 0.98, title, ha='left', va='top', fontsize=12)
         # Adjust the layout to create more space above the plot
-        fig.tight_layout(rect=[0, 0, 1, 0.93])  # Lower the plot by adjusting the rect parameter
+        fig.tight_layout(rect=[0, 0, 1, 0.96])  # Lower the plot by adjusting the rect parameter
         plot_path = os.path.join(args.outdir, filename)
         fig.savefig(plot_path)
         plt.close(fig)
