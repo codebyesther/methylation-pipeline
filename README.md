@@ -111,13 +111,13 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 - Generated file(s): `gene_cgi_map.csv` in the output directory
 - Sample output:
 
-| cgi_id             | gene_name    |
-|:-------------------|:-------------|
-| chr1:778604-779167 | LOC100288069 |
-| chr1:827036-828065 | LINC00115    |
-| chr1:869818-870248 | FAM41C       |
-| chr1:923590-926252 | LOC107985728 |
-| chr1:940225-942983 | SAMD11       |
+  | cgi_id             | gene_name    |
+  |:-------------------|:-------------|
+  | chr1:778604-779167 | LOC100288069 |
+  | chr1:827036-828065 | LINC00115    |
+  | chr1:869818-870248 | FAM41C       |
+  | chr1:923590-926252 | LOC107985728 |
+  | chr1:940225-942983 | SAMD11       |
 
 ## 🌐 Global-Level (Patient / Timepoint) Analysis
 
