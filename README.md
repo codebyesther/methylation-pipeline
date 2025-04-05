@@ -121,7 +121,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
   - Plot: A PNG file named chr_avg_overlay_<base_fname>_aligned.png saved in the plots directory.
   - Excel Summary: An Excel file named chr_avg_summary_<base_fname>.xlsx saved in the plots directory.
 - Sample output(s):
-<img src="sampleimages/chr_avg_overlay_scaled_fragment_ratios_matrix_aligned.png" width="900"/>
+<img src="sampleimages/chr_avg_overlay_scaled_fragment_ratios_matrix_aligned.png" width="1000"/>
 
 ### Generate Bubble Plots for Visualization of Longitudinal DNA Hypermethylation Profiles per Chromosome
 - Script: `scripts/locus/bubbleplot_generator_v8_gridsoff.py`
