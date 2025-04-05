@@ -260,11 +260,11 @@ methylation-pipeline/
 │   │   ├── dotplots-by-condition.py
 │   │   └── lineplots-perpatient_v3.py
 │   └── locus/
-│       ├── intuitive_storytelling_avg_methylation_local.py
+│       ├── avg-methylation-change-per-chromosome.py
 │       ├── bubbleplot_generator_v8_gridsoff.py
 │       ├── bubbleplot_generator_v8.py
 │       ├── deltagene-heatmaps-lineplots-bothfonts-labels.py
-│       └── alltimepoint-comparisons_top10dm-cgi-subregions_alldm-genes-with-multiple-affected-cgi.py
+│       └── top10dm-plots.py
 ├── .gitignore
 ├── CITATION.cff
 ├── LICENSE
