@@ -326,9 +326,11 @@ baseline_vs_post_ttest.csv (See below)
 | F7     |  -134.083 | -0.357147 |  0.755147 |
 
 avg_methylation_heatmap.png (See below)
+
 <img src="sampleimages/avg_methylation_heatmap.png" width="600"/>
 
 avg_methylation_lineplot.png (See below)
+
 <img src="sampleimages/avg_methylation_lineplot.png" width="700"/>
 
 methylation_matrix_FM999-485.csv (See below)
