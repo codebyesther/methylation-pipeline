@@ -94,7 +94,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
     - boxplot_summary_by_timepoint.csv
 - Sample output(s):
 <img src="sampleimages/average_trajectory.png" width="500"/>
-<img src="sampleimages/methylation_longitudinal_plot.png" width="500"/>
+<img src="sampleimages/methylation_longitudinal_plot.png" width="700"/>
 <img src="sampleimages/boxplot_by_timepoint.png" width="500"/>
 <img src="sampleimages/violinplot_by_timepoint.png" width="500"/>
 
