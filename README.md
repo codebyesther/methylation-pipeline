@@ -117,9 +117,9 @@ Looking across chromosomes, we can identify global trends—such as whether cert
   - Computes the changes (deltas) in methylation levels between different timepoints for each patient and chromosome.
   - Summarizes the mean changes in methylation levels for each chromosome and comparison. Saves the summary data as an Excel file in the plots directory.
   - Creates bar and line plots to visualize the average methylation changes per chromosome for different comparisons. Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation. Saves the plots as PNG files in the plots directory.
-- Generated file(s):
-  - Plot: A PNG file named chr_avg_overlay_<base_fname>_aligned.png saved in the plots directory.
-  - Excel Summary: An Excel file named chr_avg_summary_<base_fname>.xlsx saved in the plots directory.
+- Generated file(s): plots/avg-methylation-change-per-chromosome directory
+  - Plot: A PNG file named chr_avg_overlay_<base_fname>_aligned.png
+  - Excel Summary: An Excel file named chr_avg_summary_<base_fname>.xlsx
 - Sample output(s):
 <img src="sampleimages/chr_avg_overlay_scaled_fragment_ratios_matrix_aligned.png" width="1000"/>
 
@@ -138,9 +138,10 @@ Looking across chromosomes, we can identify global trends—such as whether cert
 - Saves the generated plots as PNG and SVG files in the plots directory.
 - Creates a ZIP file (bubbleplots.zip) containing all the plot files.
 - Deletes the individual plot files after zipping to save space.
-- Generated file(s):
+- Generated file(s): plots/bubbleplots.zip directory
   - Bubble plots saved as PNG and SVG files in the plots directory.
-  - A ZIP file (bubbleplots.zip) containing all the plot files.
+- Sample output(s):
+<img src="sampleimages/bubbleplot_chr1.png" width="1000"/>
 
 ### Generate Heatmaps and Lineplots of Top 10 Genes by Condition/Timepoint
 - Script: `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py`
@@ -205,7 +206,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
     - Plots bar charts for the top 10 CpG islands with the highest average changes in methylation levels between treatment timepoints. Saves these plots as PNG files in the plots directory.
   - Genes with Multiple Affected CpG Islands:
     - Identifies genes with more than one affected CpG island and plots bar charts for these genes. Saves these plots as PNG files in the plots directory.
-- Generated file(s): plots\top-10-differential-methylation-plots.zip directory
+- Generated file(s): plots/top-10-differential-methylation-plots.zip directory
   - top10_diff_CGIsubregions_baseline_post.png
   - multi_CpG_genes_baseline_post.png
   - top10_diff_CGIsubregions_baseline_on.png
