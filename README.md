@@ -142,7 +142,7 @@ This workflow focuses on overall methylation trends per patient or treatment con
   | On-Treatment   |   9 |  221.52 |    90.19 |  216.87 |
   | Post-Treatment |   7 | 1672.06 |  1112.34 | 1527.55 |
 
-<img src="sampleimages/scaled_fragment_ratios_matrix_median_dotplot.png" width="500", "sampleimages/scaled_fragment_ratios_matrix_mean_sd_dotplot.png" width="500"/>
+<img src="sampleimages/scaled_fragment_ratios_matrix_median_dotplot.png" width="500"/>
 <img src="sampleimages/scaled_fragment_ratios_matrix_mean_sd_dotplot.png" width="500"/>
 
 ### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
