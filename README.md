@@ -137,6 +137,13 @@ This workflow focuses on overall methylation trends per patient or treatment con
 <img src="sampleimages/scaled_fragment_ratios_matrix_median_dotplot.png" width="500"/>
 <img src="sampleimages/scaled_fragment_ratios_matrix_mean_sd_dotplot.png" width="500"/>
 
+| Condition      |   n |    Mean |   Median |      SD |
+|:---------------|----:|--------:|---------:|--------:|
+| Healthy        |  10 |   15.27 |    15.08 |    3.85 |
+| Baseline       |   6 |  946.99 |   759.26 |  876.29 |
+| On-Treatment   |   9 |  221.52 |    90.19 |  216.87 |
+| Post-Treatment |   7 | 1672.06 |  1112.34 | 1527.55 |
+
 ### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
 - Script: `scripts/global/lineplots-perpatient_v3.py`
 - Auto-detect file(s): .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name
