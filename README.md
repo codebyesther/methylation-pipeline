@@ -95,7 +95,6 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
 | chr1  |                     869818 |                   870248 | FAM41C       | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
 | chr1  |                     923590 |                   926252 | LOC107985728 | SAMD11    |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
 | chr1  |                     940225 |                   942983 | SAMD11       | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
-PS
 
 ### Step 5 (Optional): Build a CGI Map
 - Script: `scripts/step_5_build_gene_cgi_map.py`
