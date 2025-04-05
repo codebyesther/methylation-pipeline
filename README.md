@@ -86,6 +86,16 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
   - Extracts CGI names from the first column, filtering those starting with "CGI_".
   - Processes each CGI name by splitting it into parts and extracting chromosome, start and end genomic coordinates, gene names, and probe IDs.
 - Produces `structured_gene_annotation.csv` in the output directory.
+- Sample output:
+
+| chr   |   start genomic coordinate |   end genomic coordinate | Gene1        | Gene2     |   Gene3 |   Gene4 |   Gene5 |   Gene6 |   Gene7 |   Gene8 |   Gene9 |   Gene10 |   Gene11 |   Gene12 |   Gene13 |   Gene14 |   Gene15 |   Gene16 |   Gene17 |   Gene18 |   Gene19 |   Gene20 |   Gene21 |   Gene22 |   CGI index or probe ID |
+|:------|---------------------------:|-------------------------:|:-------------|:----------|--------:|--------:|--------:|--------:|--------:|--------:|--------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|------------------------:|
+| chr1  |                     778604 |                   779167 | LOC100288069 | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
+| chr1  |                     827036 |                   828065 | LINC00115    | LINC01128 |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
+| chr1  |                     869818 |                   870248 | FAM41C       | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
+| chr1  |                     923590 |                   926252 | LOC107985728 | SAMD11    |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
+| chr1  |                     940225 |                   942983 | SAMD11       | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
+PS
 
 ### Step 5 (Optional): Build a CGI Map
 - Script: `scripts/step_5_build_gene_cgi_map.py`
