@@ -305,8 +305,41 @@ Looking across chromosomes, we can identify global trends—such as whether cert
     - lineplot_{patient}.png
     - methylation_matrix_{patient}.csv
 - Sample output(s):
+gene_deltas_all_comparisons.csv (See below)
+
+| Unnamed: 0   |   Baseline → Post-Treatment |   Baseline → On-Treatment |   On-Treatment → Post-Treatment |
+|:-------------|----------------------------:|--------------------------:|--------------------------------:|
+| ACD          |                   -242.06   |                  -803.142 |                         588.317 |
+| ANKRD13B     |                    400.733  |                 -1295.9   |                        1347     |
+| ANO8         |                    836.396  |                 -1042.87  |                        1879.27  |
+| AQR          |                     63.9578 |                   nan     |                         nan     |
+| AR           |                  -1500.8    |                 -3706.09  |                        2205.28  |
+
+baseline_vs_post_ttest.csv (See below)
+
+| Gene   |     Delta |    T-stat |   P-value |
+|:-------|----------:|----------:|----------:|
+| C2     |  -437.633 | -0.445912 |  0.699287 |
+| AR     | -1500.8   | -0.581898 |  0.619488 |
+| C3     | -4465.09  | -0.865356 |  0.478061 |
+| NFATC1 | -2157.94  | -0.551409 |  0.679192 |
+| F7     |  -134.083 | -0.357147 |  0.755147 |
+
+avg_methylation_heatmap.png (See below)
 <img src="sampleimages/avg_methylation_heatmap.png" width="600"/>
+
+avg_methylation_lineplot.png (See below)
 <img src="sampleimages/avg_methylation_lineplot.png" width="700"/>
+
+methylation_matrix_FM999-485.csv (See below)
+
+| Unnamed: 0   |   LOI_FM999-485_Baseline |   LOI_FM999-485_C1D4-7 |   LOI_FM999-485_C4D1 |   LOI_FM999-485_C8D1 |   LOI_FM999-485_C9D1-Off-tx |
+|:-------------|-------------------------:|-----------------------:|---------------------:|---------------------:|----------------------------:|
+| KCNA5        |                 3500     |                1000    |              500     |             6500     |                     3000    |
+| BOK          |                  285.714 |                1500    |              nan     |             1200     |                     2000    |
+| BOK-AS1      |                  285.714 |                1500    |              nan     |             1200     |                     2000    |
+| C3           |                  772.222 |                5000    |              619.444 |              701.505 |                     2182.54 |
+| ZNF648       |                 1333.33  |                2666.67 |              nan     |             2500     |                     1500    |
 
 ### Identify Top 10 Differentially Methylated CGI Subregions and Top 10 Differentially Methylated Genes
 - Script: `scripts/locus/top10dm-plots.py`
