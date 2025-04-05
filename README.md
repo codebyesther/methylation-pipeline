@@ -135,12 +135,12 @@ This workflow focuses on overall methylation trends per patient or treatment con
   - Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
 - Sample output(s):
 
-| Condition      |   n |    Mean |   Median |      SD |
-|:---------------|----:|--------:|---------:|--------:|
-| Healthy        |  10 |   15.27 |    15.08 |    3.85 |
-| Baseline       |   6 |  946.99 |   759.26 |  876.29 |
-| On-Treatment   |   9 |  221.52 |    90.19 |  216.87 |
-| Post-Treatment |   7 | 1672.06 |  1112.34 | 1527.55 |
+  | Condition      |   n |    Mean |   Median |      SD |
+  |:---------------|----:|--------:|---------:|--------:|
+  | Healthy        |  10 |   15.27 |    15.08 |    3.85 |
+  | Baseline       |   6 |  946.99 |   759.26 |  876.29 |
+  | On-Treatment   |   9 |  221.52 |    90.19 |  216.87 |
+  | Post-Treatment |   7 | 1672.06 |  1112.34 | 1527.55 |
 
 <img src="sampleimages/scaled_fragment_ratios_matrix_median_dotplot.png" width="500"/>
 <img src="sampleimages/scaled_fragment_ratios_matrix_mean_sd_dotplot.png" width="500"/>
