@@ -24,6 +24,15 @@ These scripts help prepare your input methylation data.
 #### 📁 Input File Requirements
 - One Excel file with patient IDs (e.g. `patient_list.xlsx`)
   - IDs must be in the first column.
+  - Sample input patient ID file:
+
+| Patient ID   |
+|:-------------|
+| EC001-911    |
+| MN010-112    |
+| DV110-203    |
+| AM002-908    |
+| AP000-765    |
 - One or more methylation Excel files
   - Columns should contain patient IDs in their names.
 
