@@ -103,7 +103,7 @@ This workflow zooms into locus-specific (CpG island or gene-level) methylation d
 
 ### Generate Average Methylation Change per Chromosome
 Looking across chromosomes, we can identify global trends—such as whether certain chromosomes are more epigenetically active or suppressed in response to treatment.​
-- Script: `scripts/locus/intuitive_storytelling_avg_methylation_local.py`
+- Script: `scripts/locus/avg-methylation-change-per-chromosome.py`
 - Auto-detect file(s):
   - Patient file: a "patient" file in the data directory
   - Methylation file: a "scaled" methylation file in the output directory
