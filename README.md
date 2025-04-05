@@ -109,6 +109,15 @@ These input files are used at the start of Step 1. Place them in a `data/` folde
   - The final gene_cgi_map DataFrame is created by selecting the cgi_id and gene_name columns and removing duplicates.
   - The script saves the gene_cgi_map DataFrame as a CSV file in the output directory.
 - Generated file(s): `gene_cgi_map.csv` in the output directory
+- Sample output:
+
+| cgi_id             | gene_name    |
+|:-------------------|:-------------|
+| chr1:778604-779167 | LOC100288069 |
+| chr1:827036-828065 | LINC00115    |
+| chr1:869818-870248 | FAM41C       |
+| chr1:923590-926252 | LOC107985728 |
+| chr1:940225-942983 | SAMD11       |
 
 ## 🌐 Global-Level (Patient / Timepoint) Analysis
 
