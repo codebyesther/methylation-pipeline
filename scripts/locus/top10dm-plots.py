@@ -106,7 +106,7 @@ for fname, df in methylation_dfs.items():
         plt.xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
         plt.axvline(0, color="gray", linestyle="--")
         plt.title(title)
-        plt.tight_layout(pad=10.0)  # Add padding to avoid clipping
+        plt.tight_layout(rect=[0, 0, 0.95, 1])  # Add padding to the right
         plot_path = os.path.join(args.outdir, filename)
         plt.savefig(plot_path)
         plt.close()
@@ -122,7 +122,7 @@ for fname, df in methylation_dfs.items():
         plt.xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
         plt.axvline(0, color="gray", linestyle="--")
         plt.title(title)
-        plt.tight_layout()
+        plt.tight_layout(rect=[0, 0, 0.95, 1])  # Adjust padding to the right
         plot_path = os.path.join(args.outdir, filename)
         plt.savefig(plot_path)
         plt.close()
