@@ -188,7 +188,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
     - lineplot_{patient}.png
     - methylation_matrix_{patient}.csv
 - Sample output(s):
-<img src="sampleimages/avg_methylation_heatmap.png" width="500"/>
+<img src="sampleimages/avg_methylation_heatmap.png" width="600"/>
 <img src="sampleimages/avg_methylation_lineplot.png" width="700"/>
 
 ### Identify Top 10 Differentially Methylated CGI Subregions and Top 10 Differentially Methylated Genes
