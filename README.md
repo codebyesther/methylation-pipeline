@@ -232,6 +232,14 @@ Looking across chromosomes, we can identify global trends—such as whether cert
 - Sample output(s):
 <img src="sampleimages/chr_avg_overlay_scaled_fragment_ratios_matrix_aligned.png" width="1000"/>
 
+  |   Chromosome |   Mean_Delta | Comparison       |
+  |-------------:|-------------:|:-----------------|
+  |            1 |     -65.8501 | Baseline → On-Tx |
+  |            2 |    -199.831  | Baseline → On-Tx |
+  |            3 |    -256.214  | Baseline → On-Tx |
+  |            4 |     -48.9605 | Baseline → On-Tx |
+  |            5 |    -333.097  | Baseline → On-Tx |
+
 ### Generate Bubble Plots for Visualization of Longitudinal DNA Hypermethylation Profiles per Chromosome
 - Script: `scripts/locus/bubbleplot_generator_v8_gridsoff.py`
 - Auto-detect file(s):
