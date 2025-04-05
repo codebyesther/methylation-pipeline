@@ -91,7 +91,7 @@ for fname, df in methylation_dfs.items():
         for cpg in collapsed.index:
             deltas = []
             for patient in collapsed.columns.levels[0]:
-                if (patient, timepoint1) in collapsed.columns and (patient, timepoint2) in collapsed.columns:
+                if (patient, timepoint1) in collapsed.columns and (patient, timepoint2) in collapsed.columns):
                     t1 = collapsed.loc[cpg, (patient, timepoint1)]
                     t2 = collapsed.loc[cpg, (patient, timepoint2)]
                     if not pd.isna(t1) and not pd.isna(t2):
@@ -101,17 +101,17 @@ for fname, df in methylation_dfs.items():
         return pd.DataFrame(changes, columns=["CpG_Island", "Avg_Delta", "n"]).sort_values("Avg_Delta")
 
     def plot_top10_diff_cgi_subregions(df, title, filename):
-        plt.figure(figsize=(10, 6))
-        sns.barplot(data=df.head(10), x="Avg_Delta", y="CpG_Island", color='darkblue')
-        plt.xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
-        plt.axvline(0, color="gray", linestyle="--")
-        # Remove the default title and use plt.text to position it manually
-        plt.title("")  # Remove the default title
-        plt.text(0, 1.05, title, ha='left', va='bottom', transform=plt.gca().transAxes, fontsize=12)
-        plt.tight_layout()
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sns.barplot(data=df.head(10), x="Avg_Delta", y="CpG_Island", color='darkblue', ax=ax)
+        ax.set_xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
+        ax.axvline(0, color="gray", linestyle="--")
+        # Remove the default title and use Figure.text to position it manually
+        ax.set_title("")  # Remove the default title
+        fig.text(0.01, 0.96, title, ha='left', va='top', fontsize=12)
+        fig.tight_layout()
         plot_path = os.path.join(args.outdir, filename)
-        plt.savefig(plot_path)
-        plt.close()
+        fig.savefig(plot_path)
+        plt.close(fig)
         top10dmplot_filenames.append(plot_path)
 
     def plot_multi_cpg_genes(df, title, filename):
