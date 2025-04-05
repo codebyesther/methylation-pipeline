@@ -210,6 +210,9 @@ Looking across chromosomes, we can identify global trends—such as whether cert
   - multi_CpG_genes_baseline_on.png
   - top10_diff_CGIsubregions_on_post.png
   - multi_CpG_genes_on_post.png
+<img src="sampleimages/top10_diff_CGIsubregions_baseline_on.png" width="500"/>
+<img src="sampleimages/top10_diff_CGIsubregions_baseline_post.png" width="500"/>
+<img src="sampleimages/top10_diff_CGIsubregions_on_post.png" width="500"/>
 
 ---
 
