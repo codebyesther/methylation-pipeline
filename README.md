@@ -165,6 +165,15 @@ This workflow focuses on overall methylation trends per patient or treatment con
     - per_patient_summary.csv
     - boxplot_summary_by_timepoint.csv
 - Sample output(s):
+
+| Sample                    | Patient_ID   | Timepoint      | Replicate_ID   |
+|:--------------------------|:-------------|:---------------|:---------------|
+| LOI_FM999-485_Baseline    | FM999-485    | Baseline       | Baseline       |
+| LOI_FM999-485_C1D4-7      | FM999-485    | On-Treatment   | C1D4-7         |
+| LOI_FM999-485_C4D1        | FM999-485    | On-Treatment   | C4D1           |
+| LOI_FM999-485_C8D1        | FM999-485    | On-Treatment   | C8D1           |
+| LOI_FM999-485_C9D1-Off-tx | FM999-485    | Post-Treatment | C9D1-Off-tx    |
+
 <img src="sampleimages/average_trajectory.png" width="500"/>
 <img src="sampleimages/methylation_longitudinal_plot.png" width="700"/>
 <img src="sampleimages/boxplot_by_timepoint.png" width="500"/>
