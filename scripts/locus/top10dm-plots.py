@@ -107,7 +107,7 @@ for fname, df in methylation_dfs.items():
         plt.axvline(0, color="gray", linestyle="--")
         # Remove the default title and use plt.text to position it manually
         plt.title("")  # Remove the default title
-        plt.text(plt.gca().get_position().xmin, 1.02, title, ha='left', va='bottom', transform=plt.gca().transAxes, fontsize=12)
+        plt.text(0, 1.05, title, ha='left', va='bottom', transform=plt.gca().transAxes, fontsize=12)
         plt.tight_layout()
         plot_path = os.path.join(args.outdir, filename)
         plt.savefig(plot_path)
