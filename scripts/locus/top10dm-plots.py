@@ -91,7 +91,7 @@ for fname, df in methylation_dfs.items():
         for cpg in collapsed.index:
             deltas = []
             for patient in collapsed.columns.levels[0]:
-                if (patient, timepoint1) in collapsed.columns and (patient, timepoint2) in collapsed.columns):
+                if (patient, timepoint1) in collapsed.columns and (patient, timepoint2) in collapsed.columns:
                     t1 = collapsed.loc[cpg, (patient, timepoint1)]
                     t2 = collapsed.loc[cpg, (patient, timepoint2)]
                     if not pd.isna(t1) and not pd.isna(t2):
