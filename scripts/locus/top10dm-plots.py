@@ -105,8 +105,8 @@ for fname, df in methylation_dfs.items():
         sns.barplot(data=df.head(10), x="Avg_Delta", y="CpG_Island", color='darkblue')
         plt.xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
         plt.axvline(0, color="gray", linestyle="--")
-        plt.title(title)
-        plt.tight_layout(rect=[0, 0, 0.95, 1])  # Add padding to the right
+        plt.title(title, loc='left')  # Move the title to the left
+        plt.tight_layout()
         plot_path = os.path.join(args.outdir, filename)
         plt.savefig(plot_path)
         plt.close()
@@ -121,8 +121,8 @@ for fname, df in methylation_dfs.items():
         sns.barplot(data=multi_cpg_genes, x="avg_delta", y="Gene", color='darkblue')
         plt.xlabel("Avg Change in Scaled Methylated Fragment Count Ratio")
         plt.axvline(0, color="gray", linestyle="--")
-        plt.title(title)
-        plt.tight_layout(rect=[0, 0, 0.95, 1])  # Adjust padding to the right
+        plt.title(title, loc='left')  # Move the title to the left
+        plt.tight_layout()
         plot_path = os.path.join(args.outdir, filename)
         plt.savefig(plot_path)
         plt.close()
