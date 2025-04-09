@@ -12,7 +12,7 @@ class Args:
     outdir = "plots"
 args = Args()
 
-# Locate the files based on the specified criteria
+# Locate files
 data_folder = "data"
 output_folder = "output"
 
@@ -68,10 +68,10 @@ def normalize_timepoint(sample):
     else:
         return "On-Treatment"
 
-# Output plot tracking
+# Track plot filenames
 top10dmplot_filenames = []
 
-# Process methylation files
+# Process each file
 for fname, df in methylation_dfs.items():
     print(f"\n=== Processing file: {fname} ===")
     base_fname = os.path.splitext(fname)[0]
@@ -126,31 +126,31 @@ for fname, df in methylation_dfs.items():
     def plot_multi_cpg_genes(df, title, filename):
         df["CpG_Island"] = df["CpG_Island"].astype(str).str.strip()
 
-        # Convert to chr:start-end format to match gene mapping keys
+        # Convert CpG Island format to match map keys
         matches = df["CpG_Island"].str.extract(r"CGI_(chr\d+)_(\d+)_(\d+)_")
         df["Map_ID"] = matches[0] + ':' + matches[1] + '-' + matches[2]
-
         df["Gene"] = df["Map_ID"].map(cgi_to_gene)
         df = df.dropna(subset=["Gene"])
-
-        print(f"[DEBUG] {df['Gene'].nunique()} unique genes mapped in: {title}")
-        print(df[["CpG_Island", "Map_ID", "Gene"]].dropna().head(5))
 
         gene_df = df.groupby("Gene").agg(
             count=("CpG_Island", "count"),
             avg_delta=("Avg_Delta", "mean")
         ).reset_index()
 
-        print("\n[DEBUG] Full gene count summary:")
-        print(gene_df.sort_values("count", ascending=False).head(10))
-
-        # Plot genes with >1 CpG island — fallback to top 10 by count if none
         multi_cpg_genes = gene_df[gene_df["count"] > 1].sort_values("avg_delta")
-        if multi_cpg_genes.empty:
-            print(f"⚠️ No genes with >1 CpG island — plotting top 10 genes with highest CpG count instead.")
-            multi_cpg_genes = gene_df.sort_values("count", ascending=False).head(10)
 
-        print("[DEBUG] Genes selected for plotting:")
+        used_fallback = False
+        if multi_cpg_genes.empty:
+            used_fallback = True
+            print("⚠️ No genes with >1 CpG island — plotting top 10 by absolute Avg_Delta.")
+            gene_df["abs_delta"] = gene_df["avg_delta"].abs()
+            multi_cpg_genes = gene_df.sort_values("abs_delta", ascending=False).head(10)
+
+        # Set fallback-specific title
+        if used_fallback:
+            title = title.replace("Genes with More than One Affected CpG Island", "Top Genes by Methylation Change")
+
+        print(f"[DEBUG] Genes selected for: {title}")
         print(multi_cpg_genes)
 
         plt.figure(figsize=(10, 6))
@@ -164,7 +164,6 @@ for fname, df in methylation_dfs.items():
         plt.close()
         top10dmplot_filenames.append(plot_path)
 
-    # Comparisons
     comparisons = [
         ("Baseline", "Post-Treatment", "baseline_post"),
         ("Baseline", "On-Treatment", "baseline_on"),
@@ -184,13 +183,13 @@ for fname, df in methylation_dfs.items():
             f"multi_CpG_genes_{suffix}.png"
         )
 
-# Zip plots
+# Zip output
 zip_filename = os.path.join(args.outdir, 'top-10-differential-methylation-plots.zip')
 with zipfile.ZipFile(zip_filename, 'w') as zipf:
     for plot_filename in top10dmplot_filenames:
         zipf.write(plot_filename, arcname=os.path.basename(plot_filename))
 
-# Clean up individual plots
+# Clean up
 for plot_filename in top10dmplot_filenames:
     os.remove(plot_filename)
 
