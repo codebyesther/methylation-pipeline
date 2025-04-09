@@ -35,6 +35,7 @@ if not os.path.exists(map_file):
     raise FileNotFoundError("The gene_cgi_map.csv file is missing from the 'output/' folder.")
 gene_map_df = pd.read_csv(map_file)
 gene_map_df.columns = gene_map_df.columns.str.strip()
+gene_map_df["cgi_id"] = gene_map_df["cgi_id"].astype(str).str.strip()
 cgi_to_gene = dict(zip(gene_map_df["cgi_id"], gene_map_df["gene_name"]))
 
 methylation_dfs = {}
@@ -78,6 +79,7 @@ for fname, df in methylation_dfs.items():
     start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
     cpg_island_df = df.iloc[start_idx:].reset_index(drop=True)
     cpg_island_df.rename(columns={cpg_island_df.columns[0]: "CpG_Island"}, inplace=True)
+    cpg_island_df["CpG_Island"] = cpg_island_df["CpG_Island"].astype(str).str.strip()
     cpg_island_df.dropna(how="all", subset=cpg_island_df.columns[1:], inplace=True)
 
     samples = cpg_island_df.columns[1:]
@@ -122,18 +124,26 @@ for fname, df in methylation_dfs.items():
         top10dmplot_filenames.append(plot_path)
 
     def plot_multi_cpg_genes(df, title, filename):
+        df["CpG_Island"] = df["CpG_Island"].astype(str).str.strip()
         df["Gene"] = df["CpG_Island"].map(cgi_to_gene)
         df = df.dropna(subset=["Gene"])
+
+        print(f"[DEBUG] {df['Gene'].nunique()} unique genes mapped in: {title}")
+        print(df[["CpG_Island", "Gene"]].dropna().head(5))
 
         gene_df = df.groupby("Gene").agg(
             count=("CpG_Island", "count"),
             avg_delta=("Avg_Delta", "mean")
         ).reset_index()
+
         multi_cpg_genes = gene_df[gene_df["count"] > 1].sort_values("avg_delta")
 
         if multi_cpg_genes.empty:
             print(f"No multi-CpG genes found for: {title}")
             return
+
+        print("[DEBUG] Top multi-CpG genes:")
+        print(multi_cpg_genes.head())
 
         plt.figure(figsize=(10, 6))
         sns.barplot(data=multi_cpg_genes, x="avg_delta", y="Gene", color='darkblue')
@@ -176,4 +186,4 @@ with zipfile.ZipFile(zip_filename, 'w') as zipf:
 for plot_filename in top10dmplot_filenames:
     os.remove(plot_filename)
 
-print(f'Saved plots and zipped them in {zip_filename}')
+print(f'\n✅ Saved plots and zipped them in {zip_filename}')
