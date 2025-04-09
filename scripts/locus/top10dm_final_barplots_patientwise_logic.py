@@ -11,7 +11,7 @@ from scipy.stats import ttest_rel
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Generate gene-level methylation heatmaps and line plots based on delta values.')
-parser.add_argument('--output_dir', type=str, default='plots/heatmaps-lineplots', help='Directory to save plots')
+parser.add_argument('--output_dir', type=str, default='plots/10dm-barplots', help='Directory to save plots')
 args = parser.parse_args()
 
 os.makedirs(args.output_dir, exist_ok=True)
