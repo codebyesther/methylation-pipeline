@@ -125,23 +125,28 @@ for fname, df in methylation_dfs.items():
 
     def plot_multi_cpg_genes(df, title, filename):
         df["CpG_Island"] = df["CpG_Island"].astype(str).str.strip()
-        df["Gene"] = df["CpG_Island"].map(cgi_to_gene)
+    
+        # Convert to chr:start-end format to match gene mapping keys
+        matches = df["CpG_Island"].str.extract(r"CGI_(chr\d+)_(\d+)_(\d+)_")
+        df["Map_ID"] = matches[0] + ':' + matches[1] + '-' + matches[2]
+    
+        df["Gene"] = df["Map_ID"].map(cgi_to_gene)
         df = df.dropna(subset=["Gene"])
-
+    
         print(f"[DEBUG] {df['Gene'].nunique()} unique genes mapped in: {title}")
-        print(df[["CpG_Island", "Gene"]].dropna().head(5))
-
+        print(df[["CpG_Island", "Map_ID", "Gene"]].dropna().head(5))
+    
         gene_df = df.groupby("Gene").agg(
             count=("CpG_Island", "count"),
             avg_delta=("Avg_Delta", "mean")
         ).reset_index()
-
+    
         multi_cpg_genes = gene_df[gene_df["count"] > 1].sort_values("avg_delta")
-
+    
         if multi_cpg_genes.empty:
             print(f"No multi-CpG genes found for: {title}")
             return
-
+    
         print("[DEBUG] Top multi-CpG genes:")
         print(multi_cpg_genes.head())
 
