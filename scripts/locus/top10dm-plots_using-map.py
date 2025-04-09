@@ -34,7 +34,8 @@ map_file = os.path.join(output_folder, "gene_cgi_map.csv")
 if not os.path.exists(map_file):
     raise FileNotFoundError("The gene_cgi_map.csv file is missing from the 'output/' folder.")
 gene_map_df = pd.read_csv(map_file)
-cgi_to_gene = dict(zip(gene_map_df["CpG_Island"], gene_map_df["Gene"]))
+gene_map_df.columns = gene_map_df.columns.str.strip()
+cgi_to_gene = dict(zip(gene_map_df["cgi_id"], gene_map_df["gene_name"]))
 
 methylation_dfs = {}
 patient_ids = []
