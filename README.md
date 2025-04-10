@@ -261,7 +261,7 @@ Looking across chromosomes, we can identify global trends—such as whether cert
 <img src="sampleimages/bubbleplot_chr1.png" width="1000"/>
 
 ### Generate Heatmaps and Lineplots of Top 10 Genes by Condition/Timepoint
-- Script: `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py`
+- Script: `scripts/locus/heatmap-lineplot-barplot_v2.py`
 - Auto-detect file(s):
   - CpG Methylation Matrix
     - Directory: output
@@ -415,7 +415,7 @@ methylation-pipeline/
 │       ├── avg-methylation-change-per-chromosome.py
 │       ├── bubbleplot_generator_v8_gridsoff.py
 │       ├── bubbleplot_generator_v8.py
-│       ├── deltagene-heatmaps-lineplots-bothfonts-labels.py
+│       ├── scripts/locus/heatmap-lineplot-barplot_v2.py
 │       └── top10dm-plots.py
 ├── .gitignore
 ├── CITATION.cff
