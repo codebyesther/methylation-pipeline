@@ -113,7 +113,14 @@ comparisons = {
 }
 
 for comparison, delta_values in comparisons.items():
-    top_gene_deltas = pd.Series(delta_values)[top_genes].sort_values()
+    delta_series = pd.Series(delta_values)
+    valid_genes = [gene for gene in top_genes if gene in delta_series.index]
+    
+    if not valid_genes:
+        print(f"No valid genes found for {comparison}. Skipping plot.")
+        continue
+
+    top_gene_deltas = delta_series[valid_genes].sort_values()
     plt.figure(figsize=(10, 6))
     sns.barplot(x=top_gene_deltas.values, y=top_gene_deltas.index, color="darkblue")
     plt.axvline(0, color="gray", linestyle="--")
