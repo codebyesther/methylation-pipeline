@@ -103,25 +103,3 @@ for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation file
     plot_path = os.path.join("plots", f"{os.path.splitext(fname)[0]}_adjusted_plot.png")
     fig.savefig(plot_path, dpi=300, bbox_inches='tight')
     plt.close(fig)
-
-# === Create ZIP of all plots ===
-zip_path = os.path.join("plots", "bubbleplots.zip")
-with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-    for root, _, files in os.walk("plots"):
-        for file in files:
-            if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
-                file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, start="plots")
-                zipf.write(file_path, arcname=arcname)
-
-print(f"All bubble plot files zipped and saved to: {zip_path}")
-
-# === Remove individual plot files after zipping ===
-for root, _, files in os.walk("plots"):
-    for file in files:
-        if file.startswith("bubbleplot_") and (file.endswith(".png") or file.endswith(".svg")):
-            file_path = os.path.join(root, file)
-            if file_path != zip_path:
-                os.remove(file_path)
-
-print(f"Individual bubble plot files have been removed after zipping.")
