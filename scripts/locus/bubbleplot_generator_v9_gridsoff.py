@@ -191,7 +191,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_legend.axis("off")  # hide ticks and background
 
         # Define the sizes and calculate bubble sizes
-        sizes = [1, 80, 800, 8000]
+        sizes = [1, 800, 80000, 8000000]
         bubble_sizes = [size**0.5 * 50 for size in sizes]
 
         # Calculate proportional vertical positions based on bubble radii
