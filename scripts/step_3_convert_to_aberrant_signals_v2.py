@@ -32,9 +32,9 @@ print("Shape of aligned_globmin80:", aligned_globmin80.shape)
 # Ensure the aligned DataFrames have the same shape
 assert aligned_glob20.shape == aligned_globmin80.shape, "Aligned DataFrames do not have the same shape."
 
-# STEP5: Divide the values in the output_glob20 file by the corresponding values in the output_globmin80 file and multiply by 1000
+# STEP5: Divide the values in the output_glob20 file by the corresponding values in the output_globmin80 file and multiply by 100000
 ratio_df = (aligned_glob20.iloc[:, 1:].astype(float).reset_index(drop=True) /
-            aligned_globmin80.iloc[:, 1:].astype(float).reset_index(drop=True)) * 1000
+            aligned_globmin80.iloc[:, 1:].astype(float).reset_index(drop=True)) * 100000
 
 # STEP6: Reassemble the DataFrame with the original row labels
 result_df = pd.concat([aligned_glob20.iloc[:, 0].reset_index(drop=True), ratio_df], axis=1)
