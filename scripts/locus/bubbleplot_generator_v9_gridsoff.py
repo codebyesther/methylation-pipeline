@@ -84,13 +84,13 @@ for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation file
     fig, ax = plt.subplots(figsize=(10, 6))  # Adjust figure size if needed
 
     # Example Plot (replace with your actual plotting code)
-    some_plot = ax.plot(range(len(samples)), np.random.rand(len(samples)), label="Example Data")
+    scatter = ax.scatter(range(len(samples)), np.random.rand(len(samples)), c=np.random.rand(len(samples)), cmap='viridis', label="Example Data")
 
     # Adjust layout to reduce blank space
     plt.subplots_adjust(left=0.1, right=0.85, top=0.9, bottom=0.1)  # Adjust these values as needed
 
-    # Add colorbar (if applicable)
-    cbar = fig.colorbar(some_plot[0], ax=ax)  # Replace `some_plot[0]` with your actual mappable object
+    # Add colorbar (fixed implementation)
+    cbar = fig.colorbar(scatter, ax=ax)  # Use `scatter` as the mappable object
     cbar.ax.set_position([0.88, 0.15, 0.03, 0.7])  # [left, bottom, width, height]
 
     # Adjust legend position
