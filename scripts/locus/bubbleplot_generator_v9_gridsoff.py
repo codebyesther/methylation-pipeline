@@ -295,7 +295,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_legend.axis("off")
 
     # Use the same logic as the per-patient plots for legend spacing
-    sizes = [1, 80, 800, 8000]
+    sizes = [1, 800, 80000, 8000000]
     bubble_sizes = [size**0.5 * 50 for size in sizes]
 
     # Calculate proportional vertical positions based on bubble radii
