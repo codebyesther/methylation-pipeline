@@ -162,7 +162,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
                 cmap="viridis",
                 alpha=0.6,
                 vmin=0,  # lower bound of color scale
-                vmax=2000    # increased upper bound of color scale
+                vmax=8000000    # increased upper bound of color scale
             )
 
         # Format main axis
@@ -272,7 +272,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             cmap="viridis",
             alpha=0.6,
             vmin=0,  # lower bound of color scale
-            vmax=2000    # increased upper bound of color scale
+            vmax=8000000    # increased upper bound of color scale
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
