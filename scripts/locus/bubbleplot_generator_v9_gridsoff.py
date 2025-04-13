@@ -192,7 +192,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Define the sizes and calculate bubble sizes
         sizes = [1, 800, 80000, 8000000]
-        bubble_sizes = [size**0.5 * 50 for size in sizes]
+        bubble_sizes = [size**0.5 * 5 for size in sizes]
 
         # Calculate proportional vertical positions based on bubble radii
         cumulative_height = np.cumsum([size**0.5 for size in sizes])
@@ -296,7 +296,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Use the same logic as the per-patient plots for legend spacing
     sizes = [1, 800, 80000, 8000000]
-    bubble_sizes = [size**0.5 * 50 for size in sizes]
+    bubble_sizes = [size**0.5 * 5 for size in sizes]
 
     # Calculate proportional vertical positions based on bubble radii
     cumulative_height = np.cumsum([size**0.5 for size in sizes])
