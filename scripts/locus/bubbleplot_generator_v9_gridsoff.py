@@ -192,12 +192,12 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Define the sizes and calculate bubble sizes
         sizes = [1, 800, 80000, 8000000]
-        bubble_sizes = [size**0.5 * 0.25 for size in sizes]
+        bubble_sizes = [size**0.5 * 0.005 for size in sizes]
 
         # Calculate proportional vertical positions based on bubble radii
         cumulative_height = np.cumsum([size**0.5 *0.25 for size in sizes])
         total_height = cumulative_height[-1]
-        positions = np.array([0.1, 1, 2, 3.4]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+        positions = np.array([0.1, 1, 2, 3.1]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(0, 1)
@@ -216,7 +216,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=14)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.3 above the top bubble
+        ax_legend.text(legend_x_coord + 0.2, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
         # Adjust y-limits to ensure no clipping
@@ -296,12 +296,12 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Use the same logic as the per-patient plots for legend spacing
     sizes = [1, 800, 80000, 8000000]
-    bubble_sizes = [size**0.5 * 0.25 for size in sizes]
+    bubble_sizes = [size**0.5 * 0.005 for size in sizes]
 
     # Calculate proportional vertical positions based on bubble radii
     cumulative_height = np.cumsum([size**0.5 *0.25 for size in sizes])
     total_height = cumulative_height[-1]
-    positions = np.array([0.1, 1, 2, 3.4]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+    positions = np.array([0.1, 1, 2, 3.1]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(0, 1)
