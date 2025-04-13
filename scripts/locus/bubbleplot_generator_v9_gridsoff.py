@@ -135,7 +135,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # - Left col = main bubble plot
         # - Right col = sub-gridspec for colorbar (top) + bubble legend (bottom)
         fig = plt.figure(figsize=(22, 10))  # Increased figure size to prevent cropping
-        gs = GridSpec(nrows=1, ncols=2, width_ratios=[7, 0.5], figure=fig)
+        gs = GridSpec(nrows=1, ncols=2, width_ratios=[6.5, 0.5], figure=fig)
 
         # Main axis on the left
         ax_main = fig.add_subplot(gs[0, 0])
@@ -251,7 +251,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     subset_df = pd.concat(all_rows, ignore_index=True)
 
     fig = plt.figure(figsize=(22, 10))  # Increased figure size to prevent cropping
-    gs = GridSpec(nrows=1, ncols=2, width_ratios=[7, 0.5], figure=fig)
+    gs = GridSpec(nrows=1, ncols=2, width_ratios=[6.5, 0.5], figure=fig)
 
     ax_main = fig.add_subplot(gs[0, 0])
     ax_main.grid(False)  # Hide grid
