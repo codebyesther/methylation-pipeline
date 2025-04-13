@@ -200,7 +200,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         positions = np.array([0.1, 0.7, 1.4, 2.8]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
-        ax_legend.set_xlim(0, 1.8)
+        ax_legend.set_xlim(0, 1.9)
 
         # Print the axis limits to check if legend_x_coord is within range
         x_min, x_max = ax_legend.get_xlim()
@@ -222,7 +222,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.1, hspace=0.6)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
+        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.15, hspace=0.65)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
 
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
@@ -305,7 +305,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     positions = np.array([0.1, 0.7, 1.4, 2.8]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
-    ax_legend.set_xlim(0, 1.8)
+    ax_legend.set_xlim(0, 1.9)
 
     # Print the axis limits to check if legend_x_coord is within range
     x_min, x_max = ax_legend.get_xlim()
@@ -327,7 +327,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Adjust y-limits to ensure no clipping
     ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.1, hspace=0.6)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
+    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.15, hspace=0.65)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
     plt.savefig(f"{filename_base}.svg")
