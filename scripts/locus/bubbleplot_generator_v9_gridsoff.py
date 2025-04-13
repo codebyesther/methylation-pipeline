@@ -185,7 +185,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             cb.set_label("Scaled Fragment Count Ratio", fontsize=14)
 
         # Define the x-coordinate for the legend title and legend scatter plot positions
-        legend_x_coord = 1
+        legend_x_coord = 0.8
 
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
