@@ -134,7 +134,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Create figure with 2 columns:
         # - Left col = main bubble plot
         # - Right col = sub-gridspec for colorbar (top) + bubble legend (bottom)
-        fig = plt.figure(figsize=(22, 10))  # Increased figure size to prevent cropping
+        fig = plt.figure(figsize=(21, 10))  # Increased figure size to prevent cropping
         gs = GridSpec(nrows=1, ncols=2, width_ratios=[6.5, 0.5], figure=fig)
 
         # Main axis on the left
@@ -185,7 +185,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             cb.set_label("Scaled Fragment Count Ratio", fontsize=14)
 
         # Define the x-coordinate for the legend title and legend scatter plot positions
-        legend_x_coord = 1.25
+        legend_x_coord = 1
 
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
@@ -200,7 +200,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         positions = np.array([0.1, 0.7, 1.4, 2.8]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
-        ax_legend.set_xlim(-0.5, 3.5)
+        ax_legend.set_xlim(-1, 3.5)
 
         # Print the axis limits to check if legend_x_coord is within range
         x_min, x_max = ax_legend.get_xlim()
@@ -250,7 +250,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     subset_df = pd.concat(all_rows, ignore_index=True)
 
-    fig = plt.figure(figsize=(22, 10))  # Increased figure size to prevent cropping
+    fig = plt.figure(figsize=(21, 10))  # Increased figure size to prevent cropping
     gs = GridSpec(nrows=1, ncols=2, width_ratios=[6.5, 0.5], figure=fig)
 
     ax_main = fig.add_subplot(gs[0, 0])
@@ -305,7 +305,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     positions = np.array([0.1, 0.7, 1.4, 2.8]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
-    ax_legend.set_xlim(-0.5, 3.5)
+    ax_legend.set_xlim(-1, 3.5)
 
     # Print the axis limits to check if legend_x_coord is within range
     x_min, x_max = ax_legend.get_xlim()
