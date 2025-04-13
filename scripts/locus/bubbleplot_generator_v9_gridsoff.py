@@ -185,7 +185,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             cb.set_label("Scaled Fragment Count Ratio", fontsize=14)
 
         # Define the x-coordinate for the legend title and legend scatter plot positions
-        legend_x_coord = 1
+        legend_x_coord = 0.8
 
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
@@ -213,7 +213,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
             ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
-            ax_legend.text(legend_x_coord + 1.6, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
+            ax_legend.text(legend_x_coord + 1.7, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
         ax_legend.text(1.1, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
@@ -318,7 +318,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
         ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
-        ax_legend.text(legend_x_coord + 1.6, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
+        ax_legend.text(legend_x_coord + 1.7, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
     ax_legend.text(1.1, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
