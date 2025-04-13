@@ -5,7 +5,7 @@ import seaborn as sns
 
 # Load your data (replace 'your_data.csv' with the actual data file)
 # Make sure the data is structured with rows as patients and columns containing timepoints
-data_file = "Scaled_LOI-in-EMseq-16-18-20_by-Cycle.xlsx"  # Update with your data file path
+data_file = "data/Scaled_LOI-in-EMseq-16-18-20_by-Cycle.xlsx"
 data = pd.read_excel(data_file)
 
 # Example structure of the input data (data.head()):
