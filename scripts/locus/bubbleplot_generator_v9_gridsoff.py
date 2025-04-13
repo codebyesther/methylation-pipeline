@@ -162,7 +162,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
                 cmap="viridis",
                 alpha=0.6,
                 vmin=0,  # lower bound of color scale
-                vmax=8000000    # increased upper bound of color scale
+                vmax=4000000    # increased upper bound of color scale
             )
 
         # Format main axis
@@ -192,10 +192,10 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Define the sizes and calculate bubble sizes
         sizes = [1, 800, 80000, 8000000]
-        bubble_sizes = [size**0.5 * 0.005 for size in sizes]
+        bubble_sizes = [size**0.5 * 0.001 for size in sizes]
 
         # Calculate proportional vertical positions based on bubble radii
-        cumulative_height = np.cumsum([size**0.5 *0.005 for size in sizes])
+        cumulative_height = np.cumsum([size**0.5 *0.1 for size in sizes])
         total_height = cumulative_height[-1]
         positions = np.array([0.1, 0.6, 1.2, 1.9]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
@@ -272,7 +272,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             cmap="viridis",
             alpha=0.6,
             vmin=0,  # lower bound of color scale
-            vmax=8000000    # increased upper bound of color scale
+            vmax=4000000    # increased upper bound of color scale
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
@@ -296,10 +296,10 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Use the same logic as the per-patient plots for legend spacing
     sizes = [1, 800, 80000, 8000000]
-    bubble_sizes = [size**0.5 * 0.005 for size in sizes]
+    bubble_sizes = [size**0.5 * 0.001 for size in sizes]
 
     # Calculate proportional vertical positions based on bubble radii
-    cumulative_height = np.cumsum([size**0.5 *0.005 for size in sizes])
+    cumulative_height = np.cumsum([size**0.5 *0.1 for size in sizes])
     total_height = cumulative_height[-1]
     positions = np.array([0.1, 0.6, 1.2, 1.9]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
