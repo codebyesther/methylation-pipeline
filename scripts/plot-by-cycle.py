@@ -2,6 +2,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 # Load your data (replace 'your_data.csv' with the actual data file)
 # Make sure the data is structured with rows as patients and columns containing timepoints
@@ -29,7 +30,13 @@ plt.ylabel("Scaled Fragment Count Ratio", fontsize=12)
 plt.legend(title="Patient ID", bbox_to_anchor=(1.05, 1), loc="upper left")
 plt.tight_layout()
 
-# Save the plot or display it
-output_file = "line_plot_by_patient.png"  # Update with your desired output file name
+# Define the output directory for the plot
+output_dir = "plots"  # Use 'plots' directory
+os.makedirs(output_dir, exist_ok=True)  # Create the directory if it doesn't exist
+
+# Define the output file path
+output_file = os.path.join(output_dir, "line_plot_by_cycle.png")
+
+# Save the plot
 plt.savefig(output_file)
-plt.show()
+print(f"Plot saved to {output_file}")
