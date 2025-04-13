@@ -195,9 +195,9 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         bubble_sizes = [size**0.5 * 0.005 for size in sizes]
 
         # Calculate proportional vertical positions based on bubble radii
-        cumulative_height = np.cumsum([size**0.5 *0.25 for size in sizes])
+        cumulative_height = np.cumsum([size**0.5 *0.005 for size in sizes])
         total_height = cumulative_height[-1]
-        positions = np.array([0.1, 1, 2, 3.1]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+        positions = np.array([0.1, 0.6, 1.2, 1.9]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(0, 1)
@@ -212,7 +212,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
-            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 0.25, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
+            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 0.005, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=14)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
@@ -299,9 +299,9 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     bubble_sizes = [size**0.5 * 0.005 for size in sizes]
 
     # Calculate proportional vertical positions based on bubble radii
-    cumulative_height = np.cumsum([size**0.5 *0.25 for size in sizes])
+    cumulative_height = np.cumsum([size**0.5 *0.005 for size in sizes])
     total_height = cumulative_height[-1]
-    positions = np.array([0.1, 1, 2, 3.1]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+    positions = np.array([0.1, 0.6, 1.2, 1.9]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(0, 1)
