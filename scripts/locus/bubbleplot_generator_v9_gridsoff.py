@@ -153,7 +153,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             tp = row["Timepoint"]
             y = timepoint_positions_patient[tp]
             # Increase bubble scale factor for bigger bubbles
-            bubble_size = row["value"]**0.5 * 1    # bubble size inside the plot area
+            bubble_size = row["value"]**0.5 * 5    # bubble size inside the plot area
             sc = ax_main.scatter(
                 row["Midpoint"],
                 y,
@@ -162,7 +162,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
                 cmap="viridis",
                 alpha=0.6,
                 vmin=0,  # lower bound of color scale
-                vmax=3000000    # increased upper bound of color scale
+                vmax=1000000    # increased upper bound of color scale
             )
 
         # Format main axis
@@ -192,7 +192,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Define the sizes and calculate bubble sizes
         sizes = [8, 800, 80000, 8000000]
-        bubble_sizes = [size**0.5 * 1 for size in sizes]    # size of bubbles within legend area
+        bubble_sizes = [size**0.5 * 0.1 for size in sizes]    # size of bubbles within legend area
 
         # Calculate proportional vertical positions based on bubble radii
         cumulative_height = np.cumsum([size**0.5 *0.1 for size in sizes])    # legend bubble heights combined
@@ -212,7 +212,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
-            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
+            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 0.1, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
             ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=14)    # Adjust text position based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
@@ -263,7 +263,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     for _, row in subset_df.iterrows():
         tp = row["Timepoint"]
         y = timepoint_positions_chromosome[tp]
-        bubble_size = row["value"]**0.5 * 1    # bubble size inside the plot area
+        bubble_size = row["value"]**0.5 * 5    # bubble size inside the plot area
         sc = ax_main.scatter(
             row["Midpoint"],
             y,
@@ -272,7 +272,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             cmap="viridis",
             alpha=0.6,
             vmin=0,  # lower bound of color scale
-            vmax=4000000    # increased upper bound of color scale
+            vmax=1000000    # increased upper bound of color scale
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
@@ -296,7 +296,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Use the same logic as the per-patient plots for legend spacing
     sizes = [8, 800, 80000, 8000000]
-    bubble_sizes = [size**0.5 * 1 for size in sizes]    # bubble size inside the legend area
+    bubble_sizes = [size**0.5 * 0.1 for size in sizes]    # bubble size inside the legend area
 
     # Calculate proportional vertical positions based on bubble radii
     cumulative_height = np.cumsum([size**0.5 *0.1 for size in sizes])    # legend bubble heights combined
@@ -316,7 +316,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
-        ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 50, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
+        ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 0.1, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
         ax_legend.text(legend_x_coord + 0.4, pos, str(size), verticalalignment='center', horizontalalignment='center', fontsize=14)    # Adjust text position based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
