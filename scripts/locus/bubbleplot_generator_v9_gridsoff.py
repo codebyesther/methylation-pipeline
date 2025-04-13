@@ -200,7 +200,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         positions = np.array([0.1, 0.7, 1.4, 2.8]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
-        ax_legend.set_xlim(0, 1.5)
+        ax_legend.set_xlim(0, 1.8)
 
         # Print the axis limits to check if legend_x_coord is within range
         x_min, x_max = ax_legend.get_xlim()
@@ -216,7 +216,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 1, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(0.75, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
+        ax_legend.text(0.9, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
         # Adjust y-limits to ensure no clipping
@@ -305,7 +305,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     positions = np.array([0.1, 0.7, 1.4, 2.8]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
-    ax_legend.set_xlim(0, 1.5)
+    ax_legend.set_xlim(0, 1.8)
 
     # Print the axis limits to check if legend_x_coord is within range
     x_min, x_max = ax_legend.get_xlim()
@@ -321,7 +321,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.text(legend_x_coord + 1, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(0.75, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
+    ax_legend.text(0.9, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
     # Adjust y-limits to ensure no clipping
