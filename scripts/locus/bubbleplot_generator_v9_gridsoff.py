@@ -197,7 +197,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Calculate proportional vertical positions based on bubble radii
         cumulative_height = np.cumsum([size**0.5 *0.1 for size in sizes])    # legend bubble heights combined
         total_height = cumulative_height[-1]
-        positions = np.array([0.1, 0.6, 1.2, 1.9]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+        positions = np.array([0.1, 0.7, 1.4, 2.4]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(0, 1)
@@ -222,7 +222,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)  # left margin of the legend, wspace between the gray bubble and marker txt, hspace
+        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.5, hspace=0.6)  # left margin of the legend, wspace between the gray bubble and marker txt, hspace
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
         plt.savefig(f"{filename_base}.svg")
@@ -301,7 +301,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Calculate proportional vertical positions based on bubble radii
     cumulative_height = np.cumsum([size**0.5 *0.1 for size in sizes])    # legend bubble heights combined
     total_height = cumulative_height[-1]
-    positions = np.array([0.1, 0.6, 1.2, 1.9]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+    positions = np.array([0.1, 0.7, 1.4, 2.4]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(0, 1)
@@ -326,7 +326,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Adjust y-limits to ensure no clipping
     ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)  # Adjusted left margin
+    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.5, hspace=0.6)  # Adjusted left margin
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
     plt.savefig(f"{filename_base}.svg")
