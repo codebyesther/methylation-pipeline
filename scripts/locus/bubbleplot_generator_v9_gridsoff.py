@@ -134,7 +134,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Create figure with 2 columns:
         # - Left col = main bubble plot
         # - Right col = sub-gridspec for colorbar (top) + bubble legend (bottom)
-        fig = plt.figure(figsize=(20, 10))  # Increased figure size to prevent cropping
+        fig = plt.figure(figsize=(19, 10))  # Increased figure size to prevent cropping
         gs = GridSpec(nrows=1, ncols=2, width_ratios=[6, 0.5], figure=fig)
 
         # Main axis on the left
@@ -185,7 +185,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             cb.set_label("Scaled Fragment Count Ratio", fontsize=14)
 
         # Define the x-coordinate for the legend title and legend scatter plot positions
-        legend_x_coord = 0.5
+        legend_x_coord = 1
 
         # Create bubble-size legend in ax_legend
         ax_legend.axis("off")  # hide ticks and background
@@ -222,7 +222,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.1, hspace=0.4)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
+        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.1, hspace=0.6)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
 
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
@@ -250,7 +250,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     subset_df = pd.concat(all_rows, ignore_index=True)
 
-    fig = plt.figure(figsize=(20, 10))  # Increased figure size to prevent cropping
+    fig = plt.figure(figsize=(19, 10))  # Increased figure size to prevent cropping
     gs = GridSpec(nrows=1, ncols=2, width_ratios=[6, 0.5], figure=fig)
 
     ax_main = fig.add_subplot(gs[0, 0])
@@ -327,7 +327,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Adjust y-limits to ensure no clipping
     ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.1, hspace=0.4)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
+    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.1, hspace=0.6)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
     plt.savefig(f"{filename_base}.svg")
