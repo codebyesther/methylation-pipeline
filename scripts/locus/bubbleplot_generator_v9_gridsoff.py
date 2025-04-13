@@ -222,7 +222,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Adjust y-limits to ensure no clipping
         ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.2, hspace=0.3)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
+        fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.2, hspace=0.4)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
 
         filename_base = os.path.join("plots", f"bubbleplot_{patient}_{chrom}")
         plt.savefig(f"{filename_base}.png")
@@ -327,7 +327,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Adjust y-limits to ensure no clipping
     ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
 
-    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.2, hspace=0.3)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
+    fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.2, hspace=0.4)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
     plt.savefig(f"{filename_base}.png")
     plt.savefig(f"{filename_base}.svg")
