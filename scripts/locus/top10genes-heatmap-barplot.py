@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import argparse
 from scipy.stats import ttest_rel
 from tqdm import tqdm
+import zipfile
 
 # === Argument Parser ===
 parser = argparse.ArgumentParser(description='Generate gene-level methylation barplots and heatmaps based on delta values.')
@@ -117,7 +118,6 @@ op_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_on_to_pos
 
 # === Generate Gene Methylation Matrix (Raw Fragment Counts) ===
 gene_rows = []
-
 for gene in tqdm(all_genes, desc="Building gene methylation matrix"):
     cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
     gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
@@ -165,9 +165,9 @@ for comparison, (delta_values, patient_deltas_df) in comparisons.items():
     plt.close()
 
 # === Generate Heatmap of Raw Methylation for Top Genes ===
-heatmap_df = gene_methylation_matrix.loc[gene_methylation_matrix.index.intersection(top_genes)]
+ordered_top_genes = pd.Series(baseline_post).reindex(top_genes).fillna(0).sort_values().index.tolist()
+heatmap_df = gene_methylation_matrix.loc[ordered_top_genes]
 
-# Classify and group by timepoint
 column_meta = pd.DataFrame({
     'Sample': heatmap_df.columns,
     'Timepoint': [classify_timepoint(col) for col in heatmap_df.columns]
@@ -187,3 +187,53 @@ plt.tight_layout()
 plt.savefig(os.path.join(args.output_dir, "heatmap_top10_genes_avg_methylation.png"))
 plt.close()
 print("Heatmap saved.")
+
+# === Generate Per-Patient Heatmaps for Top 10 Genes ===
+per_patient_output_dir = os.path.join(args.output_dir, "per_patient_heatmaps")
+os.makedirs(per_patient_output_dir, exist_ok=True)
+
+sample_metadata = pd.DataFrame({
+    'Sample': gene_methylation_matrix.columns,
+    'Timepoint': [classify_timepoint(col) for col in gene_methylation_matrix.columns],
+    'Patient': [get_patient(col) for col in gene_methylation_matrix.columns]
+}).dropna(subset=["Patient"])
+
+for patient_id in sample_metadata["Patient"].unique():
+    patient_samples = sample_metadata[sample_metadata["Patient"] == patient_id]
+    patient_cols = patient_samples["Sample"].tolist()
+
+    if not patient_cols:
+        continue
+
+    patient_data = gene_methylation_matrix.loc[
+        gene_methylation_matrix.index.intersection(ordered_top_genes),
+        gene_methylation_matrix.columns.intersection(patient_cols)
+    ]
+    if patient_data.empty:
+        continue
+
+    patient_data = patient_data[
+        sorted(patient_data.columns, key=lambda x: timepoint_order.index(classify_timepoint(x)) if classify_timepoint(x) in timepoint_order else 99)
+    ]
+    patient_data = patient_data.loc[ordered_top_genes.intersection(patient_data.index)]
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(patient_data, cmap="coolwarm", linewidths=0.5,
+                cbar_kws={"label": "Methylated Fragment Count"}, ax=ax)
+    ax.set_title(f"Gene Methylation for Patient {patient_id}", fontsize=12)
+    ax.set_xlabel("Sample")
+    ax.set_ylabel("Gene")
+    plt.tight_layout()
+    fig_path = os.path.join(per_patient_output_dir, f"heatmap_top10_genes_patient_{patient_id}.png")
+    plt.savefig(fig_path)
+    plt.close()
+
+zip_path = os.path.join(args.output_dir, "per_patient_heatmaps.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+    for root, _, files in os.walk(per_patient_output_dir):
+        for file in files:
+            if file.endswith(".png"):
+                zipf.write(os.path.join(root, file), arcname=file)
+
+print(f"Per-patient heatmaps saved to: {per_patient_output_dir}")
+print(f"All heatmaps zipped at: {zip_path}")
