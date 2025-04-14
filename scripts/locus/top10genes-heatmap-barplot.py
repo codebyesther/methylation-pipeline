@@ -144,7 +144,9 @@ comparisons = {
 for comparison, (delta_values, patient_deltas_df) in comparisons.items():
     delta_series = pd.Series(delta_values)
     top_gene_deltas = delta_series.reindex(top_genes).fillna(0).sort_values()
-    top_patient_deltas = patient_deltas_df.loc[top_gene_deltas.index]
+    available_genes = [gene for gene in top_gene_deltas.index if gene in patient_deltas_df.index]
+    top_patient_deltas = patient_deltas_df.loc[available_genes]
+    top_gene_deltas = top_gene_deltas.loc[available_genes]
 
     comparison_name = comparison.replace(' ', '_').replace('→', 'to')
     top_gene_deltas.to_csv(os.path.join(args.output_dir, f"top10_gene_deltas_{comparison_name}.csv"))
