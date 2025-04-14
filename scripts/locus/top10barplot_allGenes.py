@@ -67,7 +67,10 @@ patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
 
 # === Delta Calculation Function ===
 def calculate_deltas(tp1, tp2):
-    deltas, stats = {}, []
+    deltas = {}
+    stats = []
+    gene_patient_deltas = {}
+
     for gene in tqdm(all_genes, desc=f"Calculating deltas for {tp1} vs {tp2}"):
         cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
         gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
@@ -83,16 +86,18 @@ def calculate_deltas(tp1, tp2):
         if tp1 in grouped.columns and tp2 in grouped.columns:
             grouped = grouped.dropna(subset=[tp1, tp2])
             if len(grouped) >= 2:
-                avg_delta = (grouped[tp2] - grouped[tp1]).mean()
+                delta_per_patient = grouped[tp2] - grouped[tp1]
+                avg_delta = delta_per_patient.mean()
                 deltas[gene] = avg_delta
+                gene_patient_deltas[gene] = delta_per_patient
                 t_stat, p_val = ttest_rel(grouped[tp2], grouped[tp1])
                 stats.append({'Gene': gene, 'Delta': avg_delta, 'T-stat': t_stat, 'P-value': p_val})
-    return deltas, pd.DataFrame(stats)
+    return deltas, pd.DataFrame(stats), pd.DataFrame(gene_patient_deltas).T
 
 # === Run Delta Comparisons ===
-baseline_post, stats_bp = calculate_deltas("Baseline", "Post-Treatment")
-baseline_on, stats_bo = calculate_deltas("Baseline", "On-Treatment")
-on_post, stats_op = calculate_deltas("On-Treatment", "Post-Treatment")
+baseline_post, stats_bp, bp_patient_deltas = calculate_deltas("Baseline", "Post-Treatment")
+baseline_on, stats_bo, bo_patient_deltas = calculate_deltas("Baseline", "On-Treatment")
+on_post, stats_op, op_patient_deltas = calculate_deltas("On-Treatment", "Post-Treatment")
 
 # === Save Delta and T-Test Results ===
 pd.DataFrame({
@@ -104,6 +109,11 @@ pd.DataFrame({
 stats_bp.to_csv(os.path.join(args.output_dir, "baseline_vs_post_ttest.csv"), index=False)
 stats_bo.to_csv(os.path.join(args.output_dir, "baseline_vs_on_ttest.csv"), index=False)
 stats_op.to_csv(os.path.join(args.output_dir, "on_vs_post_ttest.csv"), index=False)
+
+# === Save Per-Gene, Per-Patient Delta Tables ===
+bp_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_baseline_to_post.csv"))
+bo_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_baseline_to_on.csv"))
+op_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_on_to_post.csv"))
 
 # === Generate Gene Methylation Matrix (Raw Fragment Counts) ===
 gene_methylation_matrix = pd.DataFrame()
@@ -122,30 +132,35 @@ gene_methylation_matrix.columns.name = "Sample"
 gene_methylation_matrix.to_csv(os.path.join(args.output_dir, "gene_methylation_matrix.csv"))
 print(f"Gene methylation matrix saved to {os.path.join(args.output_dir, 'gene_methylation_matrix.csv')}")
 
-# === Plot Barplots for Top 10 Genes by Baseline → Post-Tx Delta ===
+# === Plot Barplots and Save Delta Tables for Top 10 Genes ===
 top_genes = pd.Series(baseline_post).abs().sort_values(ascending=False).head(10).index.tolist()
 comparisons = {
-    "Baseline → Post-Treatment": baseline_post,
-    "Baseline → On-Treatment": baseline_on,
-    "On-Treatment → Post-Treatment": on_post
+    "Baseline → Post-Treatment": (baseline_post, bp_patient_deltas),
+    "Baseline → On-Treatment": (baseline_on, bo_patient_deltas),
+    "On-Treatment → Post-Treatment": (on_post, op_patient_deltas),
 }
 
-for comparison, delta_values in comparisons.items():
+for comparison, (delta_values, patient_deltas_df) in comparisons.items():
     delta_series = pd.Series(delta_values)
-    valid_genes = [gene for gene in top_genes if gene in delta_series.index]
-    
-    if not valid_genes:
-        print(f"No valid genes found for {comparison}. Skipping plot.")
-        continue
+    top_gene_deltas = delta_series.reindex(top_genes).fillna(0).sort_values()
+    top_patient_deltas = patient_deltas_df.loc[top_gene_deltas.index]
 
-    top_gene_deltas = delta_series[valid_genes].sort_values()
+    # Save top 10 delta values and patient-level breakdown
+    comparison_name = comparison.replace(' ', '_').replace('→', 'to')
+    top_gene_deltas.to_csv(os.path.join(args.output_dir, f"top10_gene_deltas_{comparison_name}.csv"))
+    top_patient_deltas.to_csv(os.path.join(args.output_dir, f"top10_patient_deltas_{comparison_name}.csv"))
+
+    # n = number of patients used (in any of the top 10 genes for this comparison)
+    patients_used = top_patient_deltas.dropna(how='all', axis=1).shape[1]
+
+    # Plot
     plt.figure(figsize=(10, 6))
     sns.barplot(x=top_gene_deltas.values, y=top_gene_deltas.index, color="darkblue")
     plt.axvline(0, color="gray", linestyle="--")
     plt.xlabel(f"Avg Change in Methylation ({comparison.split(' → ')[1]} − {comparison.split(' → ')[0]})", fontsize=14)
     plt.ylabel("Gene", fontsize=14)
-    plt.title(f"Top 10 Genes by Average Methylation Change ({comparison})", fontsize=14)
+    plt.title(f"Top 10 Genes by Avg Methylation Change ({comparison})\n(n = {patients_used} patients)", fontsize=14)
     plt.tight_layout()
-    filename = f"barplot_top10_gene_deltas_{comparison.replace(' ', '_').replace('→', 'to')}.png"
+    filename = f"barplot_top10_gene_deltas_{comparison_name}.png"
     plt.savefig(os.path.join(args.output_dir, filename))
     plt.close()
