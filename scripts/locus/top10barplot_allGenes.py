@@ -132,6 +132,39 @@ gene_methylation_matrix.columns.name = "Sample"
 gene_methylation_matrix.to_csv(os.path.join(args.output_dir, "gene_methylation_matrix.csv"))
 print(f"Gene methylation matrix saved to {os.path.join(args.output_dir, 'gene_methylation_matrix.csv')}")
 
+# === Create Heatmap of Gene Methylation (Raw Counts) Across Timepoints ===
+# Reuse top_genes identified from Baseline → Post-Treatment comparison
+heatmap_df = gene_methylation_matrix.loc[gene_methylation_matrix.index.intersection(top_genes)]
+
+# Classify timepoints and group columns accordingly
+column_meta = pd.DataFrame({
+    'Sample': heatmap_df.columns,
+    'Timepoint': [classify_timepoint(col) for col in heatmap_df.columns]
+})
+
+# Calculate average methylation per gene per timepoint
+avg_methylation = heatmap_df.T.join(column_meta.set_index("Sample")) \
+                               .groupby("Timepoint").mean().T
+
+# Optional: reorder timepoints
+timepoint_order = ["Healthy", "Baseline", "On-Treatment", "Post-Treatment"]
+avg_methylation = avg_methylation[[tp for tp in timepoint_order if tp in avg_methylation.columns]]
+
+# Plot heatmap
+plt.figure(figsize=(10, 6))
+sns.heatmap(avg_methylation, cmap="coolwarm", annot=False, linewidths=0.5,
+            cbar_kws={"label": "Scaled Methylated Fragment Count Ratio"})
+plt.title("Average Methylation per Gene Across Timepoints (Top 10 by Δ Baseline → Post-Tx)", fontsize=12)
+plt.xlabel("Timepoint")
+plt.ylabel("Gene")
+plt.tight_layout()
+
+# Save
+heatmap_path = os.path.join(args.output_dir, "heatmap_top10_genes_avg_methylation.png")
+plt.savefig(heatmap_path)
+plt.close()
+print(f"Heatmap saved to {heatmap_path}")
+
 # === Plot Barplots and Save Delta Tables for Top 10 Genes ===
 top_genes = pd.Series(baseline_post).abs().sort_values(ascending=False).head(10).index.tolist()
 comparisons = {
