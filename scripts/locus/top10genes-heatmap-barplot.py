@@ -116,15 +116,18 @@ bo_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_baseline_
 op_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_on_to_post.csv"))
 
 # === Generate Gene Methylation Matrix (Raw Fragment Counts) ===
-gene_methylation_matrix = pd.DataFrame()
+gene_rows = []
 
-for gene in all_genes:
+for gene in tqdm(all_genes, desc="Building gene methylation matrix"):
     cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
     gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
     if gene_data.empty:
         continue
-    gene_methylation_matrix.loc[gene] = gene_data.sum(axis=0)
+    summed_row = gene_data.sum(axis=0)
+    summed_row.name = gene
+    gene_rows.append(summed_row)
 
+gene_methylation_matrix = pd.DataFrame(gene_rows)
 gene_methylation_matrix.index.name = "Gene"
 gene_methylation_matrix.columns.name = "Sample"
 gene_methylation_matrix.to_csv(os.path.join(args.output_dir, "gene_methylation_matrix.csv"))
