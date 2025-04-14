@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import glob
 import pandas as pd
@@ -95,21 +94,159 @@ def calculate_deltas(tp1, tp2):
                 stats.append({'Gene': gene, 'Delta': avg_delta, 'T-stat': t_stat, 'P-value': p_val})
     return deltas, pd.DataFrame(stats), pd.DataFrame(gene_patient_deltas).T
 
-# === (Remaining content stays the same until the end of heatmap section) ===
+# === Run Delta Comparisons ===
+baseline_post, stats_bp, bp_patient_deltas = calculate_deltas("Baseline", "Post-Treatment")
+baseline_on, stats_bo, bo_patient_deltas = calculate_deltas("Baseline", "On-Treatment")
+on_post, stats_op, op_patient_deltas = calculate_deltas("On-Treatment", "Post-Treatment")
+
+# === Save Delta and T-Test Results ===
+pd.DataFrame({
+    'Baseline → Post-Treatment': pd.Series(baseline_post),
+    'Baseline → On-Treatment': pd.Series(baseline_on),
+    'On-Treatment → Post-Treatment': pd.Series(on_post),
+}).to_csv(os.path.join(args.output_dir, "gene_deltas_all_comparisons.csv"))
+
+stats_bp.to_csv(os.path.join(args.output_dir, "baseline_vs_post_ttest.csv"), index=False)
+stats_bo.to_csv(os.path.join(args.output_dir, "baseline_vs_on_ttest.csv"), index=False)
+stats_op.to_csv(os.path.join(args.output_dir, "on_vs_post_ttest.csv"), index=False)
+
+# === Save Per-Gene, Per-Patient Delta Tables ===
+bp_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_baseline_to_post.csv"))
+bo_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_baseline_to_on.csv"))
+op_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_on_to_post.csv"))
+
+# === Generate Gene Methylation Matrix (Raw Fragment Counts) ===
+gene_rows = []
+for gene in tqdm(all_genes, desc="Building gene methylation matrix"):
+    cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
+    gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
+    if gene_data.empty:
+        continue
+    summed_row = gene_data.sum(axis=0)
+    summed_row.name = gene
+    gene_rows.append(summed_row)
+
+gene_methylation_matrix = pd.DataFrame(gene_rows)
+gene_methylation_matrix.index.name = "Gene"
+gene_methylation_matrix.columns.name = "Sample"
+gene_methylation_matrix.to_csv(os.path.join(args.output_dir, "gene_methylation_matrix.csv"))
+print(f"Gene methylation matrix saved to {os.path.join(args.output_dir, 'gene_methylation_matrix.csv')}")
+
+# === Plot Barplots and Save Delta Tables for Top 10 Genes ===
+top_genes = pd.Series(baseline_post).abs().sort_values(ascending=False).head(10).index.tolist()
+comparisons = {
+    "Baseline → Post-Treatment": (baseline_post, bp_patient_deltas),
+    "Baseline → On-Treatment": (baseline_on, bo_patient_deltas),
+    "On-Treatment → Post-Treatment": (on_post, op_patient_deltas),
+}
+
+for comparison, (delta_values, patient_deltas_df) in comparisons.items():
+    delta_series = pd.Series(delta_values)
+    top_gene_deltas = delta_series.reindex(top_genes).fillna(0).sort_values()
+    available_genes = [gene for gene in top_gene_deltas.index if gene in patient_deltas_df.index]
+    top_patient_deltas = patient_deltas_df.loc[available_genes]
+    top_gene_deltas = top_gene_deltas.loc[available_genes]
+
+    comparison_name = comparison.replace(' ', '_').replace('→', 'to')
+    top_gene_deltas.to_csv(os.path.join(args.output_dir, f"top10_gene_deltas_{comparison_name}.csv"))
+    top_patient_deltas.to_csv(os.path.join(args.output_dir, f"top10_patient_deltas_{comparison_name}.csv"))
+
+    patients_used = top_patient_deltas.dropna(how='all', axis=1).shape[1]
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=top_gene_deltas.values, y=top_gene_deltas.index, color="darkblue")
+    plt.axvline(0, color="gray", linestyle="--")
+    plt.xlabel(f"Avg Change in Methylation ({comparison.split(' → ')[1]} − {comparison.split(' → ')[0]})", fontsize=14)
+    plt.ylabel("Gene", fontsize=14)
+    plt.title(f"Top 10 Genes by Avg Methylation Change ({comparison})\n(n = {patients_used} patients)", fontsize=14)
+    plt.tight_layout()
+    plt.savefig(os.path.join(args.output_dir, f"barplot_top10_gene_deltas_{comparison_name}.png"))
+    plt.close()
+
+# === Generate Heatmap of Raw Methylation for Top Genes ===
+ordered_top_genes = pd.Series(baseline_post).reindex(top_genes).fillna(0).sort_values().index.tolist()
+heatmap_df = gene_methylation_matrix.loc[ordered_top_genes]
+
+column_meta = pd.DataFrame({
+    'Sample': heatmap_df.columns,
+    'Timepoint': [classify_timepoint(col) for col in heatmap_df.columns]
+})
+avg_methylation = heatmap_df.T.join(column_meta.set_index("Sample")).groupby("Timepoint").mean().T
+
+timepoint_order = ["Healthy", "Baseline", "On-Treatment", "Post-Treatment"]
+avg_methylation = avg_methylation[[tp for tp in timepoint_order if tp in avg_methylation.columns]]
+
+plt.figure(figsize=(10, 6))
+sns.heatmap(avg_methylation, cmap="coolwarm", linewidths=0.5,
+            cbar_kws={"label": "Scaled Methylated Fragment Count Ratio"})
+plt.title("Average Methylation per Gene Across Timepoints (Top 10 by Δ Baseline → Post-Tx)", fontsize=12)
+plt.xlabel("Timepoint")
+plt.ylabel("Gene")
+plt.tight_layout()
+plt.savefig(os.path.join(args.output_dir, "heatmap_top10_genes_avg_methylation.png"))
+plt.close()
+print("Heatmap saved.")
+
+# === Generate Per-Patient Heatmaps for Top 10 Genes ===
+per_patient_output_dir = os.path.join(args.output_dir, "per_patient_heatmaps")
+os.makedirs(per_patient_output_dir, exist_ok=True)
+
+sample_metadata = pd.DataFrame({
+    'Sample': gene_methylation_matrix.columns,
+    'Timepoint': [classify_timepoint(col) for col in gene_methylation_matrix.columns],
+    'Patient': [get_patient(col) for col in gene_methylation_matrix.columns]
+}).dropna(subset=["Patient"])
+
+for patient_id in sample_metadata["Patient"].unique():
+    patient_samples = sample_metadata[sample_metadata["Patient"] == patient_id]
+    patient_cols = patient_samples["Sample"].tolist()
+
+    if not patient_cols:
+        continue
+
+    patient_data = gene_methylation_matrix.loc[
+        gene_methylation_matrix.index.intersection(ordered_top_genes),
+        gene_methylation_matrix.columns.intersection(patient_cols)
+    ]
+    if patient_data.empty:
+        continue
+
+    patient_data = patient_data[
+        sorted(patient_data.columns, key=lambda x: timepoint_order.index(classify_timepoint(x)) if classify_timepoint(x) in timepoint_order else 99)
+    ]
+    patient_data = patient_data.loc[pd.Index(ordered_top_genes).intersection(patient_data.index)]
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(patient_data, cmap="coolwarm", linewidths=0.5,
+                cbar_kws={"label": "Methylated Fragment Count"}, ax=ax)
+    ax.set_title(f"Gene Methylation for Patient {patient_id}", fontsize=12)
+    ax.set_xlabel("Sample")
+    ax.set_ylabel("Gene")
+    plt.tight_layout()
+    fig_path = os.path.join(per_patient_output_dir, f"heatmap_top10_genes_patient_{patient_id}.png")
+    plt.savefig(fig_path)
+    plt.close()
+
+zip_path = os.path.join(args.output_dir, "per_patient_heatmaps.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+    for root, _, files in os.walk(per_patient_output_dir):
+        for file in files:
+            if file.endswith(".png"):
+                zipf.write(os.path.join(root, file), arcname=file)
+
+print(f"Per-patient heatmaps saved to: {per_patient_output_dir}")
+print(f"All heatmaps zipped at: {zip_path}")
 
 # === Generate Multi-Gene Line Plots ===
 lineplot_dir = os.path.join(args.output_dir, "lineplots")
 os.makedirs(lineplot_dir, exist_ok=True)
 
 # Melt matrix for top genes only
-
-# Ensure timepoints are in correct order
 melted_timepoint_order = ["Healthy", "Baseline", "On-Treatment", "Post-Treatment"]
 melted = gene_methylation_matrix.loc[ordered_top_genes].reset_index().melt(id_vars='Gene', var_name='Sample', value_name='Methylation')
 melted['Timepoint'] = melted['Sample'].map(classify_timepoint)
 melted['Patient'] = melted['Sample'].map(get_patient)
 melted.dropna(subset=['Patient'], inplace=True)
-
 # Apply categorical order to Timepoint
 melted['Timepoint'] = pd.Categorical(melted['Timepoint'], categories=melted_timepoint_order, ordered=True)
 
