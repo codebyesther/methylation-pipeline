@@ -215,7 +215,7 @@ for patient_id in sample_metadata["Patient"].unique():
     patient_data = patient_data[
         sorted(patient_data.columns, key=lambda x: timepoint_order.index(classify_timepoint(x)) if classify_timepoint(x) in timepoint_order else 99)
     ]
-    patient_data = patient_data.loc[ordered_top_genes.intersection(patient_data.index)]
+    patient_data = patient_data.loc[pd.Index(ordered_top_genes).intersection(patient_data.index)]
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(patient_data, cmap="coolwarm", linewidths=0.5,
