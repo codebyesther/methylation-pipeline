@@ -212,7 +212,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
-            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
+            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment (This determines the gray bubble sizes that actually get plotted in the legend)
             ax_legend.text(legend_x_coord + 2, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
@@ -317,7 +317,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
-        ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
+        ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment (This determines the gray bubble sizes that actually get plotted in the legend)
         ax_legend.text(legend_x_coord + 2, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
