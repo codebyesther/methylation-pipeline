@@ -202,7 +202,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Calculate proportional vertical positions based on bubble radii
         cumulative_height = np.cumsum([size**0.5 for size in sizes])    # legend bubble heights combined
         total_height = cumulative_height[-1]
-        positions = np.array([0.7, 6, 15]) * 10/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+        positions = np.array([0.7, 6.1, 15]) * 10/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(-7, 10)
@@ -218,7 +218,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
             ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 800, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment (This scaling factor decides the actual legend bubble size)
-            ax_legend.text(legend_x_coord + 2, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
+            ax_legend.text(legend_x_coord + 5, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
         ax_legend.text(1.1, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
@@ -309,7 +309,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Calculate proportional vertical positions based on bubble radii
     cumulative_height = np.cumsum([size**0.5 for size in sizes])    # legend bubble heights combined
     total_height = cumulative_height[-1]
-    positions = np.array([0.7, 6, 15]) * 10/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+    positions = np.array([0.7, 6.1, 15]) * 10/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(-7, 10)
@@ -325,14 +325,14 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
         ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 800, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment (This scaling factor decides the actual legend bubble size)
-        ax_legend.text(legend_x_coord + 2, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
+        ax_legend.text(legend_x_coord + 5, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
     ax_legend.text(1.1, positions[-1] + 0.5, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.5 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
     # Adjust y-limits to ensure no clipping
-    ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and title
+    ax_legend.set_ylim(0, positions[-1] + 0.5)    # legend y-axis limit should be larger than the distance between top bubble and legend title
 
     fig.subplots_adjust(left=0.1, right=0.96, top=0.9, bottom=0.1, wspace=0.15, hspace=0.65)  # left=0.1 reserves 10% of the figure width as a margin on the left side, wspace between the plot area and legend area, hspace controls the vertical spacing between colorbar and legend
     filename_base = os.path.join("plots", f"bubbleplot_{chrom}")
