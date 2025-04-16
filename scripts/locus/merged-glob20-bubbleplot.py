@@ -221,7 +221,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
             ax_legend.text(legend_x_coord + 10, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
-        ax_legend.text(1.1, positions[-1] + 0.2, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.2 above the top bubble
+        ax_legend.text(1.1, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.2 above the top bubble
                     horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
         # Adjust y-limits to ensure no clipping
@@ -328,7 +328,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
         ax_legend.text(legend_x_coord + 10, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
-    ax_legend.text(1.1, positions[-1] + 0.2, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.2 above the top bubble
+    ax_legend.text(1.1, positions[-1] + 0.3, "Bubble Size\n(Scaled Fragment Count Ratio)",    # title is 0.2 above the top bubble
                 horizontalalignment='center', verticalalignment='center', fontweight='bold', fontsize=14)
 
     # Adjust y-limits to ensure no clipping
