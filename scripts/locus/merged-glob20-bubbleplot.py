@@ -200,9 +200,9 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         print("Main plot bubble size range:", subset_df["value"].apply(lambda v: v**0.5 * 800).describe())
 
         # Calculate proportional vertical positions based on bubble radii
-        cumulative_height = np.cumsum([size**0.5 *0.5 for size in sizes])    # legend bubble heights combined
+        cumulative_height = np.cumsum([size**0.5 for size in sizes])    # legend bubble heights combined
         total_height = cumulative_height[-1]
-        positions = np.array([0.1, 6, 15]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+        positions = np.array([0.1, 6, 15]) * 15/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
         ax_legend.set_xlim(-6, 10)
@@ -307,9 +307,9 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     print("Main plot bubble size range:", subset_df["value"].apply(lambda v: v**0.5 * 800).describe())
 
     # Calculate proportional vertical positions based on bubble radii
-    cumulative_height = np.cumsum([size**0.5 *0.5 for size in sizes])    # legend bubble heights combined
+    cumulative_height = np.cumsum([size**0.5 for size in sizes])    # legend bubble heights combined
     total_height = cumulative_height[-1]
-    positions = np.array([0.1, 6, 15]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
+    positions = np.array([0.1, 6, 15]) * 15/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
     ax_legend.set_xlim(-6, 10)
