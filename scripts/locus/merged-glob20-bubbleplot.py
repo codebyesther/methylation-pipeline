@@ -195,7 +195,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Define the sizes and calculate bubble sizes
         sizes = [1, 100, 1000]
-        bubble_sizes = [size**0.5 * 8000 for size in sizes]    # size of bubbles within legend area
+        bubble_sizes = [size**0.5 * 800 for size in sizes]    # size of bubbles within legend area
         print("Legend bubble sizes:", bubble_sizes)
         print("Main plot bubble size range:", subset_df["value"].apply(lambda v: v**0.5 * 800).describe())
 
@@ -217,7 +217,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
 
         # Manually draw the legend using scatter and text
         for size, pos in zip(sizes, positions):
-            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
+            ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 800, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment (This scaling factor decides the actual legend bubble size)
             ax_legend.text(legend_x_coord + 2, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
         # Legend title slightly above top bubble, adjust the position as needed
@@ -302,7 +302,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Use the same logic as the per-patient plots for legend spacing
     sizes = [1, 100, 1000]
-    bubble_sizes = [size**0.5 * 10000 for size in sizes]    # bubble size inside the legend area
+    bubble_sizes = [size**0.5 * 800 for size in sizes]    # bubble size inside the legend area
     print("Legend bubble sizes:", bubble_sizes)
     print("Main plot bubble size range:", subset_df["value"].apply(lambda v: v**0.5 * 800).describe())
 
@@ -324,7 +324,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
 
     # Manually draw the legend using scatter and text
     for size, pos in zip(sizes, positions):
-        ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 5, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment
+        ax_legend.scatter(legend_x_coord, pos, s=size**0.5 * 800, color="gray", alpha=0.5)    # Use legend_x_coord for gray bubble x-coordinate adjustment (This scaling factor decides the actual legend bubble size)
         ax_legend.text(legend_x_coord + 2, pos, str(size), verticalalignment='center', horizontalalignment='left', fontsize=14)    # Adjust fragment count text position relative to the gray bubbles based on legend_x_coord
 
     # Legend title slightly above top bubble, adjust the position as needed
