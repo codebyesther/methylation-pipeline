@@ -165,7 +165,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
                 cmap="viridis",
                 alpha=0.6,
                 vmin=0,  # lower bound of color scale
-                vmax=100    # increased upper bound of color scale
+                vmax=50    # increased upper bound of color scale
             )
 
         # Format main axis
@@ -194,7 +194,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         ax_legend.axis("off")  # hide ticks and background
 
         # Define the sizes and calculate bubble sizes
-        sizes = [1, 10, 100]
+        sizes = [1, 5, 50]
         bubble_sizes = [size**0.5 * 800 for size in sizes]    # size of bubbles within legend area
         print("Legend bubble sizes:", bubble_sizes)
         print("Main plot bubble size range:", subset_df["value"].apply(lambda v: v**0.5 * 800).describe())
@@ -205,7 +205,7 @@ for patient in tqdm(collapsed.columns.levels[0], desc="Generating bubble plots p
         positions = np.array([0.1, 6, 15]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
         # Set the x-axis limits explicitly for the legend axis
-        ax_legend.set_xlim(-6, 6)
+        ax_legend.set_xlim(-6, 10)
 
         # Print the axis limits to check if legend_x_coord is within range
         x_min, x_max = ax_legend.get_xlim()
@@ -278,7 +278,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
             cmap="viridis",
             alpha=0.6,
             vmin=0,  # lower bound of color scale
-            vmax=100    # increased upper bound of color scale
+            vmax=50    # increased upper bound of color scale
         )
 
     ax_main.set_yticks(list(timepoint_positions_chromosome.values()))  # Ensure the number of ticks matches the number of labels
@@ -301,7 +301,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     ax_legend.axis("off")
 
     # Use the same logic as the per-patient plots for legend spacing
-    sizes = [1, 10, 100]
+    sizes = [1, 5, 50]
     bubble_sizes = [size**0.5 * 800 for size in sizes]    # bubble size inside the legend area
     print("Legend bubble sizes:", bubble_sizes)
     print("Main plot bubble size range:", subset_df["value"].apply(lambda v: v**0.5 * 800).describe())
@@ -312,7 +312,7 @@ for chrom in tqdm(coords_df["Chr"].unique(), desc="Generating bubble plots per c
     positions = np.array([0.1, 6, 15]) * 9/ 1000 * total_height / len(sizes)    # vertical spacing between gray bubble markers
 
     # Set the x-axis limits explicitly for the legend axis
-    ax_legend.set_xlim(-6, 6)
+    ax_legend.set_xlim(-6, 10)
 
     # Print the axis limits to check if legend_x_coord is within range
     x_min, x_max = ax_legend.get_xlim()
