@@ -42,7 +42,7 @@ patients = pd.read_excel(patient_list_path).iloc[:, 0].dropna().astype(str).toli
 
 # === Create Rankings Per Sample ===
 ranks = matrix.rank(axis=0, method='min', ascending=False)
-ranks[ranks >= 21] = 21  # Cap low methylation ranks at 501
+ranks[ranks >= 21] = 21  # Cap low methylation ranks at 21
 ranks.to_csv(os.path.join(output_dir, "gene_methylation_ranks.csv"))
 
 # === Metadata Mapping ===
@@ -75,10 +75,10 @@ for patient_id, subdf in melted.groupby("Patient"):
     plt.yscale("log")
     plt.gca().invert_yaxis()
 
-    collapsed_count = (subdf['Rank'] == 501).sum()
+    collapsed_count = (subdf['Rank'] == 21).sum()
     plt.text(
         0.99, 0.02,
-        f"{collapsed_count} gene-timepoints at rank 501",
+        f"{collapsed_count} gene-timepoints at rank 21",
         ha='right', va='bottom',
         transform=plt.gca().transAxes,
         fontsize=10, color='gray'
