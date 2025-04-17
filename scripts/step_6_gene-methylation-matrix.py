@@ -56,7 +56,7 @@ gene_methylation_matrix.index.name = "Gene"
 gene_methylation_matrix.columns.name = "Sample"
 
 # === Save Output ===
-out_path = os.path.join("plots", "heatmaps-lineplots")
+out_path = os.path.join("output")
 os.makedirs(out_path, exist_ok=True)
 gene_methylation_matrix.to_csv(os.path.join(out_path, "gene_methylation_matrix.csv"))
 print(f"Saved gene methylation matrix to: {os.path.join(out_path, 'gene_methylation_matrix.csv')}")
