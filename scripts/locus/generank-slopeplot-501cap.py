@@ -23,11 +23,11 @@ def classify_detailed_timepoint(sample_name):
     if re.search(r'Off[-_]?tx', sample_name, re.IGNORECASE):
         return "Off-Tx"
     
-    match = re.search(r'C(\\d{1,2})(?!\\d)', sample_name)
+    match = re.search(r'C(\d{1,2})(?!\d)', sample_name)
     if match:
         return f"C{int(match.group(1))}"
     
-    return None  # skip sample if timepoint can't be confidently identified
+    return "On-Treatment"
 
 
 def sort_timepoints(tp):
