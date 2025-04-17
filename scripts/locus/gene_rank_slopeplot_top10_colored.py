@@ -93,6 +93,7 @@ for patient_id, subdf in melted.groupby("Patient"):
             alpha=0.6,
             linewidth=2 if is_highlighted else 0.5,
             color=gene_color_dict[gene] if is_highlighted else 'black',
+            linestyle='-' if is_highlighted else ':',
             label=gene if is_highlighted else None
         )
 
