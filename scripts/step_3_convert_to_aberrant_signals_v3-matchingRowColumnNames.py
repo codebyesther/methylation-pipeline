@@ -35,14 +35,27 @@ with pd.option_context('mode.use_inf_as_na', True):
     ratio_raw = (aligned_glob20 / aligned_globmin80.replace(0, pd.NA)) * 100000
     ratio_df = ratio_raw.fillna("INF")
 
-# STEP6: Count INF values
-inf_count = (ratio_df == "INF").sum().sum()
+# STEP6: Count and log INF values
+inf_mask = ratio_df == "INF"
+inf_count = inf_mask.sum().sum()
 print(f"⚠️ Total 'INF' values (division by zero): {inf_count}")
 
-# STEP7: Format for export
-ratio_df.reset_index(inplace=True)
+# Save INF locations to CSV
+inf_locations = [(row_idx, col) for row_idx, row in ratio_df.iterrows() for col in ratio_df.columns if row[col] == "INF"]
+inf_log_df = pd.DataFrame(inf_locations, columns=["CGI_Region", "Sample"])
+inf_log_path = os.path.join(output_dir, "inf_locations_log.csv")
+inf_log_df.to_csv(inf_log_path, index=False)
+print(f"📝 Logged INF locations to: {inf_log_path}")
 
-# STEP8: Add total summary rows
+# Save INF summary (column-wise INF counts) to CSV
+inf_summary = inf_mask.sum().reset_index()
+inf_summary.columns = ["Sample", "INF_Count"]
+inf_summary_path = os.path.join(output_dir, "inf_summary.csv")
+inf_summary.to_csv(inf_summary_path, index=False)
+print(f"📊 Saved INF summary to: {inf_summary_path}")
+
+# STEP7: Format for Excel export
+ratio_df.reset_index(inplace=True)
 total_glob20_row = glob20_df[glob20_df[label_col] == cpg_label].copy()
 total_globmin80_row = globmin80_df[globmin80_df[label_col] == cpg_label].copy()
 if not total_glob20_row.empty:
@@ -51,20 +64,19 @@ if not total_globmin80_row.empty:
     total_globmin80_row.iloc[0, 0] = "Total CpG island fragments counts for GlobMin80"
 result_df = pd.concat([total_glob20_row, total_globmin80_row, ratio_df], ignore_index=True)
 
-# STEP9: Export Excel
+# STEP8: Export Excel with red highlight for INF
 output_file = os.path.join(output_dir, "scaled_fragment_ratios_matrix.xlsx")
 result_df.to_excel(output_file, index=False)
 
-# STEP10: Highlight INF cells in red using openpyxl
 wb = load_workbook(output_file)
 ws = wb.active
+ws.title = "Scaled Fragment Ratios"
 red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
 
-# INF highlighting (start at row 3 to skip 2 summary rows)
 for row in ws.iter_rows(min_row=3, min_col=2, max_col=ws.max_column):
     for cell in row:
         if cell.value == "INF":
             cell.fill = red_fill
 
 wb.save(output_file)
-print(f"✅ Saved output with red-highlighted 'INF' cells to: {output_file}")
+print(f"✅ Final Excel output saved with red-highlighted INF cells: {output_file}")
