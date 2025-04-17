@@ -1,5 +1,5 @@
-# This version assigns rank 501 to all genes that are rank 501 or lower. In other words, Ranking is capped at 501 to reduce noise from low-ranking genes.
-# It also gives Annotation for the number of gene-timepoints compressed at rank 501.
+# This version assigns rank 21 to all genes that are rank 21 or lower. In other words, Ranking is capped at 21 to reduce noise from low-ranking genes. 
+# It also gives Annotation for the number of gene-timepoints compressed at rank 21. 
 
 import os
 import pandas as pd
