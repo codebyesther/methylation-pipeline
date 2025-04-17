@@ -13,15 +13,16 @@ os.makedirs(output_dir, exist_ok=True)
 
 # === Helper Functions ===
 def classify_detailed_timepoint(sample_name):
-    if match := re.search(r'(Baseline|Off-tx|INNOV|C\d+)', sample_name):
-        token = match.group(1)
-        if token == "INNOV":
-            return "Healthy"
-        elif token == "Off-tx":
-            return "Off-Tx"
-        else:
-            return token
-    return "On-Treatment"
+    if "INNOV" in sample_name:
+        return "Healthy"
+    if "Baseline" in sample_name:
+        return "Baseline"
+    if "Off-tx" in sample_name or "Off-Tx" in sample_name:
+        return "Off-Tx"
+    match = re.search(r'C(\\d+)[^\\d]?', sample_name)
+    if match:
+        return f\"C{match.group(1)}\"
+    return \"On-Treatment\"
 
 def sort_timepoints(tp):
     if tp == "Healthy": return -2
