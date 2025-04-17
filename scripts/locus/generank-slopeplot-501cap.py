@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import re
 
 # === Settings ===
-input_path = os.path.join("plots", "heatmaps-lineplots", "gene_methylation_matrix.csv")
+input_path = os.path.join("output", "gene_methylation_matrix.csv")
 patient_list_path = os.path.join("data", "Patient ID list fot EMseq16-18-20.xlsx")
 output_dir = os.path.join("plots", "rank-slopeplot")
 os.makedirs(output_dir, exist_ok=True)
