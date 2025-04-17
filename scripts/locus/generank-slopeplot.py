@@ -39,6 +39,7 @@ patients = pd.read_excel(patient_list_path).iloc[:, 0].dropna().astype(str).toli
 
 # === Create Rankings Per Sample ===
 ranks = matrix.rank(axis=0, method='min', ascending=False)
+ranks.to_csv(os.path.join(output_dir, "gene_methylation_ranks.csv"))
 timepoint_map = {col: classify_detailed_timepoint(col) for col in ranks.columns}
 patient_map = {col: get_patient(col, patients) for col in ranks.columns}
 
@@ -48,6 +49,7 @@ melted['Timepoint'] = melted['Sample'].map(timepoint_map)
 melted['Patient'] = melted['Sample'].map(patient_map)
 melted.dropna(subset=['Patient'], inplace=True)
 melted['Timepoint'] = pd.Categorical(melted['Timepoint'], categories=sorted(set(timepoint_map.values()), key=sort_timepoints), ordered=True)
+melted.to_csv(os.path.join(output_dir, "melted_gene_methylation_ranks.csv"))
 
 # === Plot Per-Patient Slope Charts ===
 for patient_id, subdf in melted.groupby("Patient"):
