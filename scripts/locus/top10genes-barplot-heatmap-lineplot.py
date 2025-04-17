@@ -40,7 +40,7 @@ def get_patient(sample):
 # === Load Data ===
 output_folder = 'output'
 data_folder = 'data'
-cpg_matrix_file = find_file(output_folder, "matrix")
+cpg_matrix_file = find_file(output_folder, "merged_output_glob20")
 patient_list_file = find_file(data_folder, "patient")
 gene_annotation_file = find_file(output_folder, "cgi_map")
 
