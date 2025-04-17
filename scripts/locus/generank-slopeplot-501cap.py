@@ -55,7 +55,7 @@ melted = ranks.reset_index().melt(id_vars='Gene', var_name='Sample', value_name=
 melted['Timepoint'] = melted['Sample'].map(timepoint_map)
 melted['Patient'] = melted['Sample'].map(patient_map)
 melted.dropna(subset=['Patient'], inplace=True)
-melted['Timepoint'] = pd.Categorical(melted['Timepoint'], categories=sorted(set(timepoint_map.values()), key=sort_timepoints), ordered=True)
+all_timepoints_ordered = sorted(set(melted['Timepoint']), key=sort_timepoints)  # Plot Per-Patient Slope Charts with enforced timepoint ordering for patient_id, subdf in melted.groupby("Patient"):     if subdf['Timepoint'].nunique() < 2:         continue     # Re-categorize timepoints for this patient to enforce global order     subdf = subdf.copy()     subdf['Timepoint'] = pd.Categorical(subdf['Timepoint'], categories=all_timepoints_ordered, ordered=True)      plt.figure(figsize=(14, 8))     for gene, gene_df in subdf.groupby("Gene"):         plt.plot(gene_df['Timepoint'], gene_df['Rank'], alpha=0.5, linewidth=0.7)     plt.yscale("log")     plt.gca().invert_yaxis()     collapsed_count = (subdf['Rank'] == 501).sum()     plt.text(         0.99, 0.02,         f"{collapsed_count} gene-timepoints at rank 501",         ha='right', va='bottom',         transform=plt.gca().transAxes,         fontsize=10, color='gray'     )     plt.title(f"Gene Ranking Trajectories for Patient {patient_id}")     plt.ylabel("Gene Rank (lower = more methylated, log scale)")     plt.xlabel("Timepoint")     plt.tight_layout()     plt.savefig(os.path.join(output_dir, f"rank_slopeplot_patient_{patient_id}.png"))     plt.close()
 melted.to_csv(os.path.join(output_dir, "melted_gene_methylation_ranks.csv"), index=False)
 
 # === Plot Per-Patient Slope Charts ===
