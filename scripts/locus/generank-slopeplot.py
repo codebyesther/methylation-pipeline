@@ -19,10 +19,10 @@ def classify_detailed_timepoint(sample_name):
         return "Baseline"
     if "Off-tx" in sample_name or "Off-Tx" in sample_name:
         return "Off-Tx"
-    match = re.search(r'C(\\d+)[^\\d]?', sample_name)
+    match = re.search(r'C(\d+)[^\d]?', sample_name)
     if match:
-        return f\"C{match.group(1)}\"
-    return \"On-Treatment\"
+        return f"C{match.group(1)}"
+    return "On-Treatment"
 
 def sort_timepoints(tp):
     if tp == "Healthy": return -2
