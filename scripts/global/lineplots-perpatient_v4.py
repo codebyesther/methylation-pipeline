@@ -9,7 +9,7 @@ import re
 
 # === Directory Setup ===
 input_dir = "output"
-plot_dir = os.path.join("plots", "lineplots")
+plot_dir = os.path.join("plots", "global-lineplots")
 per_patient_dir = os.path.join(plot_dir, "per_patient")
 replicate_table_dir = os.path.join("output", "per_patient_tables")
 os.makedirs(per_patient_dir, exist_ok=True)
