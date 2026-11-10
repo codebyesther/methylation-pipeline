@@ -1,459 +1,376 @@
 # 🧬 Methylation Pipeline
 
-This repository contains preprocessing and visualization tools for analyzing DNA methylation changes across treatment timepoints using filtered EMseq data. It is useful for following longitudinal studies.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15150516.svg)](https://doi.org/10.5281/zenodo.15150516)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🔧 Preprocessing Steps
+A Python pipeline for **longitudinal analysis of cell-free DNA (cfDNA) methylation** from enzymatic methyl-seq (EM-seq) data. It takes CpG island (CGI) fragment counts from one or more sequencing runs, converts them into normalized methylation signals, summarizes them at the gene level, and tracks how methylation changes across treatment timepoints within each patient and across a cohort, with comparisons to healthy controls.
 
-These scripts help prepare your input methylation data.
+The pipeline works at three levels:
 
-### Step 1: Filter Methylation Files by Patient ID
-- Script: `scripts/step_1_filter_patients_local.py`
-- Applies to all methylation Excel files and a patient ID list.
-- Filters large Excel files to retain only samples from selected patients.
-- Outputs one filtered Excel file per original input in the output directory (e.g. `EMSeq-NN-Run-1_CG80_CH20_Tot10_Glob20_cpgi_counts.xlsx_samples-of-interest`)
-- Sample output(s):
-
-| Header                  |   MN010-112_Baseline_2018.05.11 |   MN010-112_C2D1_2018.06.18 |   MN010-112_C3D1_2018.07.16 |   EC001-911_Baseline_2018.10.05 |   EC001-911_C3D1_2018.12.07 |   EC001-911_C7D1-Off-tx_2019.03.29 |   DV110-203_Baseline_2018.05.14 |   DV110-203_C1D15_2018.05.30 |   DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-13 |   DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-8 |   AM002-908_Baseline_2018.05.23 |   AM002-908_C2D1_2018.06.28 |   AM002-908_Off-tx_2018.07.18 |   AP000-765_Baseline_2017.03.04 |   AP000-765_C1D15_2017.03.23 |   AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-3 |   AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-4 |
-|:------------------------|--------------------------------:|----------------------------:|----------------------------:|--------------------------------:|----------------------------:|-----------------------------------:|--------------------------------:|-----------------------------:|--------------------------------------------------------:|-------------------------------------------------------:|--------------------------------:|----------------------------:|------------------------------:|--------------------------------:|-----------------------------:|----------------------------------------------------------:|----------------------------------------------------------:|
-| Info_EMSeq              |                        20       |                     20      |                    20       |                              20 |                    20       |                                 20 |                              20 |                           20 |                                                      20 |                                                     20 |                              20 |                          20 |                        20     |                        20       |                           20 |                                                        20 |                                                        20 |
-| Info_Pool               |                         4       |                      4      |                     4       |                               4 |                     4       |                                  4 |                               1 |                            1 |                                                       1 |                                                      1 |                               1 |                           1 |                         1     |                         4       |                            4 |                                                         3 |                                                         4 |
-| Info_Barcode            |                        21       |                     22      |                    23       |                              18 |                    19       |                                 20 |                               6 |                            7 |                                                      13 |                                                      8 |                               9 |                          10 |                        11     |                        15       |                           16 |                                                        17 |                                                        17 |
-| Info_Index              |                         4       |                      4      |                     4       |                               4 |                     4       |                                  4 |                               1 |                            1 |                                                       1 |                                                      1 |                               1 |                           1 |                         1     |                         4       |                            4 |                                                         3 |                                                         4 |
-| Info_DNA-Input-Blunting |                         7.12308 |                      3.0988 |                     6.98218 |                              14 |                     4.88543 |                                 14 |                              14 |                           14 |                                                      14 |                                                     14 |                              14 |                          14 |                        11.013 |                         3.94445 |                           14 |                                                        14 |                                                        14 |
-
-#### 📁 Input File Requirements
-- One Excel file with patient IDs (e.g. `patient_list.xlsx`)
-  - IDs must be in the first column.
-  - Sample input patient ID file:
-
-    | Patient ID   |
-    |:-------------|
-    | EC001-911    |
-    | MN010-112    |
-    | DV110-203    |
-    | AM002-908    |
-    | AP000-765    |
-- One or more methylation Excel files
-  - Columns should contain patient IDs in their names.
-  - Sample input methylation file:
-
-| Header                  |   MN010-112_Baseline_2018.05.11 |   MN010-112_C2D1_2018.06.18 |   MN010-112_C3D1_2018.07.16 |   ALN0114-D_2005.04.07 |   ALN0114-E_2005.05.19 |   ALN0114-H_2005.06.30 |   ANS0122-A_2015.01.05 |   ANS0122-B_2015.01.12 |   ANS0122-C_2015.01.21 |   ANS0122-D__2015.01.29_Replicate-Barcode-12_Pool-3 |   ANS0122-D__2015.01.29_Replicate-Barcode-12_Pool-4 |   EC001-911_Baseline_2018.10.05 |   EC001-911_C3D1_2018.12.07 |   EC001-911_C7D1-Off-tx_2019.03.29 |   DV110-203_Baseline_2018.05.14 |   DV110-203_C1D15_2018.05.30 |   DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-13 |   DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-8 |   AM002-908_Baseline_2018.05.23 |   AM002-908_C2D1_2018.06.28 |   AM002-908_Off-tx_2018.07.18 |   JEOL9923-B_2014.10.24 |   JEOL9923-C_2014.12.05 |   AP000-765_Baseline_2017.03.04 |   AP000-765_C1D15_2017.03.23 |   AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-3 |   AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-4 |   OP3475-L10-AC_EoT_2016.04.29 |   OP3475-L10-AC_Post-SBRT-C1D1_2015.11.24 |   OP3475-L10-AC_Post-SBRT-C2D1_2015.12.14 |   OP3475-L10-AC_Post-SBRT-C3D1_2016.01.04 |   OP3475-L10-AC_Pre-SBRT-C1D1_2015.05.07 |   OP3475-L10-AC_Pre-SBRT-C2D1_2015.05.28 |   OP3475-L10-AC_Pre-SBRT-C5D1_2015.08.17 |   OP3475-L22-MB_Gamma-Knife_2015.09.30 |   RD3475-L22-MB_Pre-SBRT-C1D1_2015.07.01 |   RD3475-L22-MB_Pre-SBRT-C2D1_2015.07.22 |   RD3475-L22-MB_Pre-SBRT-C3D1_2015.08.12 |   RD3475-L22-MB_Pre-SBRT-C4D1_2015.09.02 |   OP3475-L28-RL_Pre-SBRT-C1D1_2015.09.04 |   OP3475-L28-RL_Pre-SBRT-C2D1_2015.09.24 |   OP3475-L28-RL_Pre-SBRT-C3D1_2015.10.13 |   OP3475-L28-RL_Progression_2015.11.18_Replicate-Barcode-12 |   OP3475-L28-RL_Progression_2015.11.18_Replicate-Barcode-23 |   OP3475-L30-AL_at-SBRT_2016.06.20 |   OP3475-L30-AL_Pre-SBRT-C1D1_2015.09.22 |   OP3475-L30-AL_Pre-SBRT-C2D1_2015.10.13 |   OP3475-L30-AL_Pre-SBRT-C3D1_2015.11.03 |   OP3475-L30-AL_Pre-SBRT-C4D1_2015.12.02 |   BAPJO-37_2018.04.19 |   BAPJO-38_2018.04.19 |   BAPJO-48_2018.05.09 |
-|:------------------------|--------------------------------:|----------------------------:|----------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|-------------------------:|------------------------------------------------------:|------------------------------------------------------:|--------------------------------:|----------------------------:|-----------------------------------:|--------------------------------:|-----------------------------:|--------------------------------------------------------:|-------------------------------------------------------:|--------------------------------:|----------------------------:|------------------------------:|-------------------------:|-------------------------:|--------------------------------:|-----------------------------:|----------------------------------------------------------:|----------------------------------------------------------:|-------------------------------:|------------------------------------------:|------------------------------------------:|------------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|---------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|------------------------------------------------------------:|------------------------------------------------------------:|-----------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------------------------:|-----------------------:|-----------------------:|-----------------------:|
-| Info_EMSeq              |                        20       |                     20      |                    20       |                 20       |                       20 |                       20 |                       20 |                       20 |                       20 |                                                    20 |                                                    20 |                              20 |                    20       |                                 20 |                              20 |                           20 |                                                      20 |                                                     20 |                              20 |                          20 |                        20     |                  20      |                  20      |                        20       |                           20 |                                                        20 |                                                        20 |                       20       |                                  20       |                                  20       |                                  20       |                                 20       |                                 20       |                                 20       |                                     20 |                                 20       |                                 20       |                                 20       |                                20        |                                  20      |                                   20     |                                  20      |                                                          20 |                                                          20 |                           20       |                                 20       |                                 20       |                                20        |                                 20       |                     20 |                     20 |                     20 |
-| Info_Pool               |                         4       |                      4      |                     4       |                  3       |                        3 |                        3 |                        3 |                        3 |                        3 |                                                     3 |                                                     4 |                               4 |                     4       |                                  4 |                               1 |                            1 |                                                       1 |                                                      1 |                               1 |                           1 |                         1     |                   4      |                   4      |                         4       |                            4 |                                                         3 |                                                         4 |                        2       |                                   2       |                                   2       |                                   2       |                                  2       |                                  2       |                                  2       |                                      1 |                                  1       |                                  1       |                                  1       |                                 1        |                                   2      |                                    2     |                                   2      |                                                           2 |                                                           2 |                            3       |                                  3       |                                  3       |                                 3        |                                  3       |                      4 |                      2 |                      1 |
-| Info_Barcode            |                        21       |                     22      |                    23       |                  1       |                        2 |                        3 |                        9 |                       10 |                       11 |                                                    12 |                                                    12 |                              18 |                    19       |                                 20 |                               6 |                            7 |                                                      13 |                                                      8 |                               9 |                          10 |                        11     |                  13      |                  14      |                        15       |                           16 |                                                        17 |                                                        17 |                       19       |                                  16       |                                  17       |                                  18       |                                 13       |                                 14       |                                 15       |                                      5 |                                  1       |                                  2       |                                  3       |                                 4        |                                  20      |                                   21     |                                  22      |                                                          12 |                                                          23 |                            8       |                                  4       |                                  5       |                                 6        |                                  7       |                     24 |                     24 |                     12 |
-| Info_Index              |                         4       |                      4      |                     4       |                  3       |                        3 |                        3 |                        3 |                        3 |                        3 |                                                     3 |                                                     4 |                               4 |                     4       |                                  4 |                               1 |                            1 |                                                       1 |                                                      1 |                               1 |                           1 |                         1     |                   4      |                   4      |                         4       |                            4 |                                                         3 |                                                         4 |                        2       |                                   2       |                                   2       |                                   2       |                                  2       |                                  2       |                                  2       |                                      1 |                                  1       |                                  1       |                                  1       |                                 1        |                                   2      |                                    2     |                                   2      |                                                           2 |                                                           2 |                            3       |                                  3       |                                  3       |                                 3        |                                  3       |                      4 |                      2 |                      1 |
-| Info_DNA-Input-Blunting |                         7.12308 |                      3.0988 |                     6.98218 |                  8.75072 |                       14 |                       14 |                       14 |                       14 |                       14 |                                                    14 |                                                    14 |                              14 |                     4.88543 |                                 14 |                              14 |                           14 |                                                      14 |                                                     14 |                              14 |                          14 |                        11.013 |                  12.4047 |                  12.2146 |                         3.94445 |                           14 |                                                        14 |                                                        14 |                        8.18321 |                                   9.68955 |                                   5.13633 |                                   8.76775 |                                  1.82199 |                                  4.79705 |                                  4.77461 |                                     14 |                                  4.55867 |                                  5.38689 |                                  5.92059 |                                 0.983236 |                                  11.6451 |                                   13.413 |                                  13.9199 |                                                          14 |                                                          14 |                            8.39411 |                                  2.88868 |                                  4.56094 |                                 0.917137 |                                  2.38761 |                      8 |                      8 |                      8 |
-
-These input files are used at the start of Step 1. Place them in a `data/` folder. Filtered outputs will be saved to an `output/` folder and will be needed for downstream analysis.
-
-### Step 2 (Optional): Merge Filtered Files from Multiple EMseq Runs
-- Script: `scripts/step_2_merge_filtered_files.py`
-- Auto-detect file(s):
-- Required only if you have `.xlsx` outputs from multiple different EMseq batches.
-- Produces one merged file for unified analysis in the output directory (e.g. `merged_output_glob20.xlsx`, `merged_output_globmin80.xlsx`)
-
-| Header                      | INNOV_LS-24-11024   | INNOV_LS-24-11027   | INNOV_LS-24-11029   | INNOV_LS-24-11045   | INNOV_LS-24-11046   | INNOV_LS-24-11047   | INNOV_LS-24-11050   | INNOV_LS-24-11072   | INNOV_LS-24-11073   | INNOV_LS-24-11074   | LOI_FM999-485_Baseline   | LOI_FM999-485_C1D4-7   | LOI_FM999-485_C4D1   | LOI_FM999-485_C8D1   | LOI_FM999-485_C9D1-Off-tx   | MN010-112_Baseline_2018.05.11   | MN010-112_C2D1_2018.06.18   | MN010-112_C3D1_2018.07.16   | EC001-911_Baseline_2018.10.05   | EC001-911_C3D1_2018.12.07   | EC001-911_C7D1-Off-tx_2019.03.29   | DV110-203_Baseline_2018.05.14   | DV110-203_C1D15_2018.05.30   | DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-13   | DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-8   | AM002-908_Baseline_2018.05.23   | AM002-908_C2D1_2018.06.28   | AM002-908_Off-tx_2018.07.18   | AP000-765_Baseline_2017.03.04   | AP000-765_C1D15_2017.03.23   | AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-3   | AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-4   |
-|:----------------------------|:--------------------|:--------------------|:--------------------|:--------------------|:--------------------|:--------------------|:--------------------|:--------------------|:--------------------|:--------------------|:-------------------------|:-----------------------|:---------------------|:---------------------|:----------------------------|:--------------------------------|:----------------------------|:----------------------------|:--------------------------------|:----------------------------|:-----------------------------------|:--------------------------------|:-----------------------------|:--------------------------------------------------------|:-------------------------------------------------------|:--------------------------------|:----------------------------|:------------------------------|:--------------------------------|:-----------------------------|:----------------------------------------------------------|:----------------------------------------------------------|
-| Info_EMSeq                  | 16                  | 16                  | 16                  | 16                  | 16                  | 16                  | 16                  | 16                  | 16                  | 16                  | 18                       | 18                     | 18                   | 18                   | 18                          | 20                              | 20                          | 20                          | 20                              | 20                          | 20                                 | 20                              | 20                           | 20                                                      | 20                                                     | 20                              | 20                          | 20                            | 20                              | 20                           | 20                                                        | 20                                                        |
-| Info_Pool                   | 2                   | 2                   | 2                   | 1                   | 1                   | 2                   | 2                   | 1                   | 1                   | 1                   | Q                        | Q                      | Q                    | Q                    | Q                           | 4                               | 4                           | 4                           | 4                               | 4                           | 4                                  | 1                               | 1                            | 1                                                       | 1                                                      | 1                               | 1                           | 1                             | 4                               | 4                            | 3                                                         | 4                                                         |
-| Info_Barcode                | 8                   | 9                   | 10                  | 2                   | 1                   | 6                   | 7                   | 3                   | 4                   | 5                   | 7                        | 8                      | 9                    | 10                   | 11                          | 21                              | 22                          | 23                          | 18                              | 19                          | 20                                 | 6                               | 7                            | 13                                                      | 8                                                      | 9                               | 10                          | 11                            | 15                              | 16                           | 17                                                        | 17                                                        |
-| C methylated in CpG context | 94.1%               | 94.2%               | 94.2%               | 94.1%               | 93.6%               | 94.2%               | 94.0%               | 93.8%               | 93.5%               | 94.0%               | 93.6%                    | 93.8%                  | 92.7%                | 92.7%                | 93.2%                       | 91.8%                           | 91.8%                       | 92.2%                       | 91.9%                           | 91.7%                       | 91.7%                              | 92.6%                           | 92.5%                        | 93.1%                                                   | 93.4%                                                  | 91.9%                           | 91.4%                       | 92.1%                         | 93.0%                           | 93.0%                        | 94.0%                                                     | 93.1%                                                     |
-| C methylated in CHG context | 10.7%               | 10.6%               | 10.7%               | 14.1%               | 13.7%               | 10.9%               | 10.1%               | 13.2%               | 14.0%               | 13.6%               | 30.8%                    | 25.9%                  | 27.1%                | 26.0%                | 25.2%                       | 5.6%                            | 6.7%                        | 5.8%                        | 6.8%                            | 6.0%                        | 6.6%                               | 6.8%                            | 7.0%                         | 7.3%                                                    | 8.4%                                                   | 6.9%                            | 6.8%                        | 7.2%                          | 6.4%                            | 7.4%                         | 4.1%                                                      | 5.8%                                                      |
-
-
-### Step 3: Convert to Aberrant Signals
-- Script: `scripts/step_3_convert_to_aberrant_signals.py` 
-- Auto-detect file(s):
-- Takes the cpgi methylation fragment counts in Glob20 Excel files and divides them by corresponding values in GlobMin80 Excel files to create methylation fragment ratios. Then, scales those numbers up to >1 by multiplying 1000 each.
-- Produces `scaled_fragment_ratios_matrix.xlsx` in the output directory.
-- Sample output:
-
-| Header                                                            |   INNOV_LS-24-11024 |   INNOV_LS-24-11027 |   INNOV_LS-24-11029 |   INNOV_LS-24-11045 |   INNOV_LS-24-11046 |   INNOV_LS-24-11047 |   INNOV_LS-24-11050 |   INNOV_LS-24-11072 |   INNOV_LS-24-11073 |   INNOV_LS-24-11074 |   LOI_FM999-485_Baseline |   LOI_FM999-485_C1D4-7 |   LOI_FM999-485_C4D1 |   LOI_FM999-485_C8D1 |   LOI_FM999-485_C9D1-Off-tx |   MN010-112_Baseline_2018.05.11 |   MN010-112_C2D1_2018.06.18 |   MN010-112_C3D1_2018.07.16 |   EC001-911_Baseline_2018.10.05 |   EC001-911_C3D1_2018.12.07 |   EC001-911_C7D1-Off-tx_2019.03.29 |   DV110-203_Baseline_2018.05.14 |   DV110-203_C1D15_2018.05.30 |   DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-13 |   DV110-203_C3D1-Off-tx_2018.07.18_Replicate-Barcode-8 |   AM002-908_Baseline_2018.05.23 |   AM002-908_C2D1_2018.06.28 |   AM002-908_Off-tx_2018.07.18 |   AP000-765_Baseline_2017.03.04 |   AP000-765_C1D15_2017.03.23 |   AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-3 |   AP000-765_Off-tx_2017.05.05_Replicate-Barcode-17_Pool-4 |
-|:------------------------------------------------------------------|--------------------:|--------------------:|--------------------:|--------------------:|--------------------:|--------------------:|--------------------:|--------------------:|--------------------:|--------------------:|-------------------------:|-----------------------:|---------------------:|---------------------:|----------------------------:|--------------------------------:|----------------------------:|----------------------------:|--------------------------------:|----------------------------:|-----------------------------------:|--------------------------------:|-----------------------------:|--------------------------------------------------------:|-------------------------------------------------------:|--------------------------------:|----------------------------:|------------------------------:|--------------------------------:|-----------------------------:|----------------------------------------------------------:|----------------------------------------------------------:|
-| Total CpG island fragments counts for this particular spreadsheet |             14.8957 |             22.0357 |             17.8042 |             16.1035 |              9.9451 |              19.694 |             11.4869 |             15.2609 |             14.3348 |             11.0945 |                  27.5086 |                 36.196 |              10.3381 |              73.6927 |                     71.4704 |                         711.685 |                      438.71 |                     551.793 |                         806.838 |                     84.9377 |                            1288.25 |                         1942.78 |                      509.272 |                                                 3959.09 |                                                3711.38 |                         2066.79 |                     198.589 |                       1112.34 |                         126.354 |                      90.1857 |                                                   796.686 |                                                   765.174 |
-| CGI_chr1_778604_779167_LOC100288069_0                             |            nan      |            nan      |            nan      |            nan      |            nan      |             nan     |            nan      |            nan      |            nan      |            nan      |                 nan      |                nan     |             nan      |             nan      |                    nan      |                         nan     |                      nan    |                     nan     |                         nan     |                    nan      |                             nan    |                          nan    |                      nan     |                                                  nan    |                                                 nan    |                          nan    |                     nan     |                        nan    |                         nan     |                     nan      |                                                   nan     |                                                   nan     |
-| CGI_chr1_827036_828065_LINC00115_LINC01128_0                      |            nan      |            nan      |            nan      |            nan      |            nan      |             nan     |            nan      |            nan      |            nan      |            nan      |                 nan      |                nan     |             nan      |             nan      |                    nan      |                         nan     |                      nan    |                     nan     |                         nan     |                    nan      |                             nan    |                          nan    |                      nan     |                                                  nan    |                                                 nan    |                          nan    |                     nan     |                        nan    |                         nan     |                     nan      |                                                   nan     |                                                   nan     |
-| CGI_chr1_869818_870248_FAM41C_0                                   |            nan      |            nan      |            nan      |            nan      |            nan      |             nan     |            nan      |            nan      |            nan      |            nan      |                 nan      |                nan     |             nan      |             nan      |                    nan      |                         nan     |                      nan    |                     nan     |                         nan     |                    nan      |                             nan    |                          nan    |                      nan     |                                                  nan    |                                                 nan    |                          nan    |                     nan     |                        nan    |                         nan     |                     nan      |                                                   nan     |                                                   nan     |
-| CGI_chr1_923590_926252_LOC107985728_SAMD11_0                      |            nan      |            nan      |            nan      |            nan      |            nan      |             nan     |            nan      |            nan      |            nan      |            nan      |                 nan      |                nan     |             nan      |             nan      |                    nan      |                         nan     |                      nan    |                     nan     |                         nan     |                    nan      |                             nan    |                          nan    |                      nan     |                                                  nan    |                                                 nan    |                          nan    |                     nan     |                        nan    |                         nan     |                     nan      |                                                   nan     |                                                   nan     |
-
-
-### Step 4 (Optional): Annotate Genes
-- Script: `scripts/step_4_generate_gene_annotation.py`
-- Required only if you are going to run `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py` later.
-- Auto-detect file(s): an Excel file containing "matrix" in its name
-- Reads an Excel file containing "matrix" in its name and processes its content to generate a CSV file with structured gene annotation data:
-  - Extracts CGI names from the first column, filtering those starting with "CGI_".
-  - Processes each CGI name by splitting it into parts and extracting chromosome, start and end genomic coordinates, gene names, and probe IDs.
-- Produces `structured_gene_annotation.csv` in the output directory.
-- Sample output:
-
-| chr   |   start genomic coordinate |   end genomic coordinate | Gene1        | Gene2     |   Gene3 |   Gene4 |   Gene5 |   Gene6 |   Gene7 |   Gene8 |   Gene9 |   Gene10 |   Gene11 |   Gene12 |   Gene13 |   Gene14 |   Gene15 |   Gene16 |   Gene17 |   Gene18 |   Gene19 |   Gene20 |   Gene21 |   Gene22 |   CGI index or probe ID |
-|:------|---------------------------:|-------------------------:|:-------------|:----------|--------:|--------:|--------:|--------:|--------:|--------:|--------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|------------------------:|
-| chr1  |                     778604 |                   779167 | LOC100288069 | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
-| chr1  |                     827036 |                   828065 | LINC00115    | LINC01128 |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
-| chr1  |                     869818 |                   870248 | FAM41C       | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
-| chr1  |                     923590 |                   926252 | LOC107985728 | SAMD11    |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
-| chr1  |                     940225 |                   942983 | SAMD11       | nan       |     nan |     nan |     nan |     nan |     nan |     nan |     nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |      nan |                       0 |
-
-### Step 5 (Optional): Build a CGI Map
-- Script: `scripts/step_5_build_gene_cgi_map.py`
-- Required only if you are going to run `scripts/locus/deltagene-heatmaps-lineplots-bothfonts-labels.py` later.
-- Auto-detect file(s): .xlsx and .csv files in the output directory that contain the term "gene_annotation" in their filename
-  - You had to have run Step 4 of the Preprocessing Steps (`scripts/step_4_generate_gene_annotation.py`) for this file to have been generated in your output directory.
-- Processes these files to create a mapping of genes to CGI identifiers:
-  - The script selects the first file from the list of matching files and prints its name.
-  - The script identifies all columns in the DataFrame that start with "Gene".
-  - It reshapes the DataFrame into a long format where each row represents a gene and its associated CGI.
-  - The script creates a cgi_id column in the format chr:start-end
-  - The final gene_cgi_map DataFrame is created by selecting the cgi_id and gene_name columns and removing duplicates.
-  - The script saves the gene_cgi_map DataFrame as a CSV file in the output directory.
-- Generated file(s): `gene_cgi_map.csv` in the output directory
-- Sample output:
-
-  | cgi_id             | gene_name    |
-  |:-------------------|:-------------|
-  | chr1:778604-779167 | LOC100288069 |
-  | chr1:827036-828065 | LINC00115    |
-  | chr1:869818-870248 | FAM41C       |
-  | chr1:923590-926252 | LOC107985728 |
-  | chr1:940225-942983 | SAMD11       |
-
-## 🌐 Global-Level (Patient / Timepoint) Analysis
-
-This workflow focuses on overall methylation trends per patient or treatment condition.
-
-### Generate Dotplots by Condition/Timepoint
-- Script: `scripts/global/dotplots-by-condition.py`
-- Auto-detect file(s): Excel file(s) located in the output directory that contains "fragment_ratios_matrix" in its name
-  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
-- Data Processing Steps:
-  - Classifies samples into conditions (Healthy, Baseline, On-Treatment, Post-Treatment).
-  - Calculates summary statistics (Mean, Median, Standard Deviation), and generates two types of scatter plots: Median Scatter Plot and Mean ± SD Scatter Plot.
-- Generated file(s):
-  - A CSV file containing summary statistics (Mean, Median, Standard Deviation) for each condition is saved as `*_summary_stats.csv` in the plots/dotplots directory.
-  - Resulting plots are saved as `*_median_dotplot.png` and `*_mean_sd_dotplot.png` in the plots/dotplots directory.
-- Sample output(s):
-
-  | Condition      |   n |    Mean |   Median |      SD |
-  |:---------------|----:|--------:|---------:|--------:|
-  | Healthy        |  10 |   15.27 |    15.08 |    3.85 |
-  | Baseline       |   6 |  946.99 |   759.26 |  876.29 |
-  | On-Treatment   |   9 |  221.52 |    90.19 |  216.87 |
-  | Post-Treatment |   7 | 1672.06 |  1112.34 | 1527.55 |
-
-<img src="sampleimages/scaled_fragment_ratios_matrix_median_dotplot.png" width="500"/>
-<img src="sampleimages/scaled_fragment_ratios_matrix_mean_sd_dotplot.png" width="500"/>
-
-### Generate Trajectory Lineplots, Boxplots and Violin + Swarm Overlay Plots by Condition/Timepoint
-- Script: `scripts/global/lineplots-perpatient_v3.py`
-- Auto-detect file(s): .xlsx or .xls file(s) located in the output directory that contains "scaled_fragment_ratios_matrix" in its name
-  - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
-- Generated file(s):
-  - Main Plot Directory: plots/lineplots
-    - methylation_longitudinal_plot.png
-    - average_trajectory.png
-    - boxplot_by_timepoint.png
-    - violinplot_by_timepoint.png
-  - Per Patient Plot Directory: plots/lineplots/per_patient
-    - Individual patient plots in the format {Patient_ID}.png
-  - Replicate Table Directory: output/per_patient_tables
-    - Replicate tables for each patient in the format {Patient_ID}.csv
-  - Metadata and Summary Files Directory: output
-    - sample_metadata.csv
-    - summary_statistics.csv
-    - per_patient_tables\patientID.csv
-    - boxplot_summary_by_timepoint.csv
-- Sample output(s):
-
-  sample_metadata.csv (See below)
-  
-  | Sample                    | Patient_ID   | Timepoint      | Replicate_ID   |
-  |:--------------------------|:-------------|:---------------|:---------------|
-  | LOI_FM999-485_Baseline    | FM999-485    | Baseline       | Baseline       |
-  | LOI_FM999-485_C1D4-7      | FM999-485    | On-Treatment   | C1D4-7         |
-  | LOI_FM999-485_C4D1        | FM999-485    | On-Treatment   | C4D1           |
-  | LOI_FM999-485_C8D1        | FM999-485    | On-Treatment   | C8D1           |
-  | LOI_FM999-485_C9D1-Off-tx | FM999-485    | Post-Treatment | C9D1-Off-tx    |
-  
-  summary_statistics.csv (See below)
-  
-  | Patient_ID   |   Baseline |   On-Treatment |   Post-Treatment |
-  |:-------------|-----------:|---------------:|-----------------:|
-  | AM002-908    |          1 |              1 |                1 |
-  | AP000-765    |          1 |              1 |                2 |
-  | DV110-203    |          1 |              1 |                2 |
-  | EC001-911    |          1 |              1 |                1 |
-  | FM999-485    |          1 |              3 |                1 |
-  
-  per_patient_tables\patientID.csv (See below)
-  
-  | Sample                        | Timepoint      | Replicate_ID   |   Scaled_Ratio |
-  |:------------------------------|:---------------|:---------------|---------------:|
-  | AM002-908_Baseline_2018.05.23 | Baseline       | 2018.05.23     |       2066.79  |
-  | AM002-908_C2D1_2018.06.28     | On-Treatment   | 2018.06.28     |        198.589 |
-  | AM002-908_Off-tx_2018.07.18   | Post-Treatment | 2018.07.18     |       1112.34  |
-  
-  boxplot_summary_by_timepoint.csv (See below)
-  
-  | Timepoint      |   count |     mean |    median |      std |
-  |:---------------|--------:|---------:|----------:|---------:|
-  | Baseline       |       6 |  946.991 |  759.261  |  876.291 |
-  | On-Treatment   |       9 |  221.524 |   90.1857 |  216.875 |
-  | Post-Treatment |       7 | 1672.06  | 1112.34   | 1527.55  |
-
-<img src="sampleimages/average_trajectory.png" width="500"/>
-<img src="sampleimages/methylation_longitudinal_plot.png" width="700"/>
-<img src="sampleimages/boxplot_by_timepoint.png" width="500"/>
-<img src="sampleimages/violinplot_by_timepoint.png" width="500"/>
-
-## 🔍 Locus-Level (CpG Island / Gene) Analysis
-This workflow zooms into locus-specific (CpG island or gene-level) methylation dynamics.
-
-### Generate Average Methylation Change per Chromosome
-Looking across chromosomes, we can identify global trends—such as whether certain chromosomes are more epigenetically active or suppressed in response to treatment.​
-- Script: `scripts/locus/avg-methylation-change-per-chromosome.py`
-- Auto-detect file(s):
-  - Patient file: a "patient" file in the data directory
-  - Methylation file: a "scaled" methylation file in the output directory
-    - You had to have run Step 3 of the Preprocessing Steps (`scripts/step_3_convert_to_aberrant_signals.py`) for this file to have been generated in your output directory.
-- Data Processing Steps:
-  - Loads the patient file and extracts patient IDs.
-  - Loads the methylation data file and prepares it for analysis by extracting CpG island data.
-  - Identifies and normalizes timepoints in the sample data (e.g., Baseline, On-Treatment, Post-Treatment, Healthy).
-  - Filters and structures the data for valid samples, excluding "Healthy" samples.
-  - Calculates the average methylation levels for each chromosome.
-  - Computes the changes (deltas) in methylation levels between different timepoints for each patient and chromosome.
-  - Summarizes the mean changes in methylation levels for each chromosome and comparison. Saves the summary data as an Excel file in the plots directory.
-  - Creates bar and line plots to visualize the average methylation changes per chromosome for different comparisons. Plots are ordered by chromosome number (karyotype order) and designed for intuitive interpretation. Saves the plots as PNG files in the plots directory.
-- Generated file(s): plots/avg-methylation-change-per-chromosome directory
-  - Plot: A PNG file named chr_avg_overlay_<base_fname>_aligned.png
-  - Excel Summary: An Excel file named chr_avg_summary_<base_fname>.xlsx
-- Sample output(s):
-<img src="sampleimages/chr_avg_overlay_scaled_fragment_ratios_matrix_aligned.png" width="1000"/>
-
-  |   Chromosome |   Mean_Delta | Comparison       |
-  |-------------:|-------------:|:-----------------|
-  |            1 |     -65.8501 | Baseline → On-Tx |
-  |            2 |    -199.831  | Baseline → On-Tx |
-  |            3 |    -256.214  | Baseline → On-Tx |
-  |            4 |     -48.9605 | Baseline → On-Tx |
-  |            5 |    -333.097  | Baseline → On-Tx |
-
-### Generate Bubble Plots for Visualization of Longitudinal DNA Hypermethylation Profiles per Chromosome
-- Script: `scripts/locus/bubbleplot_generator_v8_gridsoff.py`
-- Auto-detect file(s):
-  - Patient file: a "patient" file in the data directory (both .xlsx and .csv formats)
-  - Methylation file: a "ratios_matrix" methylation file in the output directory (both .xlsx and .csv formats)
-    - You had to have run Step 3 of the Preprocessing Steps (`scripts/step_3_convert_to_aberrant_signals.py`) for this file to have been generated in your output directory.
-- Data Processing Steps:
-  - Normalizes sample names to standard timepoints such as "Baseline", "On-Treatment", and "Post-Treatment".
-  - Processes each methylation data file to extract CpG Island coordinates and associated values, and merges this data with sample metadata.
-- Data Visualization Steps:
-- Per Patient Per Chromosome: Generates bubble plots for each patient and chromosome combination, showing the DNA hypermethylation profiles across different timepoints.
-- Per Chromosome (Averaged Across Patients): Generates bubble plots for each chromosome, averaged across all patients, to visualize overall methylation patterns.
-- Saves the generated plots as PNG and SVG files in the plots directory.
-- Creates a ZIP file (bubbleplots.zip) containing all the plot files.
-- Deletes the individual plot files after zipping to save space.
-- Generated file(s): plots/bubbleplots.zip directory
-  - Bubble plots saved as PNG and SVG files in the plots directory.
-- Sample output(s):
-<img src="sampleimages/bubbleplot_chr1.png" width="1000"/>
-
-### Generate Heatmaps and Lineplots of Top 10 Genes by Condition/Timepoint
-- Script: `scripts/locus/heatmap-lineplot-barplot_v2.py`
-- Auto-detect file(s):
-  - CpG Methylation Matrix
-    - Directory: output
-    - Identifier: Contains the keyword "matrix"
-    - Format: .xlsx or .txt
-    - You had to have run Step 3 of the Preprocessing Steps (`scripts/step_3_convert_to_aberrant_signals.py`) for this file to have been generated in your output directory.
-  - Patient List
-    - Directory: data
-    - Identifier: Contains the keyword "patient"
-    - Format: .xlsx
-  - Gene Annotation Map
-    - Directory: output
-    - Identifier: Contains the keyword "cgi_map"
-    - Format: .xlsx or .csv
-    - You have to have run Step 5 of the Preprocessing Steps (`scripts/step_5_build_gene_cgi_map.py`) for this file to have been generated in your output directory.
-- Data Processing Steps:
-  - Loads CpG methylation matrix, patient list, and gene annotation map.
-  - Matches CpGs to genes and filters genes with multiple CpGs.
-  - Calculates delta methylation values between specified timepoints and performs paired t-tests.
-  - Generates delta values and statistical comparison results for:
-    - Baseline vs Post-Treatment
-    - Baseline vs On-Treatment
-    - On-Treatment vs Post-Treatment
-  - Saves delta values and t-test results to CSV files in the plots/heatmaps-lineplots directory.
-  - Identifies top 10 genes with highest delta values (Baseline to Post-Treatment).
-  - Computes average gene methylation values and constructs a gene matrix.
-- Data Visualization Steps:
-  - Generates heatmaps and line plots for average gene methylation across timepoints.
-  - Saves heatmaps and line plots to the plots/heatmaps-lineplots directory.
-- Generated file(s): plots/heatmaps-lineplots directory
-  - Delta Values and T-Test Results
-    - gene_deltas_all_comparisons.csv
-    - baseline_vs_post_ttest.csv
-    - baseline_vs_on_ttest.csv
-    - on_vs_post_ttest.csv
-  - Average Visualizations (Across Patients)
-    - avg_methylation_heatmap.png
-    - avg_methylation_lineplot.png
-  - Per-Patient Visualizations and Matrices
-    - heatmap_{patient}.png
-    - lineplot_{patient}.png
-    - methylation_matrix_{patient}.csv
-- Sample output(s):
-gene_deltas_all_comparisons.csv (See below)
-
-| Unnamed: 0   |   Baseline → Post-Treatment |   Baseline → On-Treatment |   On-Treatment → Post-Treatment |
-|:-------------|----------------------------:|--------------------------:|--------------------------------:|
-| ACD          |                   -242.06   |                  -803.142 |                         588.317 |
-| ANKRD13B     |                    400.733  |                 -1295.9   |                        1347     |
-| ANO8         |                    836.396  |                 -1042.87  |                        1879.27  |
-| AQR          |                     63.9578 |                   nan     |                         nan     |
-| AR           |                  -1500.8    |                 -3706.09  |                        2205.28  |
-
-baseline_vs_post_ttest.csv (See below)
-
-| Gene   |     Delta |    T-stat |   P-value |
-|:-------|----------:|----------:|----------:|
-| C2     |  -437.633 | -0.445912 |  0.699287 |
-| AR     | -1500.8   | -0.581898 |  0.619488 |
-| C3     | -4465.09  | -0.865356 |  0.478061 |
-| NFATC1 | -2157.94  | -0.551409 |  0.679192 |
-| F7     |  -134.083 | -0.357147 |  0.755147 |
-
-avg_methylation_heatmap.png (See below)
-
-<img src="sampleimages/avg_methylation_heatmap.png" width="600"/>
-
-avg_methylation_lineplot.png (See below)
-
-<img src="sampleimages/avg_methylation_lineplot.png" width="700"/>
-
-methylation_matrix_FM999-485.csv (See below)
-
-| Unnamed: 0   |   LOI_FM999-485_Baseline |   LOI_FM999-485_C1D4-7 |   LOI_FM999-485_C4D1 |   LOI_FM999-485_C8D1 |   LOI_FM999-485_C9D1-Off-tx |
-|:-------------|-------------------------:|-----------------------:|---------------------:|---------------------:|----------------------------:|
-| KCNA5        |                 3500     |                1000    |              500     |             6500     |                     3000    |
-| BOK          |                  285.714 |                1500    |              nan     |             1200     |                     2000    |
-| BOK-AS1      |                  285.714 |                1500    |              nan     |             1200     |                     2000    |
-| C3           |                  772.222 |                5000    |              619.444 |              701.505 |                     2182.54 |
-| ZNF648       |                 1333.33  |                2666.67 |              nan     |             2500     |                     1500    |
-
-### Identify Top 10 Differentially Methylated CGI Subregions and Top 10 Differentially Methylated Genes
-- Script: `scripts/locus/top10dm-plots.py`
-- Auto-detect file(s):
-  - Patient Files: It searches for Excel files containing the term "patient id" in the data directory.
-  - Methylation Matrix Files: It searches for Excel files containing the term "matrix" in the output directory.
-    - You had to have run Step 3 of the Preprocessing Steps (scripts/step_3_convert_to_aberrant_signals.py) for this file to have been generated in your output directory.
-- Data Processing Steps:
-  - Extracts CpG island data from the matrix file.
-  - Generates metadata for each sample, including patient ID and treatment timepoint (Baseline, On-Treatment, Post-Treatment, Healthy).
-  - Filters samples to exclude those labeled as "Healthy".
-  - Constructs a matrix with methylation data, grouped by patient and timepoint.
-  - Collapses the matrix to average methylation levels for each CpG island across patients and timepoints.
-  - Calculates average changes in methylation levels between different treatment timepoints (Baseline vs Post-Treatment, Baseline vs On-Treatment, On-Treatment vs Post-Treatment).
-- Data Visualization Steps:
-  - Top 10 Differentially Methylated CpG Subregions:
-    - Plots bar charts for the top 10 CpG islands with the highest average changes in methylation levels between treatment timepoints. Saves these plots as PNG files in the plots directory.
-  - Genes with Multiple Affected CpG Islands:
-    - Identifies genes with more than one affected CpG island and plots bar charts for these genes. Saves these plots as PNG files in the plots directory.
-- Generated file(s): plots/top-10-differential-methylation-plots.zip directory
-  - top10_diff_CGIsubregions_baseline_post.png
-  - multi_CpG_genes_baseline_post.png
-  - top10_diff_CGIsubregions_baseline_on.png
-  - multi_CpG_genes_baseline_on.png
-  - top10_diff_CGIsubregions_on_post.png
-  - multi_CpG_genes_on_post.png
-<img src="sampleimages/top10_diff_CGIsubregions_baseline_on.png" width="500"/>
-<img src="sampleimages/top10_diff_CGIsubregions_on_post.png" width="500"/>
-<img src="sampleimages/top10_diff_CGIsubregions_baseline_post.png" width="500"/>
+| Level | Question it answers | Example outputs |
+|:--|:--|:--|
+| **Global** (sample) | How does overall methylation signal change over the course of treatment? | Condition dotplots, per-patient trajectories, box/violin plots |
+| **Locus** (CpG island / chromosome) | Which regions and chromosomes change most between timepoints? | Bubble plots, per-chromosome change, top differentially methylated CGIs |
+| **Gene** | Which genes carry the strongest signal, and how does each gene's rank shift over treatment? | Gene rank trajectories, top-gene heatmaps, paired t-tests |
 
 ---
 
-## ▶️ How to Use
+## 📑 Contents
 
-### Run Locally
-- Clone the repository:
-  ```bash
-  git clone https://github.com/codebyesther/methylation-pipeline.git
-  cd methylation-pipeline
-  ```
-- Install dependencies:
-  ```bash
-  pip install pandas numpy openpyxl matplotlib seaborn scipy tqdm
-  ```
-- Place your input `.xlsx` files in a `data/` folder.
-- Run the script (e.g. `step_1_filter_patients.py`):
-  ```bash
-  python scripts/step_1_filter_patients.py
-  ```
-
+- [Workflow overview](#-workflow-overview)
+- [Quick start](#-quick-start)
+- [Input requirements](#-input-requirements)
+- [Preprocessing (Steps 1–6)](#-preprocessing-steps-16)
+- [Global-level analysis](#-global-level-analysis)
+- [Locus-level analysis](#-locus-level-analysis)
+- [Gene-level analysis and ranking](#-gene-level-analysis-and-ranking)
+- [Script versions](#-script-versions)
+- [Project structure](#-project-structure)
+- [Known limitations](#-known-limitations)
+- [CGI naming format](#-cgi-naming-format)
+- [Citation](#-citation)
+- [License](#-license)
 
 ---
 
-## 📂 Project Structure
+## 🗺 Workflow overview
+
+```
+data/ (EM-seq CGI count files + patient ID list)
+   │
+   ├─ Step 1  Filter samples by patient ID
+   ├─ Step 2  Merge runs from multiple EM-seq batches        (optional)
+   ├─ Step 3  Glob20 / GlobMin80 ratio → scaled methylation signal
+   ├─ Step 4  Parse CGI names into gene annotations           (needed for gene-level)
+   ├─ Step 5  Build CGI → gene map                            (needed for gene-level)
+   └─ Step 6  Sum CGI signals into a gene × sample matrix     (needed for gene ranking)
+   │
+   ├─▶ Global analysis   (scripts/global/)
+   ├─▶ Locus analysis    (scripts/locus/)
+   └─▶ Gene analysis     (scripts/locus/ — gene rank and top-gene scripts)
+```
+
+---
+
+## ▶️ Quick start
+
+```bash
+git clone https://github.com/codebyesther/methylation-pipeline.git
+cd methylation-pipeline
+pip install -r requirements.txt
+
+mkdir -p data output plots
+# place your patient ID list and EM-seq Excel files in data/
+
+python scripts/step_1_filter_patients_local.py
+python scripts/step_2_merge_filtered_files.py        # if you have multiple runs
+python scripts/step_3_convert_to_aberrant_signals.py
+python scripts/step_4_generate_gene_annotation.py
+python scripts/step_5_build_gene_cgi_map.py
+python scripts/step_6_gene-methylation-matrix.py
+```
+
+Then run any of the analysis scripts below. All scripts are run from the repository root and read from `data/` and `output/`, writing results to `output/` and `plots/`.
+
+**Requirements:** Python 3 with `pandas`, `numpy`, `openpyxl`, `matplotlib`, `seaborn`, `scipy`, `tqdm` (see `requirements.txt`).
+
+---
+
+## 📁 Input requirements
+
+Place all inputs in `data/`.
+
+**1. Patient ID list** (`.xlsx`)
+- Patient IDs in the first column.
+- The filename must contain `patient` (most scripts) or `patient id` (the `top10dm-plots*` scripts). A name like `Patient ID list.xlsx` satisfies both.
+- The gene-rank scripts currently expect a specific filename; see [Known limitations](#-known-limitations).
+
+| Patient ID |
+|:--|
+| PT001 |
+| PT002 |
+| PT003 |
+
+**2. EM-seq methylation files** (`.xlsx`)
+- One row per CpG island, with CGI names in the first column (e.g. `CGI_chr1_778604_779167_LOC100288069_0`).
+- One column per sample. Each column name must contain the patient ID and a timepoint label.
+- A summary row labeled `Total CpG island fragments counts for this particular spreadsheet` holds the total CGI fragment count per sample. The global-level scripts use this row.
+- Each run is expected as a pair of files: a **Glob20** file and a **GlobMin80** file, used together in Step 3.
+
+**Sample naming conventions.** Timepoints are read from the sample (column) names:
+
+| Label in sample name | Interpreted as |
+|:--|:--|
+| `Baseline` | Baseline (pre-treatment) |
+| `C<n>` (e.g. `C2D1`, `C1D15`) | Treatment cycle *n* (On-Treatment) |
+| `Off-tx` | Off treatment (Post-Treatment) |
+| `INNOV` | Healthy control |
+
+Example sample names: `PT001_Baseline`, `PT001_C2D1`, `PT001_C7D1-Off-tx`, `INNOV_control_01`.
+
+---
+
+## 🔧 Preprocessing (Steps 1–6)
+
+### Step 1 — Filter by patient ID
+`scripts/step_1_filter_patients_local.py`
+
+- Reads the patient ID list and every methylation Excel file in `data/`.
+- Keeps only the sample columns that belong to the listed patients.
+- Writes one filtered file per input to `output/` (e.g. `EMSeq-NN-Run-1_..._Glob20_cpgi_counts.xlsx_samples-of-interest`).
+
+### Step 2 — Merge multiple EM-seq runs *(optional)*
+`scripts/step_2_merge_filtered_files.py`
+
+- Needed only if your samples span more than one sequencing run.
+- Finds the filtered files in `output/` with `Glob20` or `GlobMin80` in their names and merges each set by row label.
+- Outputs `output/merged_output_glob20.xlsx` and `output/merged_output_globmin80.xlsx`.
+
+### Step 3 — Convert to normalized methylation signal
+`scripts/step_3_convert_to_aberrant_signals.py`
+
+- Reads `output_glob20*.xlsx` and `output_globmin80*.xlsx` from `output/`.
+- For each CGI and sample, divides the Glob20 fragment count by the matching GlobMin80 count and multiplies by a scaling factor, producing a normalized methylation signal.
+- Keeps the total-count summary row so global-level scripts can use it.
+- Outputs `output/scaled_fragment_ratios_matrix.xlsx`.
+
+Two alternative versions are included (see [Script versions](#-script-versions)). The `v3` version aligns rows and columns by name rather than position, marks division-by-zero cells as `INF` (highlighted red in Excel), and logs them to `output/inf_locations_log.csv` and `output/inf_summary.csv`.
+
+### Step 4 — Annotate genes
+`scripts/step_4_generate_gene_annotation.py`
+
+- Reads an Excel file with `matrix` in its name from `output/`.
+- Parses each `CGI_...` name into chromosome, start, end, gene name(s) and index.
+- Outputs `output/structured_gene_annotation.csv`.
+
+### Step 5 — Build the CGI → gene map
+`scripts/step_5_build_gene_cgi_map.py`
+
+- Reads the `gene_annotation` file from Step 4.
+- Reshapes it into one row per CGI–gene pair, with CGI IDs in `chr:start-end` format.
+- Outputs `output/gene_cgi_map.csv`.
+
+| cgi_id | gene_name |
+|:--|:--|
+| chr1:778604-779167 | LOC100288069 |
+| chr1:827036-828065 | LINC00115 |
+| chr1:940225-942983 | SAMD11 |
+
+### Step 6 — Build the gene methylation matrix
+`scripts/step_6_gene-methylation-matrix.py`
+
+- Reads `output/merged_output_glob20.xlsx` and `output/gene_cgi_map.csv`.
+- Sums the signal of all CpG islands assigned to each gene, giving one value per gene per sample.
+- Outputs `output/gene_methylation_matrix.csv` (genes × samples). This is the input for the gene-rank scripts.
+
+---
+
+## 🌐 Global-level analysis
+
+These scripts use each sample's total CGI signal (the summary row from Step 3) to look at overall trends.
+
+### Dotplots by condition
+`scripts/global/dotplots-by-condition.py`
+
+- Input: `output/*fragment_ratios_matrix*.xlsx` (from Step 3).
+- Groups samples into Healthy, Baseline, On-Treatment and Post-Treatment, and computes the n, mean, median and SD for each group.
+- Outputs to `plots/dotplots/`: `*_summary_stats.csv`, `*_median_dotplot.png`, `*_mean_sd_dotplot.png`.
+
+<img src="sampleimages/scaled_fragment_ratios_matrix_median_dotplot.png" width="450"/> <img src="sampleimages/scaled_fragment_ratios_matrix_mean_sd_dotplot.png" width="450"/>
+
+### Per-patient trajectories
+`scripts/global/lineplots-perpatient_v3.py` (grouped timepoints)
+`scripts/global/lineplots-perpatient_v4.py` (individual treatment cycles)
+
+- Input: `output/scaled_fragment_ratios_matrix.xlsx`.
+- `v3` groups samples into Baseline / On-Treatment / Post-Treatment. `v4` keeps each treatment cycle as its own point on the x-axis.
+- Plots: longitudinal trajectories for all patients, the average trajectory, box plots, violin + swarm plots, and one plot per patient.
+- Tables: `sample_metadata.csv`, `summary_statistics.csv`, `boxplot_summary_by_timepoint.csv`, and per-patient replicate tables in `output/per_patient_tables/`.
+- `v3` writes plots to `plots/lineplots/`. `v4` writes them to `plots/global-lineplots/`.
+
+<img src="sampleimages/methylation_longitudinal_plot.png" width="600"/>
+<img src="sampleimages/average_trajectory.png" width="450"/> <img src="sampleimages/violinplot_by_timepoint.png" width="450"/>
+
+### Plot by cycle *(utility)*
+`scripts/plot-by-cycle.py`
+
+A short helper that draws line plots from a manually assembled table (patients × cycle groups). It reads a fixed file path, so edit `data_file` before using it.
+
+---
+
+## 🔍 Locus-level analysis
+
+### Average methylation change per chromosome
+`scripts/locus/avg-methylation-change-per-chromosome.py`
+
+- Inputs: a `patient` file in `data/` and a `scaled` `.xlsx` file in `output/`.
+- Averages CGI signal per chromosome for each patient and timepoint (healthy controls excluded), then computes the change between timepoints.
+- Outputs to `plots/avg-methylation-change-per-chromosome/`: `chr_avg_overlay_<name>_aligned.png` and `chr_avg_summary_<name>.xlsx`. Chromosomes are shown in karyotype order.
+
+<img src="sampleimages/chr_avg_overlay_scaled_fragment_ratios_matrix_aligned.png" width="900"/>
+
+### Bubble plots of CGI methylation along each chromosome
+`scripts/locus/bubbleplot_generator_v9_gridsoff.py` (latest)
+
+- Inputs: a `*ratios_matrix*` file in `output/` and a `patient` file in `data/`.
+- For each patient and chromosome, plots every CpG island at its genomic midpoint, sized and colored by signal, with one row per timepoint. Also makes cohort-averaged plots for each chromosome.
+- Saves PNG and SVG files, bundled into `plots/bubbleplots.zip`.
+- `merged-glob20-bubbleplot.py` produces the same plots directly from `output/merged_output_glob20.xlsx`.
+
+<img src="sampleimages/bubbleplot_chr1.png" width="900"/>
+
+### Top 10 differentially methylated CGIs and multi-CGI genes
+`scripts/locus/top10dm-plots_using-map_v4.py` (latest)
+
+- Inputs: a `patient id` file in `data/`, a `matrix` file in `output/`, and `output/gene_cgi_map.csv`.
+- Averages each CGI across patients at each timepoint, then finds the 10 CGIs with the largest change for Baseline → On-Treatment, Baseline → Post-Treatment, and On-Treatment → Post-Treatment.
+- Also identifies genes with more than one affected CGI.
+- Outputs bar charts plus the intermediate tables (`v3`/`v4`), bundled into a zip file in `plots/`.
+
+<img src="sampleimages/top10_diff_CGIsubregions_baseline_on.png" width="300"/> <img src="sampleimages/top10_diff_CGIsubregions_on_post.png" width="300"/> <img src="sampleimages/top10_diff_CGIsubregions_baseline_post.png" width="300"/>
+
+---
+
+## 🧪 Gene-level analysis and ranking
+
+### Gene rank trajectories
+`scripts/locus/gene_rank_slopeplot_top10_colored_v2.py` (recommended)
+
+This is the gene-ranking part of the pipeline. Instead of comparing raw signal values, which can vary in scale between samples and runs, it compares each gene's **rank** within its sample.
+
+1. **Rank genes within each sample.** Genes are ranked by methylation signal (rank 1 = most methylated). Genes ranked 501 or lower are grouped together at rank 501 to reduce noise from genes with little signal.
+2. **Assign patients and timepoints.** Each sample is mapped to its patient and timepoint (Baseline, each treatment cycle, Off-Tx, or Healthy).
+3. **Average replicates.** Ranks from replicate samples (same patient, same timepoint) are averaged.
+4. **Track each gene over time.** For each patient, a slope plot follows every gene's rank from baseline through each treatment cycle to the end of treatment. Genes that rank in the top 10 at any of that patient's timepoints are highlighted.
+
+- Input: `output/gene_methylation_matrix.csv` (from Step 6) and the patient ID list.
+- Outputs to `plots/rank-slopeplot/`:
+  - `rank_slopeplot_patient_<ID>.png`: rank trajectories for each patient (log scale)
+  - `gene_methylation_ranks.csv`: the full gene × sample rank matrix
+  - `melted_gene_methylation_ranks_avg.csv`: ranks in long format, averaged over replicates
+  - `top_genes_per_patient.csv`: the highlighted top genes for each patient
+
+Variants (see [Script versions](#-script-versions)) differ in the rank cap (none, 21, or 501) and in whether replicates are averaged.
+
+### Top genes: deltas, paired t-tests and heatmaps
+`scripts/locus/top10genes-heatmap-barplot.py`
+
+- Inputs: a `matrix` file in `output/`, a `patient` file in `data/`, and `output/gene_cgi_map.csv`.
+- Builds a gene-level matrix (genes with multiple CGIs), computes each gene's change between timepoints for every patient, and runs **paired t-tests** for Baseline vs On-Treatment, Baseline vs Post-Treatment, and On-Treatment vs Post-Treatment.
+- Selects the top 10 genes by size of the Baseline → Post-Treatment change and plots heatmaps, line plots and bar plots.
+- Outputs to `plots/heatmaps-lineplots/`: `gene_deltas_all_comparisons.csv`, `*_ttest.csv`, `patient_deltas_*.csv`, `top10_gene_deltas_*.csv`, `gene_methylation_matrix.csv`, and figures.
+
+<img src="sampleimages/avg_methylation_heatmap.png" width="500"/> <img src="sampleimages/avg_methylation_lineplot.png" width="500"/>
+
+### Top genes across individual treatment cycles
+`scripts/locus/top10genes-barplot-heatmap-lineplot.py`
+
+- Inputs: `output/merged_output_glob20.xlsx`, a `patient` file, and `output/gene_cgi_map.csv`.
+- Selects the 10 genes with the highest baseline signal and follows them across each treatment cycle (not grouped timepoints).
+- Outputs to `plots/heatmaps-lineplots/`: `heatmap_top10_genes_detailed_timepoints.png`, plus cohort and per-patient line plots in `gene-lineplots/`.
+
+---
+
+## 🗂 Script versions
+
+Several scripts have more than one version. The table shows which one to use.
+
+| Purpose | Recommended | Other versions |
+|:--|:--|:--|
+| Step 3 signal conversion | `step_3_convert_to_aberrant_signals_v3-matchingRowColumnNames.py` when sample rows or columns may not line up between the Glob20 and GlobMin80 files | `step_3_..._signals.py` (×1,000 scaling, position-based); `_v2` (×100,000 scaling, row alignment) |
+| Global trajectories | `lineplots-perpatient_v3.py` (grouped) or `_v4.py` (per cycle) | — |
+| Bubble plots | `bubbleplot_generator_v9_gridsoff.py` | `_v8.py`, `_v8_gridsoff.py`, `merged-glob20-bubbleplot.py` |
+| Top differentially methylated CGIs | `top10dm-plots_using-map_v4.py` | `top10dm-plots.py`, `_using-map_v2.py`, `_v3.py` |
+| Gene heatmaps / t-tests | `top10genes-heatmap-barplot.py` | `heatmap-lineplot-barplot_v2.py`, `_v3.py` |
+| Gene rank trajectories | `gene_rank_slopeplot_top10_colored_v2.py` | `generank-slopeplot.py` (no cap), `-21cap.py`, `-501cap.py`, `gene_rank_slopeplot_top10_colored.py` (no replicate averaging) |
+
+> **Note on Step 3 scaling:** the original Step 3 script multiplies ratios by 1,000; `v2` and `v3` multiply by 100,000. Use the same version for every sample in an analysis so values stay comparable.
+
+---
+
+## 📂 Project structure
 
 ```
 methylation-pipeline/
-├── data/                      # Input Excel files
-├── output/                    # Filtered and merged outputs
-├── plots/                     # Generated plots and Excel summaries
+├── data/                         # Inputs (not tracked): patient list, EM-seq Excel files
+├── output/                       # Intermediate matrices and tables
+├── plots/                        # Figures and summary tables
+├── sampleimages/                 # Example figures used in this README
 ├── scripts/
 │   ├── step_1_filter_patients_local.py
 │   ├── step_2_merge_filtered_files.py
 │   ├── step_3_convert_to_aberrant_signals.py
+│   ├── step_3_convert_to_aberrant_signals_v2.py
+│   ├── step_3_convert_to_aberrant_signals_v3-matchingRowColumnNames.py
 │   ├── step_4_generate_gene_annotation.py
 │   ├── step_5_build_gene_cgi_map.py
+│   ├── step_6_gene-methylation-matrix.py
+│   ├── plot-by-cycle.py
 │   ├── global/
 │   │   ├── dotplots-by-condition.py
-│   │   └── lineplots-perpatient_v3.py
+│   │   ├── lineplots-perpatient_v3.py
+│   │   └── lineplots-perpatient_v4.py
 │   └── locus/
 │       ├── avg-methylation-change-per-chromosome.py
-│       ├── bubbleplot_generator_v8_gridsoff.py
 │       ├── bubbleplot_generator_v8.py
-│       ├── scripts/locus/heatmap-lineplot-barplot_v2.py
-│       └── top10dm-plots.py
-├── .gitignore
+│       ├── bubbleplot_generator_v8_gridsoff.py
+│       ├── bubbleplot_generator_v9_gridsoff.py
+│       ├── merged-glob20-bubbleplot.py
+│       ├── top10dm-plots.py
+│       ├── top10dm-plots_using-map_v2.py
+│       ├── top10dm-plots_using-map_v3.py
+│       ├── top10dm-plots_using-map_v4.py
+│       ├── heatmap-lineplot-barplot_v2.py
+│       ├── heatmap-lineplot-barplot_v3.py
+│       ├── top10genes-heatmap-barplot.py
+│       ├── top10genes-barplot-heatmap-lineplot.py
+│       ├── generank-slopeplot.py
+│       ├── generank-slopeplot-21cap.py
+│       ├── generank-slopeplot-501cap.py
+│       ├── gene_rank_slopeplot_top10_colored.py
+│       └── gene_rank_slopeplot_top10_colored_v2.py
 ├── CITATION.cff
 ├── LICENSE
 ├── README.md
 └── requirements.txt
-
 ```
 
-## 📦 Dependencies
+---
 
-Install all requirements at once:
+## ⚠️ Known limitations
 
-```bash
-pip install -r requirements.txt
-```
+- **Fixed patient-list filename in the gene-rank scripts.** The `generank-*` and `gene_rank_slopeplot_*` scripts read `data/Patient ID list fot EMseq16-18-20.xlsx`. Rename your file to match, or edit `patient_list_path` at the top of the script.
+- **`generank-slopeplot.py`** reads its gene matrix from `plots/heatmaps-lineplots/gene_methylation_matrix.csv` (written by the heatmap scripts). The other rank scripts read `output/gene_methylation_matrix.csv` (Step 6).
+- **File auto-detection uses the first match.** If more than one file in a folder matches a keyword (e.g. `matrix`), scripts use the first one found. Keep only one candidate file per keyword in `data/` and `output/`.
+- **Timepoint parsing depends on sample names** following the conventions in [Input requirements](#-input-requirements).
+- **Within-patient ranking.** The gene-rank scripts track rank changes within each patient. They don't run a statistical test that combines ranks across patients.
 
-- `pandas`
-- `numpy`
-- `openpyxl`
-- `matplotlib`
-- `seaborn`
-- `scipy`
-- `tqdm`
+---
 
+## 🧠 CGI naming format
 
-## 🧠 Additional Context: Data Annotation Format
-A breakdown of CGI names (i.e. `CGI_chr1_778604_779167_LOC100288069_0`) can be done to interpret CGI identifiers:
-- `CGI_` → prefix 
-- `chr1` → chromosome
-- `778604_779167` → genomic coordinates
-- `LOC100288069` → gene name
-- `_0` → sometimes denotes CpG island index or probe ID
+`CGI_chr1_778604_779167_LOC100288069_0`
 
-Hopefully, this helps you understand the CpG region labels.
+| Part | Meaning |
+|:--|:--|
+| `CGI_` | CpG island prefix |
+| `chr1` | Chromosome |
+| `778604_779167` | Start and end coordinates |
+| `LOC100288069` | Associated gene |
+| `_0` | CGI index / probe ID |
+
+---
+
+## 📖 Citation
+
+If you use this code, please cite:
+
+> Choi, E. (2025). *Methylation Pipeline* (Version 1.0.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.15150516
+
+Citation metadata is also available in [`CITATION.cff`](CITATION.cff) (use **"Cite this repository"** on GitHub).
 
 ---
 
 ## 📜 License
 
-This project is licensed under the MIT License.
+Released under the [MIT License](LICENSE).
