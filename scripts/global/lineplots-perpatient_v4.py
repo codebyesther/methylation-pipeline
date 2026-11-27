@@ -5,6 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import classify_timepoint, detailed_timepoint, find_scaled_matrix, read_scaled_matrix  # noqa: E402
 import re
 
 # === Directory Setup ===
@@ -32,15 +35,8 @@ def assign_patient_id(name):
     return base.split("-MVS")[0] if "-MVS" in base else base
 
 def extract_explicit_timepoint(name):
-    if "INNOV" in name:
-        return None
-    elif "Baseline" in name:
-        return "Baseline"
-    elif "Off-tx" in name:
-        return "Off-Tx"
-    else:
-        match = re.search(r'C\d+', name)
-        return match.group(0) if match else None
+    tp = detailed_timepoint(name)
+    return None if tp in ("Healthy", "On-Treatment") else tp
 
 def extract_replicate(name):
     parts = name.split('_')
@@ -122,7 +118,7 @@ def make_average_trajectory_plot(df, save_path, time_order):
 
 def make_standalone_boxplot(df, save_path):
     fig, ax = plt.subplots(figsize=(7, 5))
-    sns.boxplot(data=df, x="Timepoint", y="Scaled_Ratio", palette="pastel", ax=ax)
+    sns.boxplot(data=df, x="Timepoint", y="Scaled_Ratio", hue="Timepoint", palette="pastel", legend=False, ax=ax)
     ax.set_title("Distribution of Methylation by Timepoint (Boxplot)")
     ax.set_ylabel("Scaled Methylation Fragment Count Ratio")
     ax.set_xlabel("Treatment Timepoint")
@@ -132,7 +128,7 @@ def make_standalone_boxplot(df, save_path):
 
 def make_violin_plot(df, save_path):
     fig, ax = plt.subplots(figsize=(7, 5))
-    sns.violinplot(data=df, x="Timepoint", y="Scaled_Ratio", palette="pastel", ax=ax, cut=0, inner=None)
+    sns.violinplot(data=df, x="Timepoint", y="Scaled_Ratio", hue="Timepoint", palette="pastel", legend=False, ax=ax, cut=0, inner=None)
     sns.swarmplot(data=df, x="Timepoint", y="Scaled_Ratio", color="k", size=4, ax=ax)
     ax.set_title("Distribution of Methylation by Timepoint (Violin + Swarm)")
     ax.set_ylabel("Scaled Methylation Fragment Count Ratio")
@@ -146,17 +142,12 @@ def export_boxplot_summary(df, save_path, time_order):
     summary.to_csv(save_path)
 
 # === Load Excel File ===
-file_to_use = next(
-    (os.path.join(input_dir, f) for f in os.listdir(input_dir)
-     if "scaled_fragment_ratios_matrix" in f.lower() and f.endswith((".xlsx", ".xls"))),
-    None
-)
-if file_to_use is None:
-    raise FileNotFoundError("No file with 'scaled_fragment_ratios_matrix' found in the output/ directory.")
+file_to_use = find_scaled_matrix(input_dir)
 
-df_raw = pd.read_excel(file_to_use, header=None, nrows=2)
-sample_names = df_raw.iloc[0, 1:].tolist()
-scaled_ratios = df_raw.iloc[1, 1:].tolist()
+# Sample-level signal: Glob20 total / GlobMin80 total x 1e5 (labeled row written by Step 3)
+_, scaled = read_scaled_matrix(file_to_use)
+sample_names = scaled.index.astype(str).tolist()
+scaled_ratios = scaled.tolist()
 
 # === Build Full Raw Table ===
 df_full = pd.DataFrame({

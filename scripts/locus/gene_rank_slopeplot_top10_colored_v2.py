@@ -6,39 +6,35 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import re
+import sys
+
+import matplotlib
+matplotlib.use("Agg")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import (LEGACY_PATIENT_FILE, detailed_timepoint, find_patient_file,  # noqa: E402
+                    get_patient as _get_patient, read_patient_ids, timepoint_sort_key)
 
 # === Settings ===
 input_path = os.path.join("output", "gene_methylation_matrix.csv")
-patient_list_path = os.path.join("data", "Patient ID list fot EMseq16-18-20.xlsx")
+# Any patient list in data/ (name containing "patient"); the old fixed name still works
+legacy = os.path.join("data", LEGACY_PATIENT_FILE)
+patient_list_path = legacy if os.path.exists(legacy) else find_patient_file("data")
 output_dir = os.path.join("plots", "rank-slopeplot")
 os.makedirs(output_dir, exist_ok=True)
 
 # === Helper Functions ===
 def classify_detailed_timepoint(sample_name):
-    if "INNOV" in sample_name:
-        return "Healthy"
-    if "Baseline" in sample_name:
-        return "Baseline"
-    if re.search(r'Off[-_]?tx', sample_name, re.IGNORECASE):
-        return "Off-Tx"
-    match = re.search(r'C(\d{1,2})(?!\d)', sample_name)
-    if match:
-        return f"C{int(match.group(1))}"
-    return "On-Treatment"
+    return detailed_timepoint(sample_name)
 
 def sort_timepoints(tp):
-    if tp == "Healthy": return -2
-    if tp == "Baseline": return -1
-    if tp == "Off-Tx": return 99
-    if tp.startswith("C") and tp[1:].isdigit(): return int(tp[1:])
-    return 98
+    return timepoint_sort_key(tp)
 
 def get_patient(sample_name, patient_ids):
-    return next((pid for pid in patient_ids if pid in sample_name), None)
+    return _get_patient(sample_name, patient_ids)
 
 # === Load Data ===
 matrix = pd.read_csv(input_path, index_col=0)
-patients = pd.read_excel(patient_list_path).iloc[:, 0].dropna().astype(str).tolist()
+patients = read_patient_ids(patient_list_path)
 
 # === Create Rankings Per Sample ===
 ranks = matrix.rank(axis=0, method='min', ascending=False)

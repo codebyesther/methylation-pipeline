@@ -4,47 +4,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import re
+import sys
+
+import matplotlib
+matplotlib.use("Agg")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import (classify_timepoint, find_patient_file, find_scaled_matrix,  # noqa: E402
+                    get_patient as _get_patient, read_patient_ids, read_scaled_matrix)
 
 # Auto-detect files
-data_dir = "data"
-output_dir = "output"
-patient_file = next((f for f in os.listdir(data_dir) if "patient" in f.lower()), None)
-methylation_file = next((f for f in os.listdir(output_dir) if "scaled" in f.lower() and f.endswith(".xlsx")), None)
-
-if not patient_file or not methylation_file:
-    raise FileNotFoundError("Could not find necessary patient or methylation file.")
-
-print(f"Using patient file: {patient_file}")
+patient_file = find_patient_file()
+methylation_path = find_scaled_matrix()
+methylation_file = os.path.basename(methylation_path)
+print(f"Using patient file: {os.path.basename(patient_file)}")
 print(f"Using methylation file: {methylation_file}")
 
-# Load files
-patient_df = pd.read_excel(os.path.join(data_dir, patient_file))
-patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
-
-df = pd.read_excel(os.path.join(output_dir, methylation_file))
+patient_ids = read_patient_ids(patient_file)
 base_fname = os.path.splitext(methylation_file)[0]
 
-# Prepare data
-start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
-cpg_island_df = df.iloc[start_idx:].reset_index(drop=True)
+# CGI x sample ratios; "INF" cells (GlobMin80 = 0) become NaN and are left out
+cgi, _ = read_scaled_matrix(methylation_path)
+cpg_island_df = cgi.reset_index().rename(columns={cgi.index.name or "index": "CpG_Island"})
 cpg_island_df.rename(columns={cpg_island_df.columns[0]: "CpG_Island"}, inplace=True)
-cpg_island_df.dropna(how="all", subset=cpg_island_df.columns[1:], inplace=True)
 
 def get_patient(sample):
-    for pid in patient_ids:
-        if pid in sample:
-            return pid
-    return None
+    return _get_patient(sample, patient_ids)
 
 def normalize_timepoint(sample):
-    if "Baseline" in sample:
-        return "Baseline"
-    elif "Off-tx" in sample:
-        return "Post-Treatment"
-    elif "INNOV" in sample:
-        return "Healthy"
-    else:
-        return "On-Treatment"
+    return classify_timepoint(sample)
 
 samples = cpg_island_df.columns[1:]
 sample_meta = pd.DataFrame({
@@ -57,7 +44,7 @@ valid_samples = valid_samples[valid_samples["Timepoint"] != "Healthy"]
 
 matrix = cpg_island_df.set_index("CpG_Island")[valid_samples["Sample"].tolist()]
 matrix.columns = pd.MultiIndex.from_frame(valid_samples[["Patient", "Timepoint"]])
-matrix = matrix.apply(pd.to_numeric, errors='coerce').fillna(0)
+matrix = matrix.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], np.nan)  # INF cells skipped by mean()
 collapsed = matrix.T.groupby(level=[0, 1]).mean().T
 
 chromosome_lookup = pd.Series(
@@ -109,8 +96,8 @@ line_vals = line_data.set_index("Chromosome").reindex(chr_order).fillna(0)["Mean
 os.makedirs("plots/avg-methylation-change-per-chromosome", exist_ok=True)
 
 fig, ax = plt.subplots(figsize=(16, 6))
-ax.bar(x, bar_pivot["Baseline → On-Tx"], width, label="Baseline → On-Tx", color=colors["Baseline → On-Tx"], alpha=0.8)
-ax.bar(x, bar_pivot["On-Tx → Post-Tx"], width, label="On-Tx → Post-Tx", color=colors["On-Tx → Post-Tx"], alpha=0.6)
+ax.bar(x - width / 2, bar_pivot["Baseline → On-Tx"], width, label="Baseline → On-Tx", color=colors["Baseline → On-Tx"], alpha=0.8)
+ax.bar(x + width / 2, bar_pivot["On-Tx → Post-Tx"], width, label="On-Tx → Post-Tx", color=colors["On-Tx → Post-Tx"], alpha=0.8)
 ax.plot(x, line_vals, marker="o", color=colors["Baseline → Post-Tx"], label="Baseline → Post-Tx", linewidth=2)
 
 ax.set_xticks(x)
@@ -126,7 +113,7 @@ plt.tight_layout()
 plot_path = f"plots/avg-methylation-change-per-chromosome/chr_avg_overlay_{base_fname}_aligned.png"
 excel_path = f"plots/avg-methylation-change-per-chromosome/chr_avg_summary_{base_fname}.xlsx"
 plt.savefig(plot_path, bbox_inches="tight")
-plt.show()
+plt.close(fig)
 
 merged.to_excel(excel_path, index=False)
 

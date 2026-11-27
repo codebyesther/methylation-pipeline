@@ -5,7 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import glob
+import sys
 import zipfile
+
+import matplotlib
+matplotlib.use("Agg")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import (cgi_genes, classify_timepoint, find_patient_file, find_scaled_matrix,  # noqa: E402
+                    get_patient as _get_patient, read_patient_ids)
 
 class Args:
     patients = ""
@@ -17,18 +24,8 @@ args = Args()
 data_folder = "data"
 output_folder = "output"
 
-patient_files = glob.glob(os.path.join(data_folder, '*[pP][aA][tT][iI][eE][nN][tT] [iI][dD]*.xlsx'))
-matrix_files = glob.glob(os.path.join(output_folder, '*[mM][aA][tT][rR][iI][xX]*.xlsx'))
-
-if patient_files:
-    args.patients = patient_files[0]
-else:
-    raise FileNotFoundError("No patient ID file found in the data folder.")
-
-if matrix_files:
-    args.methylation = matrix_files[0]
-else:
-    raise FileNotFoundError("No matrix file found in the output folder.")
+args.patients = find_patient_file(data_folder)
+args.methylation = find_scaled_matrix(output_folder)
 
 # Load CpG → Gene mapping
 map_file = os.path.join(output_folder, "gene_cgi_map.csv")
@@ -44,9 +41,7 @@ patient_ids = []
 os.makedirs(args.outdir, exist_ok=True)
 
 # Read patient IDs
-if "patient" in args.patients.lower():
-    patient_df = pd.read_excel(args.patients)
-    patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
+patient_ids = read_patient_ids(args.patients)
 
 # Read methylation matrix
 df = pd.read_excel(args.methylation)
@@ -54,20 +49,10 @@ methylation_dfs[os.path.basename(args.methylation)] = df
 
 # Metadata helpers
 def get_patient(sample):
-    for pid in patient_ids:
-        if pid in sample:
-            return pid
-    return None
+    return _get_patient(sample, patient_ids)
 
 def normalize_timepoint(sample):
-    if "Baseline" in sample:
-        return "Baseline"
-    elif "Off-tx" in sample:
-        return "Post-Treatment"
-    elif "INNOV" in sample:
-        return "Healthy"
-    else:
-        return "On-Treatment"
+    return classify_timepoint(sample)
 
 # Track plot filenames
 top10dmplot_filenames = []
@@ -77,8 +62,7 @@ for fname, df in methylation_dfs.items():
     print(f"\n=== Processing file: {fname} ===")
     base_fname = os.path.splitext(fname)[0]
 
-    start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
-    cpg_island_df = df.iloc[start_idx:].reset_index(drop=True)
+    cpg_island_df = df[df.iloc[:, 0].astype(str).str.strip().str.startswith("CGI_")].reset_index(drop=True)
     cpg_island_df.rename(columns={cpg_island_df.columns[0]: "CpG_Island"}, inplace=True)
     cpg_island_df["CpG_Island"] = cpg_island_df["CpG_Island"].astype(str).str.strip()
     cpg_island_df.dropna(how="all", subset=cpg_island_df.columns[1:], inplace=True)
@@ -99,7 +83,7 @@ for fname, df in methylation_dfs.items():
 
     matrix = cpg_island_df.set_index("CpG_Island")[valid_samples["Sample"].tolist()]
     matrix.columns = pd.MultiIndex.from_frame(valid_samples[["Patient", "Timepoint"]])
-    matrix = matrix.apply(pd.to_numeric, errors='coerce')
+    matrix = matrix.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], np.nan)  # "INF" cells -> missing
 
     # Save matrix as CSV
     matrix_csv = os.path.join(args.outdir, f"{base_fname}_matrix.csv")
@@ -145,10 +129,10 @@ for fname, df in methylation_dfs.items():
 
     def plot_multi_cpg_genes(df, title, filename):
         df["CpG_Island"] = df["CpG_Island"].astype(str).str.strip()
-        matches = df["CpG_Island"].str.extract(r"CGI_(chr\d+)_(\d+)_(\d+)_")
-        df["Map_ID"] = matches[0] + ':' + matches[1] + '-' + matches[2]
-        df["Gene"] = df["Map_ID"].map(cgi_to_gene)
-        df = df.dropna(subset=["Gene"])
+        # Genes come from the CGI name itself (exact symbols, chrX/chrY included,
+        # and every gene of a CGI that lists more than one)
+        df["Gene"] = df["CpG_Island"].map(cgi_genes)
+        df = df.explode("Gene").dropna(subset=["Gene"])
 
         gene_df = df.groupby("Gene").agg(
             count=("CpG_Island", "count"),

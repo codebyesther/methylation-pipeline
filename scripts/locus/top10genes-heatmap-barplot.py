@@ -10,7 +10,13 @@ import matplotlib.pyplot as plt
 import argparse
 from scipy.stats import ttest_rel
 from tqdm import tqdm
+import sys
 import zipfile
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import (cgi_gene_pairs, classify_timepoint as _classify, find_file,  # noqa: E402
+                    find_patient_file, find_scaled_matrix, get_patient as _get_patient,
+                    read_patient_ids, read_scaled_matrix)
 
 # === Argument Parser ===
 parser = argparse.ArgumentParser(description='Generate gene-level methylation barplots and heatmaps based on delta values.')
@@ -19,52 +25,30 @@ args = parser.parse_args()
 os.makedirs(args.output_dir, exist_ok=True)
 
 # === Helper Functions ===
-def find_file(directory, keyword):
-    files = glob.glob(os.path.join(directory, f"*{keyword}*"))
-    if not files:
-        raise FileNotFoundError(f"No file containing '{keyword}' found in directory '{directory}'")
-    return files[0]
-
 def classify_timepoint(sample):
-    if "Baseline" in sample:
-        return "Baseline"
-    elif "Off-tx" in sample:
-        return "Post-Treatment"
-    elif "INNOV" in sample:
-        return "Healthy"
-    else:
-        return "On-Treatment"
+    return _classify(sample)
 
 def get_patient(sample):
-    return next((pid for pid in patient_ids if pid in sample), None)
+    return _get_patient(sample, patient_ids)
 
 # === Load Data ===
 output_folder = 'output'
 data_folder = 'data'
-cpg_matrix_file = find_file(output_folder, "matrix")
-patient_list_file = find_file(data_folder, "patient")
-gene_annotation_file = find_file(output_folder, "cgi_map")
+# The Step 3 matrix (scaled_fragment_ratios_matrix.xlsx), not gene_methylation_matrix.csv
+cpg_matrix_file = find_scaled_matrix(output_folder)
+patient_list_file = find_patient_file(data_folder)
+find_file(output_folder, "cgi_map")  # Step 5 must have run (kept as a check)
+print(f"Using {os.path.basename(cpg_matrix_file)} and {os.path.basename(patient_list_file)}")
 
-cpg_matrix = pd.read_excel(cpg_matrix_file, index_col=0) if cpg_matrix_file.endswith('.xlsx') else pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
-patient_df = pd.read_excel(patient_list_file)
-gene_annot_raw = pd.read_excel(gene_annotation_file) if gene_annotation_file.endswith('.xlsx') else pd.read_csv(gene_annotation_file)
+# CGI x sample scaled ratios; "INF" cells become NaN and are skipped in means
+cpg_matrix, _ = read_scaled_matrix(cpg_matrix_file)
 
-gene_annot = gene_annot_raw[gene_annot_raw['gene_name'].notna()].copy()
-gene_annot['gene_name'] = gene_annot['gene_name'].astype(str)
-cpg_headers = cpg_matrix.index.astype(str).tolist()
-
-matched = []
-for _, row in tqdm(gene_annot.iterrows(), total=gene_annot.shape[0], desc="Matching CpGs"):
-    gene = row['gene_name']
-    matched_cpgs = [h for h in cpg_headers if gene in h]
-    for cpg in matched_cpgs:
-        matched.append({'cgi_id': cpg, 'gene_name': gene})
-
-gene_annot = pd.DataFrame(matched)
+# CGI -> gene by exact symbol (GATA2 no longer collects GATA2-AS1's islands)
+gene_annot = cgi_gene_pairs(cpg_matrix.index.astype(str))
 cpg_gene_counts = gene_annot['gene_name'].value_counts()
 all_genes = cpg_gene_counts.index.tolist()
 
-patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
+patient_ids = read_patient_ids(patient_list_file)
 
 # === Delta Calculation Function ===
 def calculate_deltas(tp1, tp2):
@@ -116,7 +100,7 @@ bp_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_baseline_
 bo_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_baseline_to_on.csv"))
 op_patient_deltas.to_csv(os.path.join(args.output_dir, "patient_deltas_on_to_post.csv"))
 
-# === Generate Gene Methylation Matrix (Raw Fragment Counts) ===
+# === Gene x sample matrix: summed scaled ratios of each gene's CpG islands ===
 gene_rows = []
 for gene in tqdm(all_genes, desc="Building gene methylation matrix"):
     cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
@@ -219,7 +203,7 @@ for patient_id in sample_metadata["Patient"].unique():
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(patient_data, cmap="coolwarm", linewidths=0.5,
-                cbar_kws={"label": "Methylated Fragment Count"}, ax=ax)
+                cbar_kws={"label": "Summed Scaled Methylated Fragment Count Ratio"}, ax=ax)
     ax.set_title(f"Gene Methylation for Patient {patient_id}", fontsize=12)
     ax.set_xlabel("Sample")
     ax.set_ylabel("Gene")

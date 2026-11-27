@@ -10,6 +10,11 @@ import argparse
 from tqdm import tqdm
 import zipfile
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import (detailed_timepoint, find_file, find_patient_file, gene_matrix,  # noqa: E402
+                    get_patient as _get_patient, read_patient_ids, timepoint_sort_key)
 
 # === Argument Parser ===
 parser = argparse.ArgumentParser(description='Generate gene-level methylation barplots, heatmaps, and line plots based on delta values.')
@@ -18,75 +23,27 @@ args = parser.parse_args()
 os.makedirs(args.output_dir, exist_ok=True)
 
 # === Helper Functions ===
-def find_file(directory, keyword):
-    files = glob.glob(os.path.join(directory, f"*{keyword}*"))
-    if not files:
-        raise FileNotFoundError(f"No file containing '{keyword}' found in directory '{directory}'")
-    return files[0]
-
 def classify_detailed_timepoint(sample):
-    if match := re.search(r'(Baseline|Off-tx|INNOV|C\d+)', sample):
-        token = match.group(1)
-        if token == "INNOV":
-            return "Healthy"
-        elif token == "Off-tx":
-            return "Off-Tx"
-        else:
-            return token  # Baseline or C1-C9
-    return "On-Treatment"
+    return detailed_timepoint(sample)
 
 def get_patient(sample):
-    return next((pid for pid in patient_ids if pid in sample), None)
+    return _get_patient(sample, patient_ids)
 
 def sort_timepoints(tp):
-    if tp == "Healthy": return -2
-    if tp == "Baseline": return -1
-    if tp == "Off-Tx": return 99
-    if tp.startswith("C") and tp[1:].isdigit(): return int(tp[1:])
-    return 98
+    return timepoint_sort_key(tp)
 
 # === Load Data ===
 output_folder = 'output'
 data_folder = 'data'
-cpg_matrix_file = find_file(output_folder, "merged_output_glob20")
-patient_list_file = find_file(data_folder, "patient")
-gene_annotation_file = find_file(output_folder, "cgi_map")
+cpg_matrix_file = find_file(output_folder, "merged_output_glob20", exts=(".xlsx",))
+patient_list_file = find_patient_file(data_folder)
 
-cpg_matrix = pd.read_excel(cpg_matrix_file, index_col=0) if cpg_matrix_file.endswith('.xlsx') else pd.read_csv(cpg_matrix_file, sep="\t", index_col=0)
-patient_df = pd.read_excel(patient_list_file)
-gene_annot_raw = pd.read_excel(gene_annotation_file) if gene_annotation_file.endswith('.xlsx') else pd.read_csv(gene_annotation_file)
+cpg_matrix = pd.read_excel(cpg_matrix_file, index_col=0)
+cpg_matrix.index = cpg_matrix.index.astype(str).str.strip()
+patient_ids = read_patient_ids(patient_list_file)
 
-gene_annot = gene_annot_raw[gene_annot_raw['gene_name'].notna()].copy()
-gene_annot['gene_name'] = gene_annot['gene_name'].astype(str)
-cpg_headers = cpg_matrix.index.astype(str).tolist()
-
-matched = []
-for _, row in tqdm(gene_annot.iterrows(), total=gene_annot.shape[0], desc="Matching CpGs"):
-    gene = row['gene_name']
-    matched_cpgs = [h for h in cpg_headers if gene in h]
-    for cpg in matched_cpgs:
-        matched.append({'cgi_id': cpg, 'gene_name': gene})
-
-gene_annot = pd.DataFrame(matched)
-cpg_gene_counts = gene_annot['gene_name'].value_counts()
-all_genes = cpg_gene_counts.index.tolist()
-
-patient_ids = patient_df.iloc[:, 0].dropna().astype(str).tolist()
-
-# === Generate Gene Methylation Matrix (Raw Fragment Counts) ===
-gene_rows = []
-for gene in tqdm(all_genes, desc="Building gene methylation matrix"):
-    cpgs = gene_annot[gene_annot['gene_name'] == gene]['cgi_id']
-    gene_data = cpg_matrix.loc[cpg_matrix.index.intersection(cpgs)]
-    if gene_data.empty:
-        continue
-    summed_row = gene_data.sum(axis=0)
-    summed_row.name = gene
-    gene_rows.append(summed_row)
-
-gene_methylation_matrix = pd.DataFrame(gene_rows)
-gene_methylation_matrix.index.name = "Gene"
-gene_methylation_matrix.columns.name = "Sample"
+# === Gene x sample matrix of raw Glob20 fragment counts (exact gene matching) ===
+gene_methylation_matrix = gene_matrix(cpg_matrix, how="sum")
 gene_methylation_matrix.to_csv(os.path.join(args.output_dir, "gene_methylation_matrix.csv"))
 print(f"Gene methylation matrix saved to {os.path.join(args.output_dir, 'gene_methylation_matrix.csv')}")
 
@@ -105,8 +62,8 @@ avg_methylation = avg_methylation[sorted(avg_methylation.columns, key=sort_timep
 
 plt.figure(figsize=(12, 6))
 sns.heatmap(avg_methylation, cmap="coolwarm", linewidths=0.5,
-            cbar_kws={"label": "Scaled Methylated Fragment Count Ratio"})
-plt.title("Average Methylation per Gene Across Treatment Cycles (Top 10 Genes)", fontsize=12)
+            cbar_kws={"label": "Glob20 Fragment Count (summed per gene)"})
+plt.title("Average Methylation per Gene Across Treatment Cycles (Top 10 Genes by Baseline Signal)", fontsize=12)
 plt.xlabel("Timepoint")
 plt.ylabel("Gene")
 plt.tight_layout()

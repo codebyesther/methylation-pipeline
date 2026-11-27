@@ -3,6 +3,8 @@
 import pandas as pd
 import os
 
+from common import contains_id
+
 # Set input and output directories
 input_dir = "data"
 output_dir = "output"
@@ -14,7 +16,7 @@ patient_ids = []
 
 # Load all Excel files from input_dir
 for fname in os.listdir(input_dir):
-    if fname.endswith(".xlsx") or fname.endswith(".xls"):
+    if fname.endswith((".xlsx", ".xls")) and not fname.startswith("~$"):
         fpath = os.path.join(input_dir, fname)
         if "patient" in fname.lower():
             # Load patient ID file
@@ -29,7 +31,7 @@ filtered_methylation_dfs = {}
 for fname, df in methylation_dfs.items():
     filtered = df[
         [df.columns[0]] + 
-        [col for col in df.columns[1:] if any(pid in str(col) for pid in patient_ids)]
+        [col for col in df.columns[1:] if any(contains_id(col, pid) for pid in patient_ids)]
     ]
     filtered_methylation_dfs[fname] = filtered
 

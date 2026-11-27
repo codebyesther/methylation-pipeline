@@ -13,17 +13,17 @@ dfs_glob20 = []
 dfs_globmin80 = []
 
 for filename in os.listdir(input_dir):
-    if filename.endswith(".xlsx"):
+    if filename.endswith(".xlsx") and "samples-of-interest" in filename and not filename.startswith("~$"):
         fpath = os.path.join(input_dir, filename)
         if "Glob20" in filename:
             print(f"Processing {filename} for Glob20...")
-            df = pd.read_excel(fpath, sheet_name="Sheet1")
-            df_t = df.set_index("Header").T
+            df = pd.read_excel(fpath, sheet_name=0)
+            df_t = df.set_index(df.columns[0]).T
             dfs_glob20.append(df_t)
         elif "GlobMin80" in filename:
             print(f"Processing {filename} for GlobMin80...")
-            df = pd.read_excel(fpath, sheet_name="Sheet1")
-            df_t = df.set_index("Header").T
+            df = pd.read_excel(fpath, sheet_name=0)
+            df_t = df.set_index(df.columns[0]).T
             dfs_globmin80.append(df_t)
 
 # Combine and reset index for Glob20 files

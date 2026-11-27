@@ -2,6 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import glob
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import classify_timepoint, detailed_timepoint, find_scaled_matrix, read_scaled_matrix  # noqa: E402
 
 # === Setup ===
 input_dir = "output"
@@ -10,14 +13,7 @@ os.makedirs(plot_dir, exist_ok=True)
 
 # === Sample classification function ===
 def classify_condition(name):
-    if "INNOV" in name:
-        return "Healthy"
-    elif "Baseline" in name:
-        return "Baseline"
-    elif "Off-tx" in name:
-        return "Post-Treatment"
-    else:
-        return "On-Treatment"
+    return classify_timepoint(name)
 
 # === Plot settings ===
 order = ["Healthy", "Baseline", "On-Treatment", "Post-Treatment"]
@@ -42,16 +38,9 @@ else:
         base_name = filename.replace('.xlsx', '')
         print(f"\n🔍 Processing: {filename}")
 
-        # === Load and reformat the scaled matrix ===
-        raw_df = pd.read_excel(filepath, header=None)
-
-        samples = raw_df.iloc[0, 1:]  # skip "Header" column
-        ratios = raw_df.iloc[1, 1:]
-
-        df = pd.DataFrame({
-            "Sample": samples.values,
-            "Scaled_Ratio": ratios.values
-        })
+        # === Load the sample-level scaled ratio (Glob20 total / GlobMin80 total x 1e5) ===
+        _, scaled = read_scaled_matrix(filepath)
+        df = pd.DataFrame({"Sample": scaled.index.astype(str), "Scaled_Ratio": scaled.values})
 
         # === Annotate and prepare for plotting ===
         df["Condition"] = df["Sample"].apply(classify_condition)
@@ -84,7 +73,7 @@ else:
         plt.ylabel("CpG Methylation\n(Scaled Ratio)", fontsize=12)
         plt.xlabel("Sample Condition", fontsize=12)
         plt.ylim(bottom=0)
-        plt.title(f"​CpG Methylation by Condition (Median)", fontsize=14)
+        plt.title("CpG Methylation by Condition (Median)", fontsize=14)
         plt.tight_layout()
         median_path = os.path.join(plot_dir, f"{base_name}_median_dotplot.png")
         plt.savefig(median_path, dpi=300)
@@ -105,7 +94,7 @@ else:
         plt.ylabel("CpG Methylation\n(Scaled Ratio)", fontsize=12)
         plt.xlabel("Sample Condition", fontsize=12)
         plt.ylim(bottom=0)
-        plt.title(f"​CpG Methylation by Condition (Mean ± SD)", fontsize=14)
+        plt.title("CpG Methylation by Condition (Mean ± SD)", fontsize=14)
         plt.tight_layout()
         mean_sd_path = os.path.join(plot_dir, f"{base_name}_mean_sd_dotplot.png")
         plt.savefig(mean_sd_path, dpi=300)

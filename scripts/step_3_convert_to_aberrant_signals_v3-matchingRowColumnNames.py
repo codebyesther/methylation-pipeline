@@ -1,82 +1,118 @@
+"""Step 3: Glob20 / GlobMin80 ratio for every CpG island and sample.
+
+Inputs (output/):
+  merged_output_glob20.xlsx and merged_output_globmin80.xlsx from Step 2, or,
+  with a single sequencing run, the one pair of Step 1 files
+  (*Glob20*_samples-of-interest.xlsx and *GlobMin80*_samples-of-interest.xlsx).
+
+Output: output/scaled_fragment_ratios_matrix.xlsx, laid out as
+  row 1  Scaled ratio of totals (Glob20 / GlobMin80 x 100000)  <- sample-level signal
+  row 2  Total CpG island fragments counts for Glob20           (raw)
+  row 3  Total CpG island fragments counts for GlobMin80        (raw)
+  rows   CGI_...  Glob20 count / GlobMin80 count of the same CGI x 100000
+
+Cells are matched by CGI name and sample name, not by position.
+  * GlobMin80 = 0 and Glob20 > 0  ->  "INF" (highlighted red, logged)
+  * GlobMin80 = 0 and Glob20 = 0  ->  0 (no fragments at all is not infinite)
+"""
+
 import os
+
+import numpy as np
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 
-# STEP1: Auto-detect input files
-output_dir = 'output'
-files_in_dir = os.listdir(output_dir)
-glob20_file = next((os.path.join(output_dir, f) for f in files_in_dir if "output_glob20" in f and f.endswith(".xlsx")), None)
-globmin80_file = next((os.path.join(output_dir, f) for f in files_in_dir if "output_globmin80" in f and f.endswith(".xlsx")), None)
+from common import GLOB20_TOTAL_ROW, GLOBMIN80_TOTAL_ROW, SCALED_TOTAL_ROW, TOTAL_ROW
 
-if not glob20_file or not globmin80_file:
-    raise FileNotFoundError("One or both input files not found.")
+output_dir = "output"
+SCALE = 100000
 
-# STEP2: Load Excel files
+
+def pick(keyword_merged, keyword_run):
+    files = sorted(os.listdir(output_dir))
+    merged = [f for f in files if keyword_merged in f.lower() and f.endswith(".xlsx") and not f.startswith("~$")]
+    if merged:
+        return os.path.join(output_dir, merged[0])
+    runs = [f for f in files if keyword_run in f and "samples-of-interest" in f and f.endswith(".xlsx")]
+    if len(runs) == 1:
+        print(f"[note] no merged file for {keyword_run}; using the single run {runs[0]}")
+        return os.path.join(output_dir, runs[0])
+    if len(runs) > 1:
+        raise FileNotFoundError(f"{len(runs)} {keyword_run} runs found; run Step 2 to merge them first.")
+    raise FileNotFoundError(f"No {keyword_run} input in output/; run Steps 1-2 first.")
+
+
+# STEP 1: find inputs ("Glob20" never matches GlobMin80 file names)
+glob20_file = pick("output_glob20", "Glob20")
+globmin80_file = pick("output_globmin80", "GlobMin80")
+print(f"Glob20:    {glob20_file}\nGlobMin80: {globmin80_file}")
+
+# STEP 2: load
 glob20_df = pd.read_excel(glob20_file)
 globmin80_df = pd.read_excel(globmin80_file)
-
-# STEP3: Filter CGI rows only
 label_col = glob20_df.columns[0]
-cpg_label = "Total CpG island fragments counts for this particular spreadsheet"
-filtered_glob20 = glob20_df[glob20_df[label_col].str.startswith("CGI_")].copy()
-filtered_globmin80 = globmin80_df[globmin80_df[label_col].str.startswith("CGI_")].copy()
+glob20_df[label_col] = glob20_df[label_col].astype(str).str.strip()
+globmin80_df[globmin80_df.columns[0]] = globmin80_df[globmin80_df.columns[0]].astype(str).str.strip()
+glob20_df = glob20_df.set_index(label_col)
+globmin80_df = globmin80_df.set_index(globmin80_df.columns[0])
 
-# STEP4: Align by row and column labels
-filtered_glob20.set_index(label_col, inplace=True)
-filtered_globmin80.set_index(label_col, inplace=True)
-shared_rows = filtered_glob20.index.intersection(filtered_globmin80.index)
-shared_columns = filtered_glob20.columns.intersection(filtered_globmin80.columns)
-aligned_glob20 = filtered_glob20.loc[shared_rows, shared_columns].sort_index().sort_index(axis=1)
-aligned_globmin80 = filtered_globmin80.loc[shared_rows, shared_columns].sort_index().sort_index(axis=1)
+# STEP 3: CGI rows only, numeric
+num = glob20_df[glob20_df.index.str.startswith("CGI_")].apply(pd.to_numeric, errors="coerce").fillna(0)
+ref = globmin80_df[globmin80_df.index.str.startswith("CGI_")].apply(pd.to_numeric, errors="coerce").fillna(0)
 
-# STEP5: Safe division with INF handling
-with pd.option_context('mode.use_inf_as_na', True):
-    ratio_raw = (aligned_glob20 / aligned_globmin80.replace(0, pd.NA)) * 100000
-    ratio_df = ratio_raw.fillna("INF")
+# STEP 4: align by row and column labels
+rows = num.index.intersection(ref.index)
+cols = num.columns.intersection(ref.columns)
+dropped = sorted(set(num.columns) ^ set(ref.columns))
+if dropped:
+    print(f"[warn] samples in only one of the two files, left out: {dropped}")
+num = num.loc[rows, cols].sort_index().sort_index(axis=1)
+ref = ref.loc[rows, cols].sort_index().sort_index(axis=1)
+print(f"{len(rows)} CpG islands x {len(cols)} samples")
 
-# STEP6: Count and log INF values
-inf_mask = ratio_df == "INF"
-inf_count = inf_mask.sum().sum()
-print(f"⚠️ Total 'INF' values (division by zero): {inf_count}")
+# STEP 5: ratio; x/0 -> INF, 0/0 -> 0
+ratio = num / ref.replace(0, np.nan) * SCALE
+inf_mask = (ref == 0) & (num > 0)
+ratio = ratio.mask((ref == 0) & (num == 0), 0.0)
+ratio_out = ratio.astype(object).where(~inf_mask, "INF")
+print(f"'INF' cells (GlobMin80 = 0, Glob20 > 0): {int(inf_mask.values.sum())}")
 
-# Save INF locations to CSV
-inf_locations = [(row_idx, col) for row_idx, row in ratio_df.iterrows() for col in ratio_df.columns if row[col] == "INF"]
-inf_log_df = pd.DataFrame(inf_locations, columns=["CGI_Region", "Sample"])
-inf_log_path = os.path.join(output_dir, "inf_locations_log.csv")
-inf_log_df.to_csv(inf_log_path, index=False)
-print(f"📝 Logged INF locations to: {inf_log_path}")
-
-# Save INF summary (column-wise INF counts) to CSV
+inf_locations = inf_mask.stack()
+inf_locations = inf_locations[inf_locations].reset_index().iloc[:, :2]
+inf_locations.columns = ["CGI_Region", "Sample"]
+inf_locations.to_csv(os.path.join(output_dir, "inf_locations_log.csv"), index=False)
 inf_summary = inf_mask.sum().reset_index()
 inf_summary.columns = ["Sample", "INF_Count"]
-inf_summary_path = os.path.join(output_dir, "inf_summary.csv")
-inf_summary.to_csv(inf_summary_path, index=False)
-print(f"📊 Saved INF summary to: {inf_summary_path}")
+inf_summary.to_csv(os.path.join(output_dir, "inf_summary.csv"), index=False)
 
-# STEP7: Format for Excel export
-ratio_df.reset_index(inplace=True)
-total_glob20_row = glob20_df[glob20_df[label_col] == cpg_label].copy()
-total_globmin80_row = globmin80_df[globmin80_df[label_col] == cpg_label].copy()
-if not total_glob20_row.empty:
-    total_glob20_row.iloc[0, 0] = "Total CpG island fragments counts for Glob20"
-if not total_globmin80_row.empty:
-    total_globmin80_row.iloc[0, 0] = "Total CpG island fragments counts for GlobMin80"
-result_df = pd.concat([total_glob20_row, total_globmin80_row, ratio_df], ignore_index=True)
 
-# STEP8: Export Excel with red highlight for INF
+# STEP 6: totals. Use the lab's total row when present, else the CGI sum.
+def total(df, cgi):
+    if TOTAL_ROW in df.index:
+        return pd.to_numeric(df.loc[TOTAL_ROW], errors="coerce").reindex(cols)
+    print("[note] no total row in an input file; using the sum of its CGI rows")
+    return cgi.sum()
+
+
+tot20, tot80 = total(glob20_df, num), total(globmin80_df, ref)
+scaled_total = tot20 / tot80.replace(0, np.nan) * SCALE
+
+summary = pd.DataFrame([scaled_total, tot20, tot80],
+                       index=[SCALED_TOTAL_ROW, GLOB20_TOTAL_ROW, GLOBMIN80_TOTAL_ROW])
+result = pd.concat([summary.astype(object), ratio_out])
+result.index.name = "Header"
+
+# STEP 7: export, INF cells in red
 output_file = os.path.join(output_dir, "scaled_fragment_ratios_matrix.xlsx")
-result_df.to_excel(output_file, index=False)
-
+result.reset_index().to_excel(output_file, index=False)
 wb = load_workbook(output_file)
 ws = wb.active
 ws.title = "Scaled Fragment Ratios"
-red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
-
-for row in ws.iter_rows(min_row=3, min_col=2, max_col=ws.max_column):
+red = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+for row in ws.iter_rows(min_row=5, min_col=2, max_col=ws.max_column):
     for cell in row:
         if cell.value == "INF":
-            cell.fill = red_fill
-
+            cell.fill = red
 wb.save(output_file)
-print(f"✅ Final Excel output saved with red-highlighted INF cells: {output_file}")
+print(f"Saved {output_file}")

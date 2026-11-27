@@ -30,6 +30,8 @@ The pipeline works at three levels:
 - [Script versions](#-script-versions)
 - [Project structure](#-project-structure)
 - [Known limitations](#-known-limitations)
+- [Testing](#-testing)
+- [Changelog](#-changelog)
 - [CGI naming format](#-cgi-naming-format)
 - [Citation](#-citation)
 - [License](#-license)
@@ -67,7 +69,7 @@ mkdir -p data output plots
 
 python scripts/step_1_filter_patients_local.py
 python scripts/step_2_merge_filtered_files.py        # if you have multiple runs
-python scripts/step_3_convert_to_aberrant_signals.py
+python scripts/step_3_convert_to_aberrant_signals_v3-matchingRowColumnNames.py
 python scripts/step_4_generate_gene_annotation.py
 python scripts/step_5_build_gene_cgi_map.py
 python scripts/step_6_gene-methylation-matrix.py
@@ -85,8 +87,9 @@ Place all inputs in `data/`.
 
 **1. Patient ID list** (`.xlsx`)
 - Patient IDs in the first column.
-- The filename must contain `patient` (most scripts) or `patient id` (the `top10dm-plots*` scripts). A name like `Patient ID list.xlsx` satisfies both.
-- The gene-rank scripts currently expect a specific filename; see [Known limitations](#-known-limitations).
+- The filename must contain `patient` in any capitalization, e.g. `Patient ID list.xlsx`.
+- IDs match sample names as whole words: `PT01` matches `PT01_Baseline` but not `PT010_C2D1`.
+- To keep the healthy controls, add `INNOV` as one of the rows.
 
 | Patient ID |
 |:--|
@@ -119,7 +122,7 @@ Example sample names: `PT001_Baseline`, `PT001_C2D1`, `PT001_C7D1-Off-tx`, `INNO
 `scripts/step_1_filter_patients_local.py`
 
 - Reads the patient ID list and every methylation Excel file in `data/`.
-- Keeps only the sample columns that belong to the listed patients.
+- Keeps only the sample columns that belong to the listed patients (whole-word ID match; list `INNOV` to keep healthy controls).
 - Writes one filtered file per input to `output/` (e.g. `EMSeq-NN-Run-1_..._Glob20_cpgi_counts.xlsx_samples-of-interest`).
 
 ### Step 2 — Merge multiple EM-seq runs *(optional)*
@@ -130,14 +133,21 @@ Example sample names: `PT001_Baseline`, `PT001_C2D1`, `PT001_C7D1-Off-tx`, `INNO
 - Outputs `output/merged_output_glob20.xlsx` and `output/merged_output_globmin80.xlsx`.
 
 ### Step 3 — Convert to normalized methylation signal
-`scripts/step_3_convert_to_aberrant_signals.py`
+`scripts/step_3_convert_to_aberrant_signals_v3-matchingRowColumnNames.py`
 
-- Reads `output_glob20*.xlsx` and `output_globmin80*.xlsx` from `output/`.
-- For each CGI and sample, divides the Glob20 fragment count by the matching GlobMin80 count and multiplies by a scaling factor, producing a normalized methylation signal.
-- Keeps the total-count summary row so global-level scripts can use it.
-- Outputs `output/scaled_fragment_ratios_matrix.xlsx`.
+- Reads `output/merged_output_glob20.xlsx` and `output/merged_output_globmin80.xlsx` from Step 2. With a single sequencing run, it uses the one pair of Step 1 files instead.
+- Matches CpG islands and samples **by name**, then divides each Glob20 count by the GlobMin80 count of the same CGI and sample, x 100,000.
+- GlobMin80 = 0 with Glob20 > 0 is written as `INF` (red in Excel) and logged to `output/inf_locations_log.csv` and `output/inf_summary.csv`; 0 / 0 is written as 0. Downstream scripts treat `INF` as missing.
+- Outputs `output/scaled_fragment_ratios_matrix.xlsx`:
 
-Two alternative versions are included (see [Script versions](#-script-versions)). The `v3` version aligns rows and columns by name rather than position, marks division-by-zero cells as `INF` (highlighted red in Excel), and logs them to `output/inf_locations_log.csv` and `output/inf_summary.csv`.
+| Row | Content |
+|:--|:--|
+| 1 | `Scaled ratio of totals (Glob20 / GlobMin80 x 100000)`: the sample-level signal used by the global scripts |
+| 2 | `Total CpG island fragments counts for Glob20` (raw) |
+| 3 | `Total CpG island fragments counts for GlobMin80` (raw) |
+| 4+ | one row per CGI |
+
+Earlier Step 3 versions are in `scripts/legacy/`.
 
 ### Step 4 — Annotate genes
 `scripts/step_4_generate_gene_annotation.py`
@@ -162,15 +172,15 @@ Two alternative versions are included (see [Script versions](#-script-versions))
 ### Step 6 — Build the gene methylation matrix
 `scripts/step_6_gene-methylation-matrix.py`
 
-- Reads `output/merged_output_glob20.xlsx` and `output/gene_cgi_map.csv`.
-- Sums the signal of all CpG islands assigned to each gene, giving one value per gene per sample.
+- Reads `output/merged_output_glob20.xlsx` (or the single Step 1 Glob20 file).
+- Sums the Glob20 fragment counts of the CpG islands that list each gene, giving one value per gene per sample. Genes are matched by **exact symbol** (`GATA2` no longer collects `GATA2-AS1`); an island listing two genes counts toward both.
 - Outputs `output/gene_methylation_matrix.csv` (genes × samples). This is the input for the gene-rank scripts.
 
 ---
 
 ## 🌐 Global-level analysis
 
-These scripts use each sample's total CGI signal (the summary row from Step 3) to look at overall trends.
+These scripts use each sample's **scaled ratio of totals**: total Glob20 fragments / total GlobMin80 fragments x 100,000 (row 1 of the Step 3 output). Older Step 3 files without that row are handled by computing it from the two raw total rows.
 
 ### Dotplots by condition
 `scripts/global/dotplots-by-condition.py`
@@ -225,7 +235,7 @@ A short helper that draws line plots from a manually assembled table (patients �
 ### Top 10 differentially methylated CGIs and multi-CGI genes
 `scripts/locus/top10dm-plots_using-map_v4.py` (latest)
 
-- Inputs: a `patient id` file in `data/`, a `matrix` file in `output/`, and `output/gene_cgi_map.csv`.
+- Inputs: the patient list in `data/`, `output/scaled_fragment_ratios_matrix.xlsx`, and `output/gene_cgi_map.csv` (Step 5).
 - Averages each CGI across patients at each timepoint, then finds the 10 CGIs with the largest change for Baseline → On-Treatment, Baseline → Post-Treatment, and On-Treatment → Post-Treatment.
 - Also identifies genes with more than one affected CGI.
 - Outputs bar charts plus the intermediate tables (`v3`/`v4`), bundled into a zip file in `plots/`.
@@ -253,7 +263,7 @@ This is the gene-ranking part of the pipeline. Instead of comparing raw signal v
   - `melted_gene_methylation_ranks_avg.csv`: ranks in long format, averaged over replicates
   - `top_genes_per_patient.csv`: the highlighted top genes for each patient
 
-Variants (see [Script versions](#-script-versions)) differ in the rank cap (none, 21, or 501) and in whether replicates are averaged.
+Earlier variants (rank cap of none, 21 or 501; no replicate averaging) are in `scripts/legacy/locus/`.
 
 ### Top genes: deltas, paired t-tests and heatmaps
 `scripts/locus/top10genes-heatmap-barplot.py`
@@ -276,18 +286,16 @@ Variants (see [Script versions](#-script-versions)) differ in the rank cap (none
 
 ## 🗂 Script versions
 
-Several scripts have more than one version. The table shows which one to use.
+Each analysis has one current script (listed in the sections above). Earlier versions were moved, unchanged, to [`scripts/legacy/`](scripts/legacy/) so old figures can be reproduced; its README lists what each one was replaced by.
 
-| Purpose | Recommended | Other versions |
-|:--|:--|:--|
-| Step 3 signal conversion | `step_3_convert_to_aberrant_signals_v3-matchingRowColumnNames.py` when sample rows or columns may not line up between the Glob20 and GlobMin80 files | `step_3_..._signals.py` (×1,000 scaling, position-based); `_v2` (×100,000 scaling, row alignment) |
-| Global trajectories | `lineplots-perpatient_v3.py` (grouped) or `_v4.py` (per cycle) | — |
-| Bubble plots | `bubbleplot_generator_v9_gridsoff.py` | `_v8.py`, `_v8_gridsoff.py`, `merged-glob20-bubbleplot.py` |
-| Top differentially methylated CGIs | `top10dm-plots_using-map_v4.py` | `top10dm-plots.py`, `_using-map_v2.py`, `_v3.py` |
-| Gene heatmaps / t-tests | `top10genes-heatmap-barplot.py` | `heatmap-lineplot-barplot_v2.py`, `_v3.py` |
-| Gene rank trajectories | `gene_rank_slopeplot_top10_colored_v2.py` | `generank-slopeplot.py` (no cap), `-21cap.py`, `-501cap.py`, `gene_rank_slopeplot_top10_colored.py` (no replicate averaging) |
-
-> **Note on Step 3 scaling:** the original Step 3 script multiplies ratios by 1,000; `v2` and `v3` multiply by 100,000. Use the same version for every sample in an analysis so values stay comparable.
+| Purpose | Current script |
+|:--|:--|
+| Step 3 signal conversion | `step_3_convert_to_aberrant_signals_v3-matchingRowColumnNames.py` |
+| Global trajectories | `global/lineplots-perpatient_v3.py` (grouped) or `_v4.py` (per cycle) |
+| Bubble plots | `locus/bubbleplot_generator_v9_gridsoff.py` |
+| Top differentially methylated CGIs | `locus/top10dm-plots_using-map_v4.py` |
+| Gene heatmaps / t-tests | `locus/top10genes-heatmap-barplot.py` |
+| Gene rank trajectories | `locus/gene_rank_slopeplot_top10_colored_v2.py` |
 
 ---
 
@@ -301,10 +309,9 @@ methylation-pipeline/
 ├── sampleimages/                 # Example figures used in this README
 ├── early_detection/              # Pre-diagnosis vs healthy-control version (own README)
 ├── scripts/
+│   ├── common.py                 # shared helpers: file detection, patients, timepoints, genes
 │   ├── step_1_filter_patients_local.py
 │   ├── step_2_merge_filtered_files.py
-│   ├── step_3_convert_to_aberrant_signals.py
-│   ├── step_3_convert_to_aberrant_signals_v2.py
 │   ├── step_3_convert_to_aberrant_signals_v3-matchingRowColumnNames.py
 │   ├── step_4_generate_gene_annotation.py
 │   ├── step_5_build_gene_cgi_map.py
@@ -314,25 +321,18 @@ methylation-pipeline/
 │   │   ├── dotplots-by-condition.py
 │   │   ├── lineplots-perpatient_v3.py
 │   │   └── lineplots-perpatient_v4.py
-│   └── locus/
-│       ├── avg-methylation-change-per-chromosome.py
-│       ├── bubbleplot_generator_v8.py
-│       ├── bubbleplot_generator_v8_gridsoff.py
-│       ├── bubbleplot_generator_v9_gridsoff.py
-│       ├── merged-glob20-bubbleplot.py
-│       ├── top10dm-plots.py
-│       ├── top10dm-plots_using-map_v2.py
-│       ├── top10dm-plots_using-map_v3.py
-│       ├── top10dm-plots_using-map_v4.py
-│       ├── heatmap-lineplot-barplot_v2.py
-│       ├── heatmap-lineplot-barplot_v3.py
-│       ├── top10genes-heatmap-barplot.py
-│       ├── top10genes-barplot-heatmap-lineplot.py
-│       ├── generank-slopeplot.py
-│       ├── generank-slopeplot-21cap.py
-│       ├── generank-slopeplot-501cap.py
-│       ├── gene_rank_slopeplot_top10_colored.py
-│       └── gene_rank_slopeplot_top10_colored_v2.py
+│   ├── locus/
+│   │   ├── avg-methylation-change-per-chromosome.py
+│   │   ├── bubbleplot_generator_v9_gridsoff.py
+│   │   ├── top10dm-plots_using-map_v4.py
+│   │   ├── top10genes-heatmap-barplot.py
+│   │   ├── top10genes-barplot-heatmap-lineplot.py
+│   │   └── gene_rank_slopeplot_top10_colored_v2.py
+│   └── legacy/                   # earlier versions, unchanged (see its README)
+├── tests/
+│   ├── make_synthetic_data.py    # synthetic dataset in the lab file layout
+│   ├── run_pipeline.sh           # runs every current script on it
+│   └── test_common.py            # unit tests (pytest)
 ├── CITATION.cff
 ├── LICENSE
 ├── README.md
@@ -343,11 +343,42 @@ methylation-pipeline/
 
 ## ⚠️ Known limitations
 
-- **Fixed patient-list filename in the gene-rank scripts.** The `generank-*` and `gene_rank_slopeplot_*` scripts read `data/Patient ID list fot EMseq16-18-20.xlsx`. Rename your file to match, or edit `patient_list_path` at the top of the script.
-- **`generank-slopeplot.py`** reads its gene matrix from `plots/heatmaps-lineplots/gene_methylation_matrix.csv` (written by the heatmap scripts). The other rank scripts read `output/gene_methylation_matrix.csv` (Step 6).
-- **File auto-detection uses the first match.** If more than one file in a folder matches a keyword (e.g. `matrix`), scripts use the first one found. Keep only one candidate file per keyword in `data/` and `output/`.
-- **Timepoint parsing depends on sample names** following the conventions in [Input requirements](#-input-requirements).
+- **Timepoint parsing depends on sample names** following the conventions in [Input requirements](#-input-requirements): `Baseline`, `C<n>`, `Off-tx` (any capitalization; `off_tx` also works), `INNOV` for healthy controls. Anything else is treated as On-Treatment.
+- **File auto-detection.** If more than one file matches (e.g. two patient lists), scripts print a note and use the first in alphabetical order. Keep one candidate per keyword in `data/` and `output/`.
 - **Within-patient ranking.** The gene-rank scripts track rank changes within each patient. They don't run a statistical test that combines ranks across patients.
+- **Paired t-tests on few patients.** `top10genes-heatmap-barplot.py` reports p-values without multiple-testing correction; with a handful of patients treat them as descriptive.
+- **`plot-by-cycle.py`** still reads a fixed file path; edit `data_file` before using it.
+
+---
+
+## ✅ Testing
+
+```bash
+pip install -r requirements.txt pytest
+python -m pytest tests early_detection/tests    # unit tests
+bash tests/run_pipeline.sh                      # every current script on synthetic data
+```
+
+`run_pipeline.sh` works in a temporary folder, so your `data/`, `output/` and `plots/` are not touched.
+
+---
+
+## 📝 Changelog
+
+**1.2.0**
+- **Global plots now show the scaled ratio.** With the v2/v3 Step 3 output, the dotplot and trajectory scripts read the first data row, which was the raw Glob20 total, not the Glob20 / GlobMin80 ratio. Step 3 now writes the ratio of totals as a labeled first row and the scripts read it by name.
+- **Step 3 runs on current pandas** (the removed `mode.use_inf_as_na` option made it fail), works with a single run, and writes 0 / 0 as 0 instead of `INF`.
+- **`INF` cells are treated as missing.** `pd.to_numeric` reads the text `INF` as infinity, which made averages and deltas infinite and broke the bubble plots.
+- **Exact gene matching** in Step 6 and the gene scripts (`GATA2` vs `GATA2-AS1`, `APC` vs `APCDD1`); `top10dm` now keeps chrX/chrY islands and every gene of a multi-gene island.
+- **Whole-word patient matching** (`PT01` vs `PT010`) and case-insensitive patient-list detection everywhere; the gene-rank script no longer needs the fixed file name.
+- `top10genes-heatmap-barplot.py` reads the Step 3 matrix even when `gene_methylation_matrix.csv` is also in `output/`.
+- Bubble plots: fixed for pandas 3 and for CpG islands with no gene symbol.
+- Per-chromosome plot: the two bar series are side by side instead of on top of each other.
+- Superseded versions moved to `scripts/legacy/`; added `scripts/common.py`, tests and a synthetic dataset.
+
+**1.1.0** Added `early_detection/`.
+
+**1.0.0** First release.
 
 ---
 

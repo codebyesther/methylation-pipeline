@@ -8,6 +8,10 @@ import seaborn as sns
 import re
 from matplotlib.gridspec import GridSpec
 from tqdm import tqdm  # Import tqdm for progress bars
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import classify_timepoint, find_patient_file, get_patient as _get_patient, read_patient_ids  # noqa: E402
 
 sns.set(style="whitegrid")
 os.makedirs("plots", exist_ok=True)
@@ -23,14 +27,8 @@ data_dir = "data/"
 # Find files with "ratios_matrix" in their name from the output directory
 ratio_files = glob.glob(os.path.join(output_dir, "*ratios_matrix*.xlsx")) + glob.glob(os.path.join(output_dir, "*ratios_matrix*.csv"))
 
-# Find files with "patient" in their name from the data directory
-patient_files = glob.glob(os.path.join(data_dir, "*patient*.xlsx")) + glob.glob(os.path.join(data_dir, "*patient*.csv"))
-
-# Process patient files
-for file_path in tqdm(patient_files, desc="Processing patient files"):
-    df = pd.read_excel(file_path, header=None) if file_path.endswith('.xlsx') else pd.read_csv(file_path, header=None)
-    values = df[0].dropna().astype(str).tolist()
-    patient_ids.extend([v for v in values if not v.lower().startswith("unnamed")])
+# Patient list: any file in data/ with "patient" in its name (case-insensitive)
+patient_ids = read_patient_ids(find_patient_file(data_dir))
     
 # Process ratio files
 for file_path in tqdm(ratio_files, desc="Processing ratio files"):
@@ -40,14 +38,7 @@ for file_path in tqdm(ratio_files, desc="Processing ratio files"):
 
 # === Normalize sample names ===
 def normalize_timepoint(sample):
-    if "Baseline" in sample:
-        return "Baseline"
-    elif "Off-tx" in sample:
-        return "Post-Treatment"
-    elif "INNOV" in sample:
-        return "Healthy"
-    else:
-        return "On-Treatment"
+    return classify_timepoint(sample)
 
 # Define timepoints
 timepoints_patient = ["Baseline", "On-Treatment", "Post-Treatment"]  # Per-patient plots
@@ -69,13 +60,12 @@ timepoint_positions_chromosome = {
 # === Process Files ===
 for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation files"):
     print(f"\n=== Processing file: {fname} ===")
-    start_idx = df[df.iloc[:, 0].astype(str).str.contains("CGI_chr", na=False)].index[0]
-    cpg_df = df.iloc[start_idx:].reset_index(drop=True)
+    cpg_df = df[df.iloc[:, 0].astype(str).str.strip().str.startswith("CGI_")].reset_index(drop=True)
     cpg_df.rename(columns={cpg_df.columns[0]: "CpG_Island"}, inplace=True)
     cpg_df.dropna(how="all", subset=cpg_df.columns[1:], inplace=True)
 
     samples = cpg_df.columns[1:]
-    def get_patient(s): return next((pid for pid in patient_ids if pid in s), None)
+    def get_patient(s): return _get_patient(s, patient_ids)
     sample_meta = pd.DataFrame({
         "Sample": samples,
         "Patient": [get_patient(s) for s in samples],
@@ -86,11 +76,11 @@ for fname, df in tqdm(methylation_dfs.items(), desc="Processing methylation file
     non_healthy = sample_meta[sample_meta["Timepoint"] != "Healthy"]
     matrix = cpg_df.set_index("CpG_Island")[non_healthy["Sample"]]
     matrix.columns = pd.MultiIndex.from_frame(non_healthy[["Patient", "Timepoint"]])
-    matrix = matrix.apply(pd.to_numeric, errors='coerce')
-    collapsed = matrix.groupby(axis=1, level=[0, 1]).mean()
+    matrix = matrix.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], np.nan)  # "INF" cells -> missing
+    collapsed = matrix.T.groupby(level=[0, 1]).mean().T
 
     # === Extract CpG Coordinates ===
-    cpg_coords = cpg_df["CpG_Island"].str.extract(r"CGI_(chr\w+)_(\d+)_(\d+)", expand=True)
+    cpg_coords = cpg_df["CpG_Island"].str.extract(r"CGI_(chr[^_]+)_(\d+)_(\d+)", expand=True)
     cpg_coords.columns = ["Chr", "Start", "End"]
     cpg_coords = cpg_coords.dropna()
     cpg_coords["Start"] = cpg_coords["Start"].astype(int)
