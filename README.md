@@ -13,11 +13,14 @@ The pipeline works at three levels:
 | **Locus** (CpG island / chromosome) | Which regions and chromosomes change most between timepoints? | Bubble plots, per-chromosome change, top differentially methylated CGIs |
 | **Gene** | Which genes carry the strongest signal, and how does each gene's rank shift over treatment? | Gene rank trajectories, top-gene heatmaps, paired t-tests |
 
+> **Early detection.** The [`early_detection/`](early_detection/) folder applies the same normalization to a different design: plasma drawn 15-9 and 9-3 months before a cancer diagnosis and near diagnosis, compared with healthy controls. It reconstructs the pipeline's first (2024) use case and runs end to end on a synthetic demo dataset. See [`early_detection/README.md`](early_detection/README.md).
+
 ---
 
 ## 📑 Contents
 
 - [Workflow overview](#-workflow-overview)
+- [Early detection (separate folder)](early_detection/README.md)
 - [Quick start](#-quick-start)
 - [Input requirements](#-input-requirements)
 - [Preprocessing (Steps 1–6)](#-preprocessing-steps-16)
@@ -296,6 +299,7 @@ methylation-pipeline/
 ├── output/                       # Intermediate matrices and tables
 ├── plots/                        # Figures and summary tables
 ├── sampleimages/                 # Example figures used in this README
+├── early_detection/              # Pre-diagnosis vs healthy-control version (own README)
 ├── scripts/
 │   ├── step_1_filter_patients_local.py
 │   ├── step_2_merge_filtered_files.py
