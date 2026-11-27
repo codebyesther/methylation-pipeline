@@ -18,7 +18,7 @@ import argparse
 import glob
 import os
 
-from edcommon import (DATA_DIR, OUTPUT_DIR, ensure_dirs, load_count_file,
+from edcommon import (DATA_DIR, OUTPUT_DIR, contains_id, ensure_dirs, load_count_file,
                       read_id_list, window_of, write_count_file)
 
 
@@ -44,7 +44,7 @@ def main():
         cgi, totals = load_count_file(path)
         keep, no_window = [], []
         for col in cgi.columns:
-            if any(sid in str(col) for sid in ids):
+            if any(contains_id(col, sid) for sid in ids):
                 (keep if window_of(col) else no_window).append(col)
         name = os.path.splitext(os.path.basename(path))[0]
         out_path = os.path.join(args.out, f"{name}_filtered.xlsx")

@@ -52,6 +52,8 @@ def main():
     out = pd.DataFrame({"control_mean": c_mean, "control_max": c_max, "n_control": ctrl["sample"].nunique()})
 
     windows = [w for w in PRE_DX_KEYS if w in set(long["window"])]
+    if not windows:
+        raise SystemExit("No pre-diagnosis samples found (windows pre12, pre6, near).")
     for w in windows:
         g = long[long["window"] == w]
         m = g.groupby("gene")["signal"].mean()

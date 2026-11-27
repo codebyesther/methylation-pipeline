@@ -33,7 +33,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from edcommon import (DATA_DIR, OUTPUT_DIR, find_file, load_count_file,
+from edcommon import (DATA_DIR, OUTPUT_DIR, find_file, keyword_in, load_count_file,
                       read_id_list, subject_of, window_of)
 
 
@@ -42,7 +42,7 @@ def pick_input(out_dir: str, keyword: str) -> str:
     if os.path.exists(merged):
         return merged
     hits = [p for p in sorted(glob.glob(os.path.join(out_dir, "*_filtered.xlsx")))
-            if keyword.lower() in os.path.basename(p).lower()]
+            if keyword_in(os.path.basename(p), keyword)]
     if len(hits) == 1:
         return hits[0]
     if not hits:

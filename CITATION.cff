@@ -6,9 +6,9 @@ authors:
     affiliation: Yale University
     orcid: https://orcid.org/0000-0002-6885-7700
 title: "Methylation Pipeline"
-version: "1.0.0"
+version: "1.1.0"
 doi: 10.5281/zenodo.15150516
-date-released: 2025-04-04
+date-released: 2026-11-27
 repository-code: https://github.com/codebyesther/methylation-pipeline
 license: MIT
 type: software
