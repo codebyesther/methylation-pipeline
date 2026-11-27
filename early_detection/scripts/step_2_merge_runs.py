@@ -14,16 +14,13 @@ import os
 
 import pandas as pd
 
-from edcommon import OUTPUT_DIR, load_count_file, write_count_file
+from edcommon import OUTPUT_DIR, keyword_in, load_count_file, write_count_file
 
 
 def merge(keyword: str, out_dir: str) -> None:
     paths = [p for p in sorted(glob.glob(os.path.join(out_dir, "*_filtered.xlsx")))
-             if keyword.lower() in os.path.basename(p).lower()
+             if keyword_in(os.path.basename(p), keyword)
              and not os.path.basename(p).lower().startswith("merged_")]
-    # "Glob20" is also a substring of e.g. "Glob200"; require the keyword be
-    # followed by a non-digit so Glob20 and GlobMin80 files never mix.
-    paths = [p for p in paths if _keyword_exact(os.path.basename(p), keyword)]
     if not paths:
         raise FileNotFoundError(f"No *_filtered.xlsx containing '{keyword}' in {out_dir}/")
 
@@ -43,17 +40,6 @@ def merge(keyword: str, out_dir: str) -> None:
     out = os.path.join(out_dir, f"merged_{keyword}.xlsx")
     write_count_file(merged, tot, out)
     print(f"{keyword}: merged {len(paths)} run(s) -> {merged.shape[1]} samples, {merged.shape[0]} CGIs")
-
-
-def _keyword_exact(name: str, keyword: str) -> bool:
-    low, k = name.lower(), keyword.lower()
-    i = low.find(k)
-    while i != -1:
-        nxt = low[i + len(k): i + len(k) + 1]
-        if not nxt.isdigit():
-            return True
-        i = low.find(k, i + 1)
-    return False
 
 
 def main():

@@ -5,8 +5,8 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
-from edcommon import load_count_file, parse_cgi_name, subject_of, window_of  # noqa: E402
-from step_2_merge_runs import _keyword_exact  # noqa: E402
+from edcommon import (contains_id, keyword_in, load_count_file, parse_cgi_name,  # noqa: E402
+                      subject_of, window_of)
 
 
 @pytest.mark.parametrize("name,expected", [
@@ -16,6 +16,7 @@ from step_2_merge_runs import _keyword_exact  # noqa: E402
     ("256960_6-months", "pre6"),
     ("HL06_6m", "pre6"),
     ("HL01_near-Dx", "near"),
+    ("HL01_Dx", "near"),
     ("256960_at-cancer", "near"),
     ("CTRL03_control", "control"),
     ("INNOV_control_01", "control"),
@@ -31,6 +32,11 @@ def test_subject_of_uses_id_list_first():
     assert subject_of("HL01_12m") == "HL01"
 
 
+def test_ids_match_whole_tokens_only():
+    assert subject_of("HL10_12m", ["HL1", "HL10"]) == "HL10"
+    assert contains_id("HL1_12m", "HL1") and not contains_id("HL10_12m", "HL1")
+
+
 def test_parse_cgi_name_genes_and_index():
     p = parse_cgi_name("CGI_chr1_778604_779167_LOC100288069_0")
     assert (p["chr"], p["start"], p["end"], p["genes"], p["cgi_index"]) == (
@@ -42,9 +48,9 @@ def test_parse_cgi_name_genes_and_index():
 
 
 def test_keyword_exact_keeps_glob20_and_globmin80_apart():
-    assert _keyword_exact("RunA_Tot10_Glob20_cpgi.xlsx", "Glob20")
-    assert not _keyword_exact("RunA_Tot10_Glob200_cpgi.xlsx", "Glob20")
-    assert not _keyword_exact("RunA_Tot10_GlobMin80_cpgi.xlsx", "Glob20")
+    assert keyword_in("RunA_Tot10_Glob20_cpgi.xlsx", "Glob20")
+    assert not keyword_in("RunA_Tot10_Glob200_cpgi.xlsx", "Glob20")
+    assert not keyword_in("RunA_Tot10_GlobMin80_cpgi.xlsx", "Glob20")
 
 
 def test_load_count_file_reads_total_row_and_ignores_info(tmp_path):
@@ -60,3 +66,17 @@ def test_load_count_file_reads_total_row_and_ignores_info(tmp_path):
     assert list(cgi.index) == ["CGI_chr1_1_2_A_0", "CGI_chr1_3_4_B_1"]
     assert cgi.loc["CGI_chr1_3_4_B_1", "S2_control"] == 0
     assert totals.to_dict() == {"S1_12m": 10, "S2_control": 5}
+
+
+def test_load_count_file_picks_matching_total_row(tmp_path):
+    # 2024-style file: totals for both filter sets in one sheet
+    df = pd.DataFrame({
+        "Header": ["Total CpG island fragments counts for CG80_CH20_Tot10_GlobMin80",
+                   "Total CpG island fragments counts for CG80_CH20_Tot10_Glob20",
+                   "CGI_chr1_1_2_A_0"],
+        "S1_12m": [100, 7, 7],
+    })
+    path = tmp_path / "Run_CG80_CH20_Tot10_Glob20_cpgi_counts.xlsx"
+    df.to_excel(path, index=False)
+    _, totals = load_count_file(str(path))
+    assert totals["S1_12m"] == 7

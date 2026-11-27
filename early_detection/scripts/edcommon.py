@@ -44,7 +44,7 @@ WINDOWS: list[Window] = [
     Window("control", "Healthy control", r"control|healthy|innov|ctrl", True),
     Window("pre12", "15-9 months before Dx", r"12[-_ ]?m(onths?)?\b|12m"),
     Window("pre6", "9-3 months before Dx", r"(?<!1)6[-_ ]?m(onths?)?\b|(?<!1)6m"),
-    Window("near", "Near Dx", r"at[-_ ]?cancer|near[-_ ]?dx|at[-_ ]?dx|\bdx\b"),
+    Window("near", "Near Dx", r"at[-_ ]?cancer|near[-_ ]?dx|at[-_ ]?dx|(?<![a-z0-9])dx(?![a-z0-9])"),
 ]
 
 # Order used on every x-axis: earliest pre-diagnosis window first, control last
@@ -64,18 +64,37 @@ def window_label(key: str) -> str:
     return next(w.label for w in WINDOWS if w.key == key)
 
 
+def contains_id(sample_name: str, subject_id: str) -> bool:
+    """True if the ID appears in the sample name as a whole token.
+
+    "HL1" matches "HL1_12m" but not "HL10_12m"; IDs may be followed or
+    preceded by "_", "-", space or the ends of the name.
+    """
+    if not subject_id:
+        return False
+    pat = r"(?<![A-Za-z0-9])" + re.escape(str(subject_id)) + r"(?![A-Za-z0-9])"
+    return re.search(pat, str(sample_name)) is not None
+
+
 def subject_of(sample_name: str, subject_ids: list[str] | None = None) -> str:
     """Return the subject ID a sample belongs to.
 
-    If a subject ID list is given, the first ID contained in the sample name is
-    returned. Otherwise the sample name up to the first separator is used.
+    If a subject ID list is given, the longest ID that appears in the sample
+    name as a whole token is returned. Otherwise the sample name up to the
+    first separator is used.
     """
     name = str(sample_name)
     if subject_ids:
-        for sid in subject_ids:
-            if sid and sid in name:
+        for sid in sorted(subject_ids, key=len, reverse=True):
+            if contains_id(name, sid):
                 return sid
     return re.split(r"[_\- ]", name, maxsplit=1)[0]
+
+
+def keyword_in(name: str, keyword: str) -> bool:
+    """Case-insensitive keyword match that is not followed by a digit,
+    so "Glob20" matches "..._Glob20_..." but not "..._Glob200_..."."""
+    return re.search(re.escape(keyword) + r"(?!\d)", str(name), flags=re.IGNORECASE) is not None
 
 
 # ---------------------------------------------------------------------------
@@ -112,13 +131,18 @@ def read_id_list(path: str) -> list[str]:
 # ---------------------------------------------------------------------------
 # Count files from the lab preprocessing
 # ---------------------------------------------------------------------------
-def load_count_file(path: str) -> tuple[pd.DataFrame, pd.Series | None]:
+def load_count_file(path: str, prefer: str | None = None) -> tuple[pd.DataFrame, pd.Series | None]:
     """Load a CGI fragment-count spreadsheet.
 
     Expected layout (the lab preprocessing output): first column holds row
     labels; rows whose label starts with ``CGI_`` are CpG islands; one summary
     row whose label contains "Total CpG island fragments counts" holds the
     per-sample total. Any other rows (pool, cancer type, notes) are ignored.
+
+    Some lab files carry several total rows (e.g. one for the Glob20 set and
+    one for the GlobMin80 set). Then the row whose label contains ``prefer``
+    is used, if given; otherwise the row whose label shares a filter tag with
+    the file name; otherwise the first, with a warning.
 
     Returns (cgi_counts, totals). ``totals`` is None if no summary row exists.
     """
@@ -133,7 +157,17 @@ def load_count_file(path: str) -> tuple[pd.DataFrame, pd.Series | None]:
     total_rows = raw[labels.str.lower().str.contains(TOTAL_ROW_KEY)]
     totals = None
     if not total_rows.empty:
-        totals = pd.to_numeric(total_rows.iloc[0, 1:], errors="coerce")
+        pick = 0
+        if len(total_rows) > 1:
+            row_labels = total_rows[label_col].astype(str).tolist()
+            base = os.path.basename(path)
+            tags = [prefer] if prefer else re.findall(r"Glob(?:Min)?\d+|Max\d+", base, flags=re.IGNORECASE)
+            hits = [i for i, lab in enumerate(row_labels) if any(keyword_in(lab, t) for t in tags if t)]
+            if hits:
+                pick = hits[0]
+            else:
+                print(f"[warn] {base}: {len(row_labels)} total rows; using the first: {row_labels[0]!r}")
+        totals = pd.to_numeric(total_rows.iloc[pick, 1:], errors="coerce")
         totals.index = raw.columns[1:]
         totals = totals.reindex(cgi.columns)
     return cgi, totals
